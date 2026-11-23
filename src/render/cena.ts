@@ -1,7 +1,16 @@
 // Renderização 3D em vista lateral (2.5D) com Three.js. Lê o Estado da simulação; não altera nada nele.
 import * as THREE from 'three';
-import type { Estado, EstadoJogador, Fase } from '../core/types';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import type { Estado, EstadoJogador, Fase, Retangulo } from '../core/types';
 import { FISICA } from '../core/sim';
+import { TEMPO, materialBrilho, materialMundo } from './materiais';
+import { texturaLuz, texturaRuna, texturaSilhuetas, uvCelula } from './texturas';
+import { ceu, camadasFundo } from './ceu';
+import { construirCenario, geoFlor, geoTufo, CORES } from './cenario';
+import { cascatas, lago } from './agua';
+import { vagalumes } from './efeitos';
+import { Pos } from './pos';
+import { colocar, pintar, sorteio } from './util';
 
 export type Qualidade = 'baixa' | 'media' | 'alta';
 
@@ -59,155 +68,224 @@ function criarBoneco(cores: { corpo: number; lenco: number; cabelo: number }, q:
   return { raiz, corpo, bracoE, bracoD, pernaE, pernaD, lenco, fase: 0, achatar: 0 };
 }
 
+/** `?resfixa` desliga a resolução dinâmica (capturas de tela comparáveis em máquina sem GPU). */
+const RES_FIXA = typeof location !== 'undefined' && new URLSearchParams(location.search).has('resfixa');
+
 export class Cena {
   readonly renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
-  private camera = new THREE.PerspectiveCamera(40, 16 / 9, 0.5, 220);
+  private camera = new THREE.PerspectiveCamera(42, 16 / 9, 0.5, 400);
   private bonecos: [Boneco, Boneco];
-  private portas = new Map<string, THREE.Mesh>();
+  private sombras: THREE.Mesh[] = [];
+  private portas = new Map<string, THREE.Group>();
   private placas = new Map<string, THREE.Mesh>();
   private portal!: THREE.Group;
   private vagalumes!: THREE.Points;
+  private ceu!: THREE.Mesh;
   private sol!: THREE.DirectionalLight;
+  private pos: Pos | null = null;
+  private chao: Retangulo[] = [];
   private alvoCam = new THREE.Vector3();
   private relogio = 0;
+  private iniciou = false;
+  // resolução dinâmica: se o aparelho não segura ~40 fps, baixa a resolução interna (até metade) e sobe de volta
+  private escala = 1;
+  private medida = { t: 0, n: 0 };
+  private tamanho = { w: 1, h: 1 };
 
   constructor(canvas: HTMLCanvasElement, private fase: Fase, readonly qualidade: Qualidade) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: qualidade !== 'baixa', powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, qualidade === 'alta' ? 2 : qualidade === 'media' ? 1.5 : 1));
+    this.renderer.setPixelRatio(this.razaoPixel());
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
-    this.renderer.shadowMap.enabled = qualidade !== 'baixa';
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.montarCeu();
+    this.renderer.toneMapping = THREE.NeutralToneMapping;
+    this.renderer.toneMappingExposure = 1.0;
+    // sombras de verdade só na alta; na média e na baixa, sombra-bolha sob os personagens (bem mais barato)
+    this.renderer.shadowMap.enabled = qualidade === 'alta';
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.localClippingEnabled = true; // a porteira some dentro do lintel ao subir
+    this.renderer.info.autoReset = false;
+    TEMPO.value = 0;
     this.montarLuz();
-    this.montarFase();
-    this.montarCenario();
+    this.montarMundo();
+    this.montarJogo();
     this.bonecos = [
       criarBoneco({ corpo: COR.p1Corpo, lenco: COR.p1Lenco, cabelo: COR.p1Cabelo }, qualidade, 'P1', '#ff5a4e'),
       criarBoneco({ corpo: COR.p2Corpo, lenco: COR.p2Lenco, cabelo: COR.p2Cabelo }, qualidade, 'P2', '#5aa8ff'),
     ];
     for (const b of this.bonecos) this.scene.add(b.raiz);
+    (window as unknown as { __cena: THREE.Scene }).__cena = this.scene; // TEMPX
+    if (qualidade === 'alta') this.pos = new Pos(this.renderer, this.scene, this.camera);
   }
 
-  private montarCeu() {
-    // gradiente do céu num domo (um só draw), com névoa da mesma cor no horizonte
-    const geo = new THREE.SphereGeometry(180, 24, 12);
-    const mat = new THREE.ShaderMaterial({
-      side: THREE.BackSide, depthWrite: false,
-      uniforms: { topo: { value: new THREE.Color(COR.ceuTopo) }, baixo: { value: new THREE.Color(COR.ceuBaixo) } },
-      vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-      fragmentShader: 'uniform vec3 topo; uniform vec3 baixo; varying vec3 vP; void main(){ float t = smoothstep(-0.1, 0.6, vP.y); gl_FragColor = vec4(mix(baixo, topo, t), 1.0); }',
-    });
-    const ceu = new THREE.Mesh(geo, mat);
-    ceu.renderOrder = -1;
-    this.scene.add(ceu);
-    this.scene.fog = new THREE.Fog(COR.nevoa, 28, 110);
-  }
+  private razaoPixel() { return Math.min(devicePixelRatio, this.qualidade === 'alta' ? 2 : this.qualidade === 'media' ? 1.5 : 1); }
 
   private montarLuz() {
-    this.scene.add(new THREE.HemisphereLight(0xffe3c2, 0x3b2c5a, 1.1));
-    this.sol = new THREE.DirectionalLight(0xffd29a, 2.4);
-    this.sol.position.set(-12, 20, 14);
-    this.sol.castShadow = this.qualidade !== 'baixa';
+    const corNevoa = new THREE.Color(0xa88bd2);
+    this.scene.fog = new THREE.Fog(corNevoa, 20, 95);
+    // luz de pintura: céu dourado por cima, rebatida roxa por baixo, sol quente pela esquerda e contraluz rosada
+    this.scene.add(new THREE.HemisphereLight(0xffe4c4, 0x5a3f96, 1.55));
+    this.sol = new THREE.DirectionalLight(0xffcf8f, 2.3);
+    this.sol.castShadow = this.qualidade === 'alta';
     const s = this.sol.shadow;
-    s.mapSize.set(this.qualidade === 'alta' ? 2048 : 1024, this.qualidade === 'alta' ? 2048 : 1024);
-    s.camera.left = -16; s.camera.right = 16; s.camera.top = 12; s.camera.bottom = -8;
-    s.camera.near = 1; s.camera.far = 60; s.bias = -0.0006; s.normalBias = 0.02; s.radius = 3;
+    s.mapSize.set(2048, 2048);
+    s.camera.left = -18; s.camera.right = 18; s.camera.top = 12; s.camera.bottom = -8;
+    s.camera.near = 1; s.camera.far = 70; s.bias = -0.0005; s.normalBias = 0.03;
     this.scene.add(this.sol, this.sol.target);
+    const contra = new THREE.DirectionalLight(0xff9fd8, 0.9);
+    contra.position.set(10, 8, -14);
+    this.scene.add(contra);
   }
 
-  private montarFase() {
+  private montarMundo() {
     const q = this.qualidade;
-    const grama = material(COR.grama, q), terra = material(COR.terra, q), madeira = material(COR.madeira, q);
-    const prof = 4; // profundidade das plataformas (eixo z)
-    for (const p of this.fase.plataformas) {
-      const tampa = new THREE.Mesh(new THREE.BoxGeometry(p.w, 0.22, prof), grama);
-      tampa.position.set(p.x + p.w / 2, p.y + p.h - 0.11 + 0.02, 0);
-      const base = new THREE.Mesh(new THREE.BoxGeometry(p.w * 0.98, Math.max(0.1, p.h + 4), prof * 0.96), terra);
-      base.position.set(p.x + p.w / 2, p.y + p.h - 0.2 - (p.h + 4) / 2, -0.05);
-      // plataforma alta: casa na árvore, com tronco
-      if (p.y > 1) {
-        base.visible = false;
-        const tronco = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.7, p.y + 1, 10), madeira);
-        tronco.position.set(p.x + p.w / 2, (p.y - 1) / 2, -1.6);
-        tronco.castShadow = q !== 'baixa';
-        this.scene.add(tronco);
-        tampa.material = madeira;
-      }
-      for (const m of [tampa, base]) { m.receiveShadow = q !== 'baixa'; m.castShadow = q !== 'baixa'; this.scene.add(m); }
+    const luzTex = texturaLuz();
+    this.ceu = ceu();
+    this.scene.add(this.ceu);
+    this.scene.add(camadasFundo(texturaSilhuetas(), -120, this.fase.largura + 120));
+    const c = construirCenario(this.fase, q);
+    this.chao = c.chao;
+    const matMundo = materialMundo(q, { ruido: q !== 'baixa' });
+    for (const m of c.mundo.malhas(matMundo)) {
+      m.receiveShadow = m.castShadow = q === 'alta';
+      this.scene.add(m);
     }
+    for (const m of c.brilho.malhas(materialBrilho())) this.scene.add(m);
+    // grama e flores instanciadas (vento no shader)
+    const tufos = new THREE.InstancedMesh(geoTufo(), materialMundo(q, { vento: true, ruido: false }), c.tufos.length);
+    c.tufos.forEach((m, i) => tufos.setMatrixAt(i, m));
+    tufos.receiveShadow = q === 'alta';
+    tufos.computeBoundingSphere();
+    this.scene.add(tufos);
+    if (c.flores.length) {
+      const flores = new THREE.InstancedMesh(geoFlor(), materialMundo(q, { vento: true, ruido: false }), c.flores.length);
+      c.flores.forEach((f, i) => { flores.setMatrixAt(i, f.m); flores.setColorAt(i, f.cor); });
+      flores.computeBoundingSphere();
+      this.scene.add(flores);
+    }
+    const agua = lago(-4.4, -120, this.fase.largura + 120, (this.scene.fog as THREE.Fog).color);
+    this.scene.add(agua, cascatas(c.cascatas));
+    const nevoa = c.nevoa.malha(luzTex, false); nevoa.renderOrder = 3;
+    const luz = c.luz.malha(luzTex, true); luz.renderOrder = 4;
+    // na baixa, sem névoa em camadas (sobreposição transparente pesa no celular fraco)
+    this.scene.add(luz);
+    if (q !== 'baixa') this.scene.add(nevoa);
+    this.vagalumes = vagalumes(q === 'baixa' ? 70 : q === 'media' ? 150 : 240, this.fase.largura, sorteio(19), luzTex);
+    this.vagalumes.renderOrder = 5;
+    this.scene.add(this.vagalumes);
+    // sombra-bolha (macia) sob cada personagem
+    const [u0, v0, u1, v1] = uvCelula('halo');
+    for (let i = 0; i < 2; i++) {
+      const g = new THREE.PlaneGeometry(1, 1);
+      g.rotateX(-Math.PI / 2);
+      const uv = g.getAttribute('uv') as THREE.BufferAttribute;
+      for (let k = 0; k < uv.count; k++) uv.setXY(k, u0 + uv.getX(k) * (u1 - u0), v0 + uv.getY(k) * (v1 - v0));
+      const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: luzTex, color: 0x1c0b38, transparent: true, opacity: q === 'alta' ? 0.45 : 0.7, depthWrite: false, fog: false }));
+      m.renderOrder = 1;
+      this.sombras.push(m); this.scene.add(m);
+    }
+  }
+
+  /** Peças que se mexem com o jogo: placas, porteira e portal. */
+  private montarJogo() {
+    const q = this.qualidade;
+    const runa = texturaRuna();
     for (const p of this.fase.placas) {
-      const m = new THREE.Mesh(new THREE.CylinderGeometry(p.w / 2, p.w / 2, 0.18, 20), material(0xffd56a, q, { emissive: new THREE.Color(0x6a4a00) }));
+      const mat = q === 'baixa'
+        ? new THREE.MeshLambertMaterial({ color: 0xb4a6c8, emissive: 0xffc040, emissiveMap: runa, emissiveIntensity: 0.6 })
+        : new THREE.MeshStandardMaterial({ color: 0xb4a6c8, roughness: 0.6, emissive: 0xffc040, emissiveMap: runa, emissiveIntensity: 0.6 });
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(p.w / 2, p.w / 2 + 0.03, 0.12, 28), mat);
       m.position.set(p.x + p.w / 2, p.y + 0.09, 0.6);
-      m.receiveShadow = q !== 'baixa';
+      m.receiveShadow = q === 'alta';
       this.placas.set(p.id, m); this.scene.add(m);
     }
     for (const p of this.fase.portas) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(p.w, p.h, prof * 0.9), madeira);
-      m.position.set(p.x + p.w / 2, p.y + p.h / 2, 0);
-      m.castShadow = q !== 'baixa';
-      this.portas.set(p.id, m); this.scene.add(m);
+      const corte = [new THREE.Plane(new THREE.Vector3(0, -1, 0), p.y + p.h)];
+      const geos: THREE.BufferGeometry[] = [];
+      const fundo = 3.7, n = 8;
+      for (let k = 0; k < n; k++) {
+        const g = new THREE.BoxGeometry(p.w * (k % 2 ? 0.92 : 1), p.h + 0.25, fundo / n - 0.03);
+        colocar(g, 0, (p.h + 0.25) / 2, -fundo / 2 + (k + 0.5) * (fundo / n) - 0.1);
+        geos.push(pintar(g, k % 2 ? 0x8a5732 : CORES.madeira));
+      }
+      for (const y of [0.45, p.h - 0.5]) {
+        const g = new THREE.BoxGeometry(p.w + 0.08, 0.16, fundo + 0.06); colocar(g, 0, y, -0.1); geos.push(pintar(g, CORES.ferro));
+        for (let k = 0; k < 5; k++) { const r = new THREE.SphereGeometry(0.05, 5, 3); colocar(r, p.w / 2 + 0.04, y, -fundo / 2 + 0.3 + k * 0.8); geos.push(pintar(r, 0x8a8098)); }
+      }
+      const matPorta = materialMundo(q);
+      matPorta.clippingPlanes = corte;
+      const grupo = new THREE.Group();
+      const corpo = new THREE.Mesh(mergeGeometries(geos)!, matPorta);
+      corpo.castShadow = q === 'alta';
+      // runa dourada nas duas faces que a câmera vê (lado e frente)
+      const matRuna = new THREE.MeshBasicMaterial({ map: runa, color: 0xffd060, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, clippingPlanes: corte, toneMapped: false, fog: false });
+      const runas: THREE.BufferGeometry[] = [];
+      for (const sx of [-1, 1]) { const g = new THREE.PlaneGeometry(1.5, 1.5); g.rotateY(sx * Math.PI / 2); g.translate(sx * (p.w / 2 + 0.01), p.h * 0.55, 0); runas.push(g); }
+      const fr = new THREE.PlaneGeometry(p.w * 0.9, p.w * 0.9); fr.translate(0, p.h * 0.55, fundo / 2 - 0.1 + 0.01); runas.push(fr);
+      grupo.add(corpo, new THREE.Mesh(mergeGeometries(runas)!, matRuna));
+      grupo.position.set(p.x + p.w / 2, p.y, 0);
+      this.portas.set(p.id, grupo); this.scene.add(grupo);
     }
-    // portal: estrela dourada (o símbolo da capa)
+    // portal: anel dourado, estrela de quatro pontas (o símbolo da capa) e um véu roxo girando
     const g = new THREE.Group();
-    const anel = new THREE.Mesh(new THREE.TorusGeometry(0.75, 0.07, 10, 40), new THREE.MeshBasicMaterial({ color: 0xffe7a0 }));
-    const estrela = new THREE.Mesh(new THREE.OctahedronGeometry(0.35), new THREE.MeshBasicMaterial({ color: 0xfff4c8 }));
-    const luz = new THREE.PointLight(0xffd98a, 6, 6);
-    g.add(anel, estrela, luz);
+    const anel = new THREE.Mesh(new THREE.TorusGeometry(0.8, 0.07, 10, 48), new THREE.MeshBasicMaterial({ color: 0xffd98a, toneMapped: false }));
+    const forma = new THREE.Shape();
+    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2 + Math.PI / 2, r = i % 2 === 0 ? 0.48 : 0.12; i === 0 ? forma.moveTo(Math.cos(a) * r, Math.sin(a) * r) : forma.lineTo(Math.cos(a) * r, Math.sin(a) * r); }
+    const estrelaGeo = new THREE.ExtrudeGeometry(forma, { depth: 0.08, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.03, bevelSegments: 1 });
+    estrelaGeo.center();
+    const estrela = new THREE.Mesh(estrelaGeo, new THREE.MeshBasicMaterial({ color: 0xfff2c0, toneMapped: false }));
+    const veu = new THREE.Mesh(new THREE.CircleGeometry(0.76, 40), new THREE.MeshBasicMaterial({ map: this.texturaVeu(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
+    veu.position.z = -0.02;
+    g.add(veu, anel, estrela);
+    if (q !== 'baixa') g.add(new THREE.PointLight(0xffd98a, 5, 7, 1.5));
     const pr = this.fase.portal;
     g.position.set(pr.x + pr.w / 2, pr.y + 1, 0.2);
     this.portal = g; this.scene.add(g);
   }
 
-  private montarCenario() {
-    const q = this.qualidade;
-    const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
-    // fundo: árvores gigantes e rochas em camadas (paralaxe natural da perspectiva)
-    const copa = material(COR.gramaEscura, q), tronco = material(COR.madeira, q), rocha = material(COR.rocha, q);
-    const geoCopa = new THREE.IcosahedronGeometry(1, 1), geoTronco = new THREE.CylinderGeometry(0.4, 0.7, 1, 8);
-    const n = q === 'baixa' ? 18 : 34;
-    const copas = new THREE.InstancedMesh(geoCopa, copa, n), troncos = new THREE.InstancedMesh(geoTronco, tronco, n);
-    const m4 = new THREE.Matrix4(), qt = new THREE.Quaternion(), v = new THREE.Vector3(), s = new THREE.Vector3();
-    for (let i = 0; i < n; i++) {
-      const x = -6 + (this.fase.largura + 12) * (i / n) + rnd() * 3, z = -8 - rnd() * 18, h = 6 + rnd() * 10;
-      m4.compose(v.set(x, h / 2 - 2, z), qt.identity(), s.set(1 + rnd(), h, 1 + rnd())); troncos.setMatrixAt(i, m4);
-      const r = 2.5 + rnd() * 2.5;
-      m4.compose(v.set(x, h - 1, z), qt.setFromAxisAngle(v.clone().set(0, 1, 0), rnd() * 6), s.set(r, r * 0.8, r)); copas.setMatrixAt(i, m4);
-    }
-    this.scene.add(copas, troncos);
-    const rochas = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 0), rocha, 12);
-    for (let i = 0; i < 12; i++) {
-      m4.compose(v.set(rnd() * this.fase.largura, -2 + rnd(), -4 - rnd() * 4), qt.identity(), s.setScalar(0.6 + rnd() * 1.5));
-      rochas.setMatrixAt(i, m4);
-    }
-    this.scene.add(rochas);
-    // cogumelos (o elemento da arte de referência)
-    const chapeu = material(COR.cogumeloChapeu, q), pe = material(COR.cogumeloPe, q);
-    for (let i = 0; i < 9; i++) {
-      const g = new THREE.Group();
-      const esc = 0.6 + rnd() * 2.2;
-      const p = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.2, 1, 8), pe); p.position.y = 0.5;
-      const c = new THREE.Mesh(new THREE.SphereGeometry(0.6, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), chapeu); c.position.y = 0.95;
-      g.add(p, c); g.scale.setScalar(esc);
-      g.position.set(2 + rnd() * (this.fase.largura - 4), -0.02, -1.4 - rnd() * 3);
-      if (q !== 'baixa') { p.castShadow = c.castShadow = true; }
-      this.scene.add(g);
-    }
-    // vaga-lumes: pontos aditivos (uma chamada)
-    const nv = q === 'baixa' ? 60 : 160;
-    const pos = new Float32Array(nv * 3);
-    for (let i = 0; i < nv; i++) { pos[i * 3] = rnd() * this.fase.largura; pos[i * 3 + 1] = rnd() * 7; pos[i * 3 + 2] = -3 + rnd() * 6; }
-    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    this.vagalumes = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xfff1a8, size: 0.09, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }));
-    this.scene.add(this.vagalumes);
+  /** Espiral roxa e dourada do véu do portal (canvas). */
+  private texturaVeu() {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const x = c.getContext('2d')!;
+    const gr = x.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, 'rgba(255,240,200,1)'); gr.addColorStop(0.35, 'rgba(200,120,255,0.75)'); gr.addColorStop(0.8, 'rgba(90,50,200,0.5)'); gr.addColorStop(1, 'rgba(255,210,140,0.9)');
+    x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
+    x.strokeStyle = 'rgba(255,230,170,0.55)'; x.lineWidth = 3;
+    for (let b = 0; b < 4; b++) { x.beginPath(); for (let t = 0; t < 1; t += 0.02) { const a = b * Math.PI / 2 + t * 5, r = t * 60; x.lineTo(64 + Math.cos(a) * r, 64 + Math.sin(a) * r); } x.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
   }
 
   redimensionar(w: number, h: number) {
+    this.tamanho = { w, h };
+    this.renderer.setPixelRatio(this.razaoPixel() * this.escala);
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    (this.vagalumes.material as THREE.ShaderMaterial).uniforms.uAltura.value = h * this.renderer.getPixelRatio();
+    this.pos?.setSize(w, h, this.renderer.getPixelRatio());
+  }
+
+  private ajustarResolucao(dt: number) {
+    if (RES_FIXA) return;
+    const m = this.medida;
+    m.t += dt; m.n++;
+    if (m.t < 0.6 || m.n < 4) return;
+    const fps = m.n / m.t;
+    m.t = 0; m.n = 0;
+    const antes = this.escala;
+    if (fps < 20) this.escala = 0.5; // muito abaixo: vai direto ao mínimo
+    else if (fps < 40) this.escala = Math.max(0.5, this.escala - 0.15);
+    else if (fps > 57) this.escala = Math.min(1, this.escala + 0.1);
+    if (this.escala !== antes) this.redimensionar(this.tamanho.w, this.tamanho.h);
+  }
+
+  /** Altura do chão logo abaixo de (x, y), para a sombra-bolha. */
+  private alturaChao(x: number, y: number) {
+    let melhor = -Infinity;
+    for (const r of this.chao) {
+      const topo = r.y + r.h;
+      if (x >= r.x - 0.2 && x <= r.x + r.w + 0.2 && topo <= y + 0.05 && topo > melhor) melhor = topo;
+    }
+    return melhor;
   }
 
   private animarBoneco(b: Boneco, j: EstadoJogador, dt: number, eventos: string[], i: number) {
@@ -229,32 +307,50 @@ export class Cena {
 
   desenhar(e: Estado, dt: number) {
     this.relogio += dt;
+    TEMPO.value = this.relogio;
+    this.ajustarResolucao(dt);
+    this.renderer.info.reset();
     const [a, b] = e.jogadores;
     this.animarBoneco(this.bonecos[0], a, dt, e.eventos, 0);
     this.animarBoneco(this.bonecos[1], b, dt, e.eventos, 1);
-    for (const [id, m] of this.portas) {
+    e.jogadores.forEach((j, i) => {
+      const s = this.sombras[i], y = this.alturaChao(j.x, j.y);
+      const alto = j.y - y;
+      s.visible = Number.isFinite(y) && alto < 6;
+      s.position.set(j.x, y + 0.025, 0);
+      s.scale.setScalar(Math.max(0.35, 1.3 - alto * 0.18));
+    });
+    for (const [id, g] of this.portas) {
       const ab = e.portas[id] ?? 0;
       const p = this.fase.portas.find((x) => x.id === id)!;
-      m.scale.y = Math.max(0.02, 1 - ab);
-      m.position.y = p.y + p.h - (p.h * m.scale.y) / 2;
+      g.position.y = p.y + ab * p.h; // sobe para dentro do lintel; a parte de cima é cortada (igual à colisão)
+      g.visible = ab < 0.99;
     }
-    for (const [id, m] of this.placas) m.position.y = e.placasPressionadas[id] ? 0.03 : 0.09;
-    this.portal.rotation.y += dt * 1.2;
-    this.portal.children[1].rotation.x += dt * 2;
-    const pos = this.vagalumes.geometry.getAttribute('position') as THREE.BufferAttribute;
-    for (let i = 0; i < pos.count; i++) pos.setY(i, pos.getY(i) + Math.sin(this.relogio * 0.8 + i) * dt * 0.15);
-    pos.needsUpdate = true;
+    for (const [id, m] of this.placas) {
+      const on = !!e.placasPressionadas[id];
+      m.position.y += ((on ? 0.03 : 0.09) - m.position.y) * Math.min(1, dt * 18);
+      const mat = m.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity += ((on ? 2.6 : 0.55 + Math.sin(this.relogio * 2.5) * 0.15) - mat.emissiveIntensity) * Math.min(1, dt * 8);
+    }
+    this.portal.rotation.y = Math.sin(this.relogio * 0.8) * 0.35;
+    this.portal.children[0].rotation.z -= dt * 0.9;
+    this.portal.children[2].rotation.z += dt * 1.2;
+    const pulso = 1 + Math.sin(this.relogio * 3) * 0.06 + Math.min(1, e.noPortal) * 0.25;
+    this.portal.children[2].scale.setScalar(pulso);
 
-    // câmera: segue o meio dos dois e afasta quando eles se separam
+    // câmera: segue o meio dos dois, afasta quando eles se separam e fica um pouco acima, olhando levemente para
+    // baixo, para mostrar a floresta (copas, casas, cascata) acima dos personagens, como na arte conceitual
     const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
     const sep = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y) * 1.6);
-    const dist = Math.min(22, Math.max(7.5, 6 + sep * 0.9));
-    this.alvoCam.set(mx, my + 1.2, dist);
+    const dist = Math.min(22, Math.max(9, 7 + sep * 0.9));
+    this.alvoCam.set(mx, my + 2.0 + dist * 0.06, dist);
+    if (!this.iniciou) { this.camera.position.copy(this.alvoCam); this.iniciou = true; }
     this.camera.position.lerp(this.alvoCam, Math.min(1, dt * 4));
-    this.camera.lookAt(this.camera.position.x, this.camera.position.y - 0.6, 0);
-    this.sol.position.set(this.camera.position.x - 12, 20, 14);
+    this.camera.lookAt(this.camera.position.x, this.camera.position.y - 0.9 - dist * 0.04, 0);
+    this.ceu.position.copy(this.camera.position);
+    this.sol.position.set(this.camera.position.x - 10, 18, 16);
     this.sol.target.position.set(this.camera.position.x, 0, 0);
-    this.renderer.render(this.scene, this.camera);
+    if (this.pos) this.pos.render(); else this.renderer.render(this.scene, this.camera);
   }
 
   info() { const r = this.renderer.info.render; return { chamadas: r.calls, triangulos: r.triangles }; }
