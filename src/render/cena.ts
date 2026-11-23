@@ -56,7 +56,6 @@ export class Cena {
     this.montarJogo();
     this.bonecos = [criarPersonagem('P1', qualidade), criarPersonagem('P2', qualidade)];
     for (const b of this.bonecos) this.scene.add(b.raiz);
-    (window as unknown as { __cena: THREE.Scene }).__cena = this.scene; // TEMPX
     if (qualidade === 'alta') this.pos = new Pos(this.renderer, this.scene, this.camera);
   }
 
@@ -268,13 +267,13 @@ export class Cena {
     // baixo, para mostrar a floresta (copas, casas, cascata) acima dos personagens, como na arte conceitual
     const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
     const sep = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y) * 1.6);
-    const dist = Math.min(22, Math.max(9, 7 + sep * 0.9));
+    const dist = Math.min(22, Math.max(7.6, 6 + sep * 0.9));
     this.alvoCam.set(mx, my + 2.0 + dist * 0.06, dist);
     if (!this.iniciou) { this.camera.position.copy(this.alvoCam); this.iniciou = true; }
     this.camera.position.lerp(this.alvoCam, Math.min(1, dt * 4));
     this.camera.lookAt(this.camera.position.x, this.camera.position.y - 0.9 - dist * 0.04, 0);
     this.ceu.position.copy(this.camera.position);
-    this.sol.position.set(this.camera.position.x - 10, 18, 16);
+    this.sol.position.set(this.camera.position.x - 8, 20, 7);
     this.sol.target.position.set(this.camera.position.x, 0, 0);
     if (this.pos) this.pos.render(); else this.renderer.render(this.scene, this.camera);
   }

@@ -12,7 +12,7 @@ import { Quadros } from './efeitos';
 import type { Cascata } from './agua';
 
 export const CORES = {
-  grama: 0x62b443, gramaClara: 0xa6d95a, gramaEscura: 0x2f6e2e, terra: 0x4d3126,
+  grama: 0x58a03e, gramaClara: 0x9fcf4a, gramaEscura: 0x2a5f36, gramaSol: 0xd9d45a, terra: 0x4d3126,
   rocha1: 0xb495a8, rocha2: 0x84688a, rocha3: 0xc09a78, musgo: 0x5f9e3a,
   madeira: 0x9a6538, madeiraEscura: 0x5a3720, casca: 0x6f4a35, cascaEscura: 0x3d2a26,
   copaEscura: 0x245a3c, copa: 0x4f9a48, copaClara: 0x9fd85e, copaSol: 0xe2e27a,
@@ -76,8 +76,13 @@ export function construirCenario(fase: Fase, q: Qualidade): Cenario {
     }
     deformar(cap, 0.05, 2.0, (p) => (p.y > topo - 0.01 ? null : new THREE.Vector3(1, 0.3, 1)));
     mundo.add(pintar(cap, (p, n, c) => {
-      const v = fbm(p.x * 0.6, 0, p.z * 0.6);
-      if (n.y > 0.6) misturar(c, CORES.grama, CORES.gramaClara, 0.3 + v * 0.7);
+      const v = fbm(p.x * 0.6, 0, p.z * 0.6), v2 = fbm(p.x * 1.1 + 7, 0, p.z * 1.1);
+      if (n.y > 0.6) {
+        // manchas de sol douradas e sombra azulada, como a grama pintada da arte conceitual
+        misturar(c, CORES.gramaEscura, CORES.grama, Math.min(1, 0.55 + v * 0.9 + v2 * 0.3));
+        if (v > 0.05) misturar(c, c.getHex(), CORES.gramaClara, Math.min(1, (v - 0.05) * 2.2));
+        if (v + v2 * 0.5 > 0.32) misturar(c, c.getHex(), CORES.gramaSol, Math.min(0.75, (v + v2 * 0.5 - 0.32) * 2.5));
+      }
       else misturar(c, CORES.gramaEscura, CORES.grama, (p.y - (topo - 0.6)) / 0.6);
     }));
     // trepadeiras/musgo escorrendo na frente
@@ -127,7 +132,7 @@ export function construirCenario(fase: Fase, q: Qualidade): Cenario {
     mundo.add(pintar(pe, (p, _n, c) => misturar(c, 0xc9b49a, CORES.pe, (p.y - y) / (s * 0.6))));
     const R = 0.62;
     const topoX = x - Math.sin(inclina) * altura * s, topoY = y + Math.cos(inclina) * altura * s;
-    const cap = new THREE.SphereGeometry(R, rico ? 16 : 10, rico ? 7 : 5, 0, Math.PI * 2, 0, Math.PI / 2);
+    const cap = new THREE.SphereGeometry(R, rico ? 24 : 12, rico ? 10 : 5, 0, Math.PI * 2, 0, Math.PI / 2);
     cap.scale(1, 0.62, 1);
     colocar(cap, topoX, topoY - 0.05 * s, z, s, [0, 0, inclina]);
     mundo.add(pintar(cap, (p, n, c) => misturar(c, CORES.chapeuBorda, CORES.chapeu, 0.25 + n.y * 0.9)));
@@ -140,7 +145,7 @@ export function construirCenario(fase: Fase, q: Qualidade): Cenario {
     for (let k = 0; k < n; k++) {
       const th = r(0.1, 1.3), ph = r(0, Math.PI * 2), rr = r(0.09, 0.17);
       const px = Math.sin(th) * Math.cos(ph) * R, py = Math.cos(th) * R * 0.62, pz = Math.sin(th) * Math.sin(ph) * R;
-      const g = new THREE.SphereGeometry(rr, 7, 3);
+      const g = new THREE.SphereGeometry(rr, rico ? 10 : 7, rico ? 4 : 3);
       g.scale(1, 0.35, 1);
       const nrm = new THREE.Vector3(px, py / 0.38, pz).normalize();
       g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), nrm));

@@ -46,7 +46,7 @@ export function vagalumes(n: number, largura: number, rnd: () => number, mapa: T
     const perto = rnd() < 0.55;
     pos[i * 3] = -4 + rnd() * (largura + 8);
     pos[i * 3 + 1] = perto ? -0.5 + rnd() * 4.5 : rnd() * 9;
-    pos[i * 3 + 2] = perto ? -2.5 + rnd() * 5.5 : -4 - rnd() * 10;
+    pos[i * 3 + 2] = perto ? -2.5 + rnd() * 4 : -4 - rnd() * 10;
     sem[i * 3] = rnd(); sem[i * 3 + 1] = rnd(); sem[i * 3 + 2] = rnd();
   }
   const g = new THREE.BufferGeometry();
@@ -64,7 +64,7 @@ export function vagalumes(n: number, largura: number, rnd: () => number, mapa: T
         gl_Position = projectionMatrix * mv;
         vBrilho = pow(0.5 + 0.5 * sin(uTempo * (1.5 + semente.z * 2.0) + semente.x * 30.0), 2.0);
         vCor = mix(vec3(1.0, 0.86, 0.35), vec3(0.75, 1.0, 0.55), semente.z);
-        gl_PointSize = (0.22 + 0.25 * vBrilho) * uAltura * projectionMatrix[1][1] * 0.5 / -mv.z;
+        gl_PointSize = (0.13 + 0.17 * vBrilho) * uAltura * projectionMatrix[1][1] * 0.5 / -mv.z;
       }`,
     fragmentShader: /* glsl */ `
       uniform sampler2D uMapa; uniform vec4 uCel; varying float vBrilho; varying vec3 vCor;
