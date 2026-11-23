@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#2b1f5c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icone-192.png" />
+  <title>Entre Dois Mundos</title>
+</head>
+<body>
+  <section id="menu" class="tela">
+    <h1>Entre Dois Mundos</h1>
+    <p class="sub">Uma jornada para dois</p>
+    <div class="botoes">
+      <button id="bt-criar" class="grande">Criar sala</button>
+      <div class="linha">
+        <input id="codigo" maxlength="5" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+        <button id="bt-entrar">Entrar</button>
+      </div>
+      <button id="bt-treino" class="leve">Treinar sozinho</button>
+      <label class="leve">Gráficos
+        <select id="qualidade"><option value="baixa">Leve</option><option value="media">Normal</option><option value="alta">Bonito</option></select>
+      </label>
+    </div>
+    <p id="menu-erro" class="erro"></p>
+  </section>
+
+  <section id="sala" class="tela" hidden>
+    <p>Código da sala</p>
+    <div id="sala-codigo" class="codigo">·····</div>
+    <button id="bt-compartilhar">Compartilhar convite</button>
+    <p id="sala-status"></p>
+    <button id="bt-voltar" class="leve">Voltar</button>
+  </section>
+
+  <section id="jogo" class="tela" hidden>
+    <canvas id="canvas"></canvas>
+    <div id="hud"><span id="hud-sala"></span><span id="hud-info"></span><button id="bt-trocar" hidden>⇄</button><button id="bt-sair">✕</button></div>
+    <div id="controles">
+      <div id="joystick"><div class="bola"></div></div>
+      <div id="botoes">
+        <button id="bt-mao" aria-label="Mão">✋</button>
+        <button id="bt-pulo" aria-label="Pular">⬆</button>
+      </div>
+    </div>
+    <div id="aviso" hidden></div>
+    <div id="concluida" hidden>⭐ Capítulo concluído! ⭐</div>
+  </section>
+
+  <div id="girar">Gire o celular para jogar na horizontal ↻</div>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

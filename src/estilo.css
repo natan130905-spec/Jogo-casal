@@ -1,0 +1,44 @@
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1238; color: #fff7e8;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; touch-action: none; user-select: none; -webkit-user-select: none; }
+.tela { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+.tela[hidden] { display: none; }
+#menu, #sala { background: radial-gradient(circle at 50% 30%, #5b3f8f 0%, #2b1f5c 55%, #150e30 100%); padding: env(safe-area-inset-top) 16px 16px; }
+h1 { margin: 0; font-size: clamp(32px, 8vh, 64px); font-style: italic; letter-spacing: 1px; text-shadow: 0 0 18px #ffd98a88; }
+.sub { margin: 0 0 8px; opacity: 0.8; }
+.botoes { display: flex; flex-direction: column; gap: 10px; align-items: stretch; width: min(360px, 90vw); }
+.linha { display: flex; gap: 8px; }
+button, input, select { font: inherit; font-size: 18px; border-radius: 14px; border: 0; padding: 12px 16px; }
+button { background: #ffcf6b; color: #3a2310; font-weight: 700; box-shadow: 0 4px 0 #b9852b; }
+button:active, button.ativo { transform: translateY(2px); box-shadow: 0 2px 0 #b9852b; }
+button.grande { font-size: 22px; padding: 16px; }
+button.leve, label.leve { background: transparent; color: #fff7e8; box-shadow: none; border: 2px solid #ffffff44; }
+label.leve { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-radius: 14px; }
+select { padding: 6px 10px; }
+input { flex: 1; text-transform: uppercase; letter-spacing: 6px; text-align: center; background: #fff7e8; color: #2b1f5c; min-width: 0; }
+.erro { min-height: 1.2em; color: #ffb0a0; margin: 0; }
+.codigo { font-size: clamp(40px, 14vh, 96px); letter-spacing: 12px; font-weight: 800; color: #ffe7a0; text-shadow: 0 0 24px #ffd98a; }
+
+#jogo { background: #000; }
+#canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#hud { position: absolute; top: max(8px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left)); right: max(12px, env(safe-area-inset-right));
+  display: flex; gap: 10px; align-items: center; font-size: 13px; text-shadow: 0 1px 3px #000; pointer-events: none; }
+#hud span { background: #00000040; padding: 3px 8px; border-radius: 8px; }
+#hud button { pointer-events: auto; font-size: 14px; padding: 4px 10px; margin-left: auto; box-shadow: none; background: #ffffff30; color: #fff; }
+#hud #bt-sair { margin-left: 0; }
+#controles { position: absolute; inset: 0; pointer-events: none; }
+#joystick { position: absolute; left: max(4vw, env(safe-area-inset-left)); bottom: 6vh; width: min(34vh, 170px); aspect-ratio: 1; border-radius: 50%;
+  background: #ffffff1c; border: 2px solid #ffffff55; pointer-events: auto; display: grid; place-items: center; touch-action: none; }
+#joystick .bola { width: 42%; aspect-ratio: 1; border-radius: 50%; background: #ffffffcc; transition: transform 0.05s; }
+#botoes { position: absolute; right: max(4vw, env(safe-area-inset-right)); bottom: 6vh; display: flex; gap: 3vh; align-items: flex-end; pointer-events: auto; }
+#botoes button { width: min(19vh, 96px); aspect-ratio: 1; border-radius: 50%; font-size: min(7vh, 34px); padding: 0; background: #ffffff2e; color: #fff;
+  border: 2px solid #ffffff77; box-shadow: none; touch-action: none; }
+#bt-pulo { width: min(24vh, 116px) !important; }
+#botoes button.ativo { background: #ffcf6b88; }
+#aviso, #concluida { position: absolute; top: 18%; left: 50%; transform: translateX(-50%); background: #000a; padding: 12px 20px; border-radius: 14px; font-size: 20px; }
+#concluida { font-size: clamp(22px, 6vh, 40px); color: #ffe7a0; }
+#girar { display: none; }
+@media (orientation: portrait) and (max-width: 900px) {
+  #girar { display: grid; place-items: center; position: fixed; inset: 0; background: #2b1f5c; font-size: 22px; text-align: center; padding: 24px; z-index: 50; }
+}
+@media (hover: hover) and (pointer: fine) { #controles { display: none; } }
