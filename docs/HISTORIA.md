@@ -1,9 +1,9 @@
 # Entre Dois Mundos — a história
 
-> Nomes provisórios: **Léo** (P1) e **Lia** (P2). Podem virar os nomes do casal que joga (opção no menu).
+> Personagens: **Natan** (P1, lenço vermelho e óculos de aviador) e **Bruna** (P2, roupa roxa e coquinhos no cabelo).
 
 ## Prólogo — A estrela do pedido
-Na noite em que completam um ano juntos, Léo e Lia sobem no morro atrás de casa para ver o céu, como no primeiro
+Na noite em que completam um ano juntos, Natan e Bruna sobem no morro atrás de casa para ver o céu, como no primeiro
 encontro. Uma estrela cadente risca o céu e os dois fazem o mesmo pedido, em segredo: *"que a gente nunca esqueça
 nada do que viveu juntos"*.
 
@@ -38,6 +38,6 @@ Para acordarem juntos, precisam juntar os **sete pedaços da estrela**, um em ca
 ## Final
 Com os sete pedaços, a estrela se reconstrói e a névoa se desfaz. O Rei-Pesadelo era só a maior lembrança esquecida:
 o medo de se perder um do outro. Ao ser atingido pela última faísca, vira um pequeno vaga-lume que pousa no ombro dos dois.
-Léo e Lia acordam no morro, de manhã, ainda de mãos dadas. No céu do amanhecer, uma estrela pequena continua acesa.
+Natan e Bruna acordam no morro, de manhã, ainda de mãos dadas. No céu do amanhecer, uma estrela pequena continua acesa.
 
 **Fim:** *"Algumas coisas a gente não precisa lembrar sozinho."*
