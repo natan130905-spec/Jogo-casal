@@ -1,6 +1,7 @@
 import './estilo.css';
 import { FLORESTA_1 } from './core/fases';
-import { DT, estadoInicial, passo } from './core/sim';
+import { DT, estadoInicial, normalizarInput, passo } from './core/sim';
+import { instantaneo, interpolar, restaurar } from './core/instantaneo';
 import { INPUT_NEUTRO, type Estado, type Input } from './core/types';
 import { Controles } from './input/controles';
 import { criarSala, entrarSala, normalizarCodigo, type Conexao, type Mensagem } from './net/rede';
@@ -53,9 +54,9 @@ function iniciarJogo(modo: Modo, con: Conexao | null) {
   let ping = 0;
   if (con) {
     con.aoReceber = (m: Mensagem) => {
-      if (m.t === 'in') entradaRemota = m.i;
+      if (m.t === 'in') entradaRemota = normalizarInput(m.i);
       else if (m.t === 'st') {
-        const s = m.s as Estado;
+        const s = restaurar(fase, m.s);
         buffer.push({ t: performance.now(), s });
         eventosPendentes.push(...s.eventos);
         while (buffer.length > 8) buffer.shift();
@@ -88,8 +89,7 @@ function iniciarJogo(modo: Modo, con: Conexao | null) {
       for (let i = 0; i < buffer.length - 1; i++) if (buffer[i].t <= alvo && buffer[i + 1].t >= alvo) { a = buffer[i]; b = buffer[i + 1]; }
       if (a && b) {
         const k = b.t === a.t ? 1 : Math.max(0, Math.min(1, (alvo - a.t) / (b.t - a.t)));
-        mostrar = structuredClone(b.s);
-        mostrar.jogadores.forEach((j, i) => { j.x = a.s.jogadores[i].x + (j.x - a.s.jogadores[i].x) * k; j.y = a.s.jogadores[i].y + (j.y - a.s.jogadores[i].y) * k; });
+        mostrar = interpolar(fase, a.s, b.s, k);
         mostrar.eventos = eventosPendentes; eventosPendentes = [];
       }
     } else {
@@ -102,7 +102,7 @@ function iniciarJogo(modo: Modo, con: Conexao | null) {
         eventosParaEnviar.push(...estado.eventos);
         acumulado -= DT;
         if (modo === 'anfitriao' && estado.tick % 3 === 0) {
-          con!.enviar({ t: 'st', s: { ...estado, eventos: eventosParaEnviar } });
+          con!.enviar({ t: 'st', s: instantaneo(fase, estado, eventosParaEnviar) });
           eventosParaEnviar = [];
         }
       }

@@ -4,6 +4,7 @@
 // públicos que o PeerJS já configura.
 import Peer, { type DataConnection, type PeerOptions } from 'peerjs';
 import type { Input } from '../core/types';
+import type { Instantaneo } from '../core/instantaneo';
 
 const ALFABETO = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const PREFIXO = 'entre-dois-mundos-v1-';
@@ -18,7 +19,8 @@ export const normalizarCodigo = (s: string) => s.toUpperCase().replace(/[^A-Z0-9
 export type Mensagem =
   | { t: 'oi'; versao: string }
   | { t: 'in'; i: Input; seq: number }
-  | { t: 'st'; s: unknown }
+  /** instantâneo compacto do estado (anfitrião → convidado) */
+  | { t: 'st'; s: Instantaneo }
   | { t: 'ping'; at: number }
   | { t: 'pong'; at: number };
 

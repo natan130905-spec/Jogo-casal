@@ -1,5 +1,6 @@
 // E2E: dois "celulares" em paisagem; A cria a sala, B entra pelo código; confere sincronização e o pulo cooperativo.
-// Uso: node test/e2e/dupla.mjs [--publico]   (sem --publico usa um servidor PeerJS local na porta 9137)
+// Uso: node test/e2e/dupla.mjs [--publico]   (sem --publico usa um servidor PeerJS local)
+// Portas: PORTA (vite preview, padrão 4719) e PORTA_SINAL (PeerJS, padrão 9137; 0 = qualquer livre).
 import { createRequire } from 'node:module';
 const { chromium, devices } = createRequire(import.meta.url)('/opt/node-tools/node_modules/playwright');
 import { PeerServer } from 'peer';
@@ -9,9 +10,14 @@ import { mkdirSync } from 'node:fs';
 const publico = process.argv.includes('--publico');
 const saida = new URL('../../test-out/', import.meta.url).pathname; mkdirSync(saida, { recursive: true });
 let sinal = null;
-if (!publico) sinal = PeerServer({ port: 9137, path: '/', host: '127.0.0.1' });
-const srv = await preview({ preview: { port: 4719, host: '127.0.0.1' }, logLevel: 'error' });
-const base = `http://127.0.0.1:4719/?q=media${publico ? '' : '&sinal=127.0.0.1:9137'}`;
+const porta = Number(process.env.PORTA ?? 4719);
+let portaSinal = Number(process.env.PORTA_SINAL ?? 9137);
+if (!publico) {
+  const pronto = new Promise((r) => { sinal = PeerServer({ port: portaSinal, path: '/', host: '127.0.0.1' }, (s) => r(s.address().port)); });
+  portaSinal = await pronto;
+}
+const srv = await preview({ preview: { port: porta, host: '127.0.0.1', strictPort: true }, logLevel: 'error' });
+const base = `http://127.0.0.1:${porta}/?q=media${publico ? '' : `&sinal=127.0.0.1:${portaSinal}`}`;
 const navegador = await chromium.launch({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] });
 const cel = { ...devices['Pixel 7 landscape'] };
 const A = await (await navegador.newContext(cel)).newPage();
@@ -47,6 +53,9 @@ let yP1emB = 0;
 for (let k = 0; k < 10; k++) { await pausa(120); yP1emB = Math.max(yP1emB, await B.evaluate(() => window.__edm?.estado().jogadores[0].y)); }
 await A.keyboard.up('Space');
 checar(yP1emB > 0.5, `pulo do P1 aparece no convidado (y=${yP1emB?.toFixed(2)})`);
+// o instantâneo novo traz vida, bichinhos e estrelinhas
+const extra = await B.evaluate(() => { const e = window.__edm?.estado(); return { cor: e.jogadores.map((j) => j.coracoes), bichos: e.inimigos.length, casal: e.estrelinhasCasal }; });
+checar(extra.cor.every((c) => c >= 1 && c <= 3) && extra.bichos > 0 && extra.casal >= 0, `convidado recebe corações ${extra.cor} e ${extra.bichos} bichinhos`);
 await pausa(800);
 await A.screenshot({ path: saida + 'A_depois.png' }); await B.screenshot({ path: saida + 'B_depois.png' });
 const info = await A.textContent('#hud-info');
