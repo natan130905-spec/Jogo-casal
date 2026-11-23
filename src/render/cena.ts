@@ -1,8 +1,7 @@
 // Renderização 3D em vista lateral (2.5D) com Three.js. Lê o Estado da simulação; não altera nada nele.
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import type { Estado, EstadoJogador, Fase, Retangulo } from '../core/types';
-import { FISICA } from '../core/sim';
+import type { Estado, Fase, Retangulo } from '../core/types';
 import { TEMPO, materialBrilho, materialMundo } from './materiais';
 import { texturaLuz, texturaRuna, texturaSilhuetas, uvCelula } from './texturas';
 import { ceu, camadasFundo } from './ceu';
@@ -11,62 +10,9 @@ import { cascatas, lago } from './agua';
 import { vagalumes } from './efeitos';
 import { Pos } from './pos';
 import { colocar, pintar, sorteio } from './util';
+import { criarPersonagem, type Personagem } from './personagem';
 
 export type Qualidade = 'baixa' | 'media' | 'alta';
-
-const COR = {
-  ceuTopo: 0x2b1f5c, ceuBaixo: 0xf6b6a0, nevoa: 0x7d6aa8,
-  grama: 0x6fbf4a, gramaEscura: 0x4f9a35, terra: 0x7a4b2e, rocha: 0x8a7f9c,
-  madeira: 0x9a6a3e, cogumeloChapeu: 0xd6453d, cogumeloPe: 0xf3e6cf,
-  p1Corpo: 0x8a5a36, p1Lenco: 0xd23b2f, p1Cabelo: 0x5a3420,
-  p2Corpo: 0x8b6cc7, p2Lenco: 0xf0c75a, p2Cabelo: 0x3a2433, pele: 0xf4c9a4,
-};
-
-function material(cor: number, q: Qualidade, extra: Partial<THREE.MeshStandardMaterialParameters> = {}) {
-  return q === 'baixa'
-    ? new THREE.MeshLambertMaterial({ color: cor, ...(extra.emissive ? { emissive: extra.emissive } : {}) })
-    : new THREE.MeshStandardMaterial({ color: cor, roughness: 0.85, metalness: 0, ...extra });
-}
-
-interface Boneco { raiz: THREE.Group; corpo: THREE.Group; bracoE: THREE.Mesh; bracoD: THREE.Mesh; pernaE: THREE.Mesh; pernaD: THREE.Mesh; lenco: THREE.Mesh; fase: number; achatar: number }
-
-function criarBoneco(cores: { corpo: number; lenco: number; cabelo: number }, q: Qualidade, rotulo: string, corRotulo: string): Boneco {
-  const raiz = new THREE.Group();
-  const corpo = new THREE.Group();
-  raiz.add(corpo);
-  const sombra = q !== 'baixa';
-  const add = (geo: THREE.BufferGeometry, cor: number, x: number, y: number, z = 0, pai: THREE.Object3D = corpo) => {
-    const m = new THREE.Mesh(geo, material(cor, q)); m.position.set(x, y, z); m.castShadow = sombra; pai.add(m); return m;
-  };
-  // proporção chibi: cabeça grande (≈ 45 % da altura)
-  add(new THREE.CapsuleGeometry(0.2, 0.22, 4, 10), cores.corpo, 0, 0.45);
-  const cabeca = add(new THREE.SphereGeometry(0.27, 20, 16), COR.pele, 0, 0.88);
-  // cabelo: calota no alto + volume na nuca; o rosto (z+) fica livre
-  add(new THREE.SphereGeometry(0.3, 18, 10, 0, Math.PI * 2, 0, Math.PI * 0.36), cores.cabelo, 0, 0.9, -0.02);
-  add(new THREE.SphereGeometry(0.27, 16, 12), cores.cabelo, 0, 0.86, -0.09).scale.set(1.05, 1, 0.8);
-  for (const s of [-1, 1]) {
-    add(new THREE.SphereGeometry(0.045, 10, 8), 0x2a1a14, 0.1 * s, 0.87, 0.245, corpo).scale.set(1, 1.35, 0.6);
-    add(new THREE.SphereGeometry(0.035, 8, 6), 0xf59a8a, 0.17 * s, 0.8, 0.2, corpo).scale.set(1, 0.6, 0.4); // bochecha
-  }
-  void cabeca;
-  const lenco = add(new THREE.TorusGeometry(0.16, 0.05, 6, 16), cores.lenco, 0, 0.64);
-  lenco.rotation.x = Math.PI / 2;
-  const bracoE = add(new THREE.CapsuleGeometry(0.06, 0.2, 3, 6), cores.corpo, -0.24, 0.5);
-  const bracoD = add(new THREE.CapsuleGeometry(0.06, 0.2, 3, 6), cores.corpo, 0.24, 0.5);
-  const pernaE = add(new THREE.CapsuleGeometry(0.07, 0.14, 3, 6), 0x4a3426, -0.09, 0.14);
-  const pernaD = add(new THREE.CapsuleGeometry(0.07, 0.14, 3, 6), 0x4a3426, 0.09, 0.14);
-
-  // rótulo P1/P2 sobre a cabeça
-  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
-  const g = c.getContext('2d')!;
-  g.fillStyle = corRotulo; g.font = 'bold 64px system-ui'; g.textAlign = 'center'; g.fillText(rotulo, 64, 64);
-  g.beginPath(); g.moveTo(44, 80); g.lineTo(84, 80); g.lineTo(64, 110); g.fill();
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false }));
-  sp.scale.set(0.45, 0.45, 1); sp.position.y = 1.55; sp.renderOrder = 10;
-  corpo.scale.setScalar(1.15);
-  raiz.add(sp);
-  return { raiz, corpo, bracoE, bracoD, pernaE, pernaD, lenco, fase: 0, achatar: 0 };
-}
 
 /** `?resfixa` desliga a resolução dinâmica (capturas de tela comparáveis em máquina sem GPU). */
 const RES_FIXA = typeof location !== 'undefined' && new URLSearchParams(location.search).has('resfixa');
@@ -75,7 +21,7 @@ export class Cena {
   readonly renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(42, 16 / 9, 0.5, 400);
-  private bonecos: [Boneco, Boneco];
+  private bonecos: [Personagem, Personagem];
   private sombras: THREE.Mesh[] = [];
   private portas = new Map<string, THREE.Group>();
   private placas = new Map<string, THREE.Mesh>();
@@ -108,10 +54,7 @@ export class Cena {
     this.montarLuz();
     this.montarMundo();
     this.montarJogo();
-    this.bonecos = [
-      criarBoneco({ corpo: COR.p1Corpo, lenco: COR.p1Lenco, cabelo: COR.p1Cabelo }, qualidade, 'P1', '#ff5a4e'),
-      criarBoneco({ corpo: COR.p2Corpo, lenco: COR.p2Lenco, cabelo: COR.p2Cabelo }, qualidade, 'P2', '#5aa8ff'),
-    ];
+    this.bonecos = [criarPersonagem('P1', qualidade), criarPersonagem('P2', qualidade)];
     for (const b of this.bonecos) this.scene.add(b.raiz);
     (window as unknown as { __cena: THREE.Scene }).__cena = this.scene; // TEMPX
     if (qualidade === 'alta') this.pos = new Pos(this.renderer, this.scene, this.camera);
@@ -288,31 +231,14 @@ export class Cena {
     return melhor;
   }
 
-  private animarBoneco(b: Boneco, j: EstadoJogador, dt: number, eventos: string[], i: number) {
-    b.raiz.position.set(j.x, j.y, 0);
-    const alvoRot = j.olhando > 0 ? Math.PI / 2 * 0.55 : -Math.PI / 2 * 0.55;
-    b.raiz.rotation.y += (alvoRot - b.raiz.rotation.y) * Math.min(1, dt * 12);
-    const vel = Math.abs(j.vx) / FISICA.velAndar;
-    if (j.noChao) b.fase += dt * 12 * vel;
-    const balanco = j.noChao ? Math.sin(b.fase) * 0.7 * vel : 0.6;
-    b.bracoE.rotation.x = balanco; b.bracoD.rotation.x = -balanco;
-    b.pernaE.rotation.x = -balanco; b.pernaD.rotation.x = balanco;
-    if (eventos.includes(`pouso:${i}`)) b.achatar = 1;
-    b.achatar = Math.max(0, b.achatar - dt * 5);
-    const estica = j.noChao ? 1 - b.achatar * 0.18 : 1 + Math.min(0.12, Math.abs(j.vy) * 0.01);
-    b.corpo.scale.set(1 / Math.sqrt(estica), estica, 1 / Math.sqrt(estica));
-    b.corpo.position.y = j.noChao ? Math.abs(Math.sin(b.fase)) * 0.05 * vel : 0;
-    b.lenco.rotation.z = Math.sin(this.relogio * 6) * 0.15 * (0.3 + vel);
-  }
-
   desenhar(e: Estado, dt: number) {
     this.relogio += dt;
     TEMPO.value = this.relogio;
     this.ajustarResolucao(dt);
     this.renderer.info.reset();
     const [a, b] = e.jogadores;
-    this.animarBoneco(this.bonecos[0], a, dt, e.eventos, 0);
-    this.animarBoneco(this.bonecos[1], b, dt, e.eventos, 1);
+    this.bonecos[0].atualizar(a, b, dt, e.eventos, 0, this.relogio);
+    this.bonecos[1].atualizar(b, a, dt, e.eventos, 1, this.relogio);
     e.jogadores.forEach((j, i) => {
       const s = this.sombras[i], y = this.alturaChao(j.x, j.y);
       const alto = j.y - y;
