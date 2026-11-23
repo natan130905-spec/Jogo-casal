@@ -73,6 +73,8 @@ describe('simulação', () => {
 
   it('campanha da fase completa por um roteiro cooperativo', () => {
     const e = rodar(estadoInicial(FLORESTA_1), 0.5);
+    // este roteiro testa placas, porteira e mãos dadas; os bichinhos têm testes próprios (mecanicas.test.ts)
+    for (const n of e.inimigos) n.vivo = false;
     irAte(e, 1, 33.7);          // P2 vai para a placa-1
     irAte(e, 0, 42.3);          // P1 passa a porteira aberta e fica na placa-2
     expect(e.jogadores[0].x).toBeGreaterThan(41);
