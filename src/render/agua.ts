@@ -66,20 +66,20 @@ export function cascatas(lista: Cascata[]): THREE.Mesh {
 }
 
 /** Lago no fundo dos abismos: degradê de profundidade, ondinhas e cintilação dourada. */
-export function lago(y: number, x0: number, x1: number, corNevoa: THREE.Color): THREE.Mesh {
+export function lago(y: number, x0: number, x1: number, corNevoa: THREE.Color, cores: [number, number] = [0x1a296b, 0x8c6bc7]): THREE.Mesh {
   const g = new THREE.PlaneGeometry(x1 - x0, 40, 1, 1);
   g.rotateX(-Math.PI / 2);
   g.translate((x0 + x1) / 2, y, -14);
   const mat = new THREE.ShaderMaterial({
-    uniforms: { uTempo: TEMPO, uNevoa: { value: corNevoa } },
+    uniforms: { uTempo: TEMPO, uNevoa: { value: corNevoa }, uPerto: { value: new THREE.Color().setHex(cores[0], THREE.LinearSRGBColorSpace) }, uLonge: { value: new THREE.Color().setHex(cores[1], THREE.LinearSRGBColorSpace) } },
     vertexShader: /* glsl */ `varying vec3 vP; varying float vDist;
       void main(){ vP = (modelMatrix * vec4(position,1.0)).xyz; vec4 mv = viewMatrix * vec4(vP,1.0); vDist = -mv.z; gl_Position = projectionMatrix * mv; }`,
-    fragmentShader: /* glsl */ `uniform float uTempo; uniform vec3 uNevoa; varying vec3 vP; varying float vDist; ${RUIDO2}
+    fragmentShader: /* glsl */ `uniform float uTempo; uniform vec3 uNevoa, uPerto, uLonge; varying vec3 vP; varying float vDist; ${RUIDO2}
       void main(){
         vec2 q = vP.xz;
         float r = aRuido(q * vec2(1.2, 3.0) + vec2(uTempo * 0.3, uTempo * 0.5)) * 0.6 + aRuido(q * vec2(3.1, 7.0) - vec2(uTempo * 0.5, 0.0)) * 0.4;
         float fundoZ = smoothstep(6.0, -30.0, vP.z);
-        vec3 c = mix(vec3(0.10, 0.16, 0.42), vec3(0.55, 0.42, 0.78), fundoZ);
+        vec3 c = mix(uPerto, uLonge, fundoZ);
         c += vec3(0.25, 0.35, 0.55) * smoothstep(0.55, 0.85, r) * 0.6;
         float faisca = smoothstep(0.93, 0.99, aRuido(q * 9.0 + vec2(uTempo * 0.8, -uTempo * 0.4)));
         c += vec3(1.0, 0.82, 0.45) * faisca * 1.2;

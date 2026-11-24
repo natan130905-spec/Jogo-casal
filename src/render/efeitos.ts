@@ -40,7 +40,7 @@ export class Quadros {
 }
 
 /** Vaga-lumes: pontos que flutuam e piscam no shader. `uAltura` = altura do canvas em pixels. */
-export function vagalumes(n: number, largura: number, rnd: () => number, mapa: THREE.Texture) {
+export function vagalumes(n: number, largura: number, rnd: () => number, mapa: THREE.Texture, cores: [number, number] = [0xffdb59, 0xbfff8c]) {
   const pos = new Float32Array(n * 3), sem = new Float32Array(n * 3);
   for (let i = 0; i < n; i++) {
     const perto = rnd() < 0.55;
@@ -54,16 +54,16 @@ export function vagalumes(n: number, largura: number, rnd: () => number, mapa: T
   g.setAttribute('semente', new THREE.BufferAttribute(sem, 3));
   const [u0, v0, u1, v1] = uvCelula('estrela');
   const mat = new THREE.ShaderMaterial({
-    uniforms: { uTempo: TEMPO, uAltura: { value: 800 }, uMapa: { value: mapa }, uCel: { value: new THREE.Vector4(u0, v0, u1 - u0, v1 - v0) } },
+    uniforms: { uTempo: TEMPO, uAltura: { value: 800 }, uCorA: { value: new THREE.Color().setHex(cores[0], THREE.LinearSRGBColorSpace) }, uCorB: { value: new THREE.Color().setHex(cores[1], THREE.LinearSRGBColorSpace) }, uMapa: { value: mapa }, uCel: { value: new THREE.Vector4(u0, v0, u1 - u0, v1 - v0) } },
     vertexShader: /* glsl */ `
-      attribute vec3 semente; uniform float uTempo; uniform float uAltura; varying float vBrilho; varying vec3 vCor;
+      attribute vec3 semente; uniform float uTempo; uniform float uAltura; uniform vec3 uCorA, uCorB; varying float vBrilho; varying vec3 vCor;
       void main(){
         float t = uTempo * (0.25 + semente.x * 0.35) + semente.y * 40.0;
         vec3 p = position + vec3(sin(t) * 0.9 + sin(t * 2.3) * 0.25, sin(t * 1.3 + 1.0) * 0.5, cos(t * 0.8) * 0.5);
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
         vBrilho = pow(0.5 + 0.5 * sin(uTempo * (1.5 + semente.z * 2.0) + semente.x * 30.0), 2.0);
-        vCor = mix(vec3(1.0, 0.86, 0.35), vec3(0.75, 1.0, 0.55), semente.z);
+        vCor = mix(uCorA, uCorB, semente.z);
         gl_PointSize = (0.13 + 0.17 * vBrilho) * uAltura * projectionMatrix[1][1] * 0.5 / -mv.z;
       }`,
     fragmentShader: /* glsl */ `

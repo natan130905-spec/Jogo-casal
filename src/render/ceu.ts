@@ -1,6 +1,7 @@
 // Céu do crepúsculo (roxo → rosa → dourado, com sol, halo e nuvens finas) e as camadas de floresta pintadas ao fundo.
 import * as THREE from 'three';
 import { TEMPO } from './materiais';
+import type { Tema } from './tema';
 
 /** Direção do sol (de onde vem a luz dourada): um pouco à esquerda, baixo no céu, atrás da floresta. */
 export const DIR_SOL = new THREE.Vector3(-0.22, 0.2, -1).normalize();
@@ -8,18 +9,20 @@ export const DIR_SOL = new THREE.Vector3(-0.22, 0.2, -1).normalize();
 const lin = (hex: number) => new THREE.Color(hex);
 
 /** Domo do céu. Deve acompanhar a posição da câmera (o sol fica sempre no mesmo lugar do quadro). */
-export function ceu(): THREE.Mesh {
+export function ceu(t?: Tema['ceu']): THREE.Mesh {
+  const k = t ?? { topo: 0x2a1c63, lilas: 0x7a55c4, rosa: 0xf09ab8, horiz: 0xffd394, baixo: 0x8a6ac0, sol: 0xffd9a0, nuvens: 0.55, estrelas: 0.8 };
   const geo = new THREE.SphereGeometry(190, 32, 16);
   const mat = new THREE.ShaderMaterial({
     side: THREE.BackSide, depthWrite: false, fog: false,
     uniforms: {
       uTempo: TEMPO, uSol: { value: DIR_SOL },
-      cTopo: { value: lin(0x2a1c63) }, cLilas: { value: lin(0x7a55c4) }, cRosa: { value: lin(0xf09ab8) },
-      cHoriz: { value: lin(0xffd394) }, cBaixo: { value: lin(0x8a6ac0) }, cSol: { value: lin(0xffd9a0) },
+      cTopo: { value: lin(k.topo) }, cLilas: { value: lin(k.lilas) }, cRosa: { value: lin(k.rosa) },
+      cHoriz: { value: lin(k.horiz) }, cBaixo: { value: lin(k.baixo) }, cSol: { value: lin(k.sol) },
+      uNuvens: { value: k.nuvens }, uEstrelas: { value: k.estrelas },
     },
     vertexShader: /* glsl */ 'varying vec3 vD; void main(){ vD = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); gl_Position.z = gl_Position.w * 0.99999; }',
     fragmentShader: /* glsl */ `
-      uniform float uTempo; uniform vec3 uSol, cTopo, cLilas, cRosa, cHoriz, cBaixo, cSol; varying vec3 vD;
+      uniform float uTempo, uNuvens, uEstrelas; uniform vec3 uSol, cTopo, cLilas, cRosa, cHoriz, cBaixo, cSol; varying vec3 vD;
       float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float n2(vec2 x){ vec2 i = floor(x), f = fract(x); f = f*f*(3.0-2.0*f);
         return mix(mix(h2(i), h2(i+vec2(1,0)), f.x), mix(h2(i+vec2(0,1)), h2(i+vec2(1,1)), f.x), f.y); }
@@ -36,10 +39,10 @@ export function ceu(): THREE.Mesh {
         vec2 uv = d.xz / (abs(y) + 0.18) * 1.6 + vec2(uTempo * 0.01, 0.0);
         float nv = n2(uv) * 0.6 + n2(uv * 2.7 + 3.0) * 0.4;
         float nuvem = smoothstep(0.55, 0.85, nv) * smoothstep(0.02, 0.12, y) * smoothstep(0.55, 0.2, y);
-        c = mix(c, mix(vec3(1.0, 0.72, 0.62), vec3(1.0, 0.92, 0.7), pow(s, 4.0)), nuvem * 0.55);
+        c = mix(c, mix(vec3(1.0, 0.72, 0.62), vec3(1.0, 0.92, 0.7), pow(s, 4.0)), nuvem * uNuvens);
         // estrelinhas no alto
         float est = step(0.996, h2(floor(d.xy * 260.0 + d.z * 91.0))) * smoothstep(0.35, 0.7, y);
-        c += vec3(est) * 0.8;
+        c += vec3(est) * uEstrelas;
         gl_FragColor = vec4(c, 1.0);
         #include <colorspace_fragment>
       }`,
@@ -54,11 +57,12 @@ export function ceu(): THREE.Mesh {
  * Camadas de silhueta (planos longos com a textura repetida), da mais distante para a mais próxima. A cor de cada
  * camada já é a da névoa naquela distância (perspectiva atmosférica), por isso elas não usam a névoa da cena.
  */
-export function camadasFundo(mapa: THREE.Texture, x0: number, x1: number): THREE.Mesh {
+export function camadasFundo(mapa: THREE.Texture, x0: number, x1: number, cores?: [number, number][]): THREE.Mesh {
+  const k = cores ?? [[0xe0b4d8, 0xf6cfd6], [0xa286cc, 0xcfa6d6], [0x6c5eae, 0x9a84c6]];
   const camadas = [
-    { z: -75, base: -22, alto: 30, faixa: 0, repete: 90, baixo: 0xe0b4d8, cima: 0xf6cfd6, desloc: 0.0 },
-    { z: -52, base: -16, alto: 26, faixa: 1, repete: 70, baixo: 0xa286cc, cima: 0xcfa6d6, desloc: 0.37 },
-    { z: -34, base: -12, alto: 24, faixa: 1, repete: 52, baixo: 0x6c5eae, cima: 0x9a84c6, desloc: 0.71 },
+    { z: -75, base: -22, alto: 30, faixa: 0, repete: 90, baixo: k[0][0], cima: k[0][1], desloc: 0.0 },
+    { z: -52, base: -16, alto: 26, faixa: 1, repete: 70, baixo: k[1][0], cima: k[1][1], desloc: 0.37 },
+    { z: -34, base: -12, alto: 24, faixa: 1, repete: 52, baixo: k[2][0], cima: k[2][1], desloc: 0.71 },
   ];
   const pos: number[] = [], uv: number[] = [], cor: number[] = [], idx: number[] = [];
   const c = new THREE.Color();
