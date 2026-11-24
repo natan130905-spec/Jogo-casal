@@ -19,7 +19,7 @@ import { Efeitos } from './efeitos';
 import { Particulas3D } from './particulas';
 import { CameraArena } from './camera';
 import { carregarModelo } from './modelos';
-import { RESOLUCAO } from './toon';
+import { RECORTE, RESOLUCAO } from './toon';
 import { C } from './atlas';
 
 /** `?resfixa` desliga a resolução dinâmica (capturas comparáveis em máquina sem GPU). */
@@ -165,6 +165,10 @@ export class CenaArena {
     this.cam.atualizar(e, local, dt, this.efeitos.tremor, t);
     if (this.camFixa) { this.cam.camera.position.copy(this.camFixa.pos); this.cam.camera.lookAt(this.camFixa.alvo); this.cam.camera.updateMatrixWorld(true); }
     this.efeitos.atualizar(e, dt, t, this.fx, this.herois, this.rei, this.cam.camera.position, local);
+    // pilar entre a câmera e quem joga fica pontilhado (não tapa o personagem); câmera fixa (corte) desliga
+    { const j = e.jogadores[local], c = this.cam.camera.position;
+      RECORTE.uCamP.value.copy(c);
+      if (this.camFixa) RECORTE.uAlvoP.value.copy(c); else RECORTE.uAlvoP.value.set(j.x, j.y + 0.8, j.z); }
 
     // céu: fase 3 escurece, vitória clareia
     const u = (this.ceu.material as THREE.ShaderMaterial).uniforms;

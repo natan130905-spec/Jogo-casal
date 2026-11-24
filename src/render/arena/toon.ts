@@ -7,6 +7,42 @@ import { TEMPO } from '../materiais';
 /** Resolução da tela (px) para o contorno em pixels; atualizada em `CenaArena.redimensionar`. */
 export const RESOLUCAO = { value: new THREE.Vector2(1280, 720) };
 
+/**
+ * Recorte de visão: o que estiver entre a câmera e quem joga (no chão, a menos de `uRecorteRaio` m da linha) fica
+ * pontilhado (some 3 de cada 4 pixels), para um pilar de cristal não tapar o personagem. Atualizado em
+ * `CenaArena.desenhar`; câmera = alvo desliga.
+ */
+export const RECORTE = { uCamP: { value: new THREE.Vector3() }, uAlvoP: { value: new THREE.Vector3() }, uRecorteRaio: { value: 1.4 } };
+const RECORTE_VERT_DECL = 'varying vec3 vMundoR;';
+const RECORTE_VERT = `{
+  vec4 mR = vec4(transformed, 1.0);
+  #ifdef USE_INSTANCING
+    mR = instanceMatrix * mR;
+  #endif
+  vMundoR = (modelMatrix * mR).xyz;
+}`;
+const RECORTE_FRAG_DECL = 'varying vec3 vMundoR; uniform vec3 uCamP, uAlvoP; uniform float uRecorteRaio;';
+const RECORTE_FRAG = `{
+  vec2 segR = (uAlvoP - uCamP).xz; float l2R = dot(segR, segR);
+  if (l2R > 0.01) {
+    float uR = dot(vMundoR.xz - uCamP.xz, segR) / l2R;
+    float dR = length(vMundoR.xz - (uCamP.xz + segR * clamp(uR, 0.0, 1.0)));
+    float qR = smoothstep(uRecorteRaio, uRecorteRaio * 0.55, dR) * step(0.0, uR) * step(uR, 0.93);
+    vec2 pR = mod(floor(gl_FragCoord.xy), 2.0);
+    float bR = (pR.x * 2.0 + pR.y + 0.5) / 4.0;
+    if (bR < qR * 0.8) discard;
+  }
+}`;
+function comRecorte(sh: { vertexShader: string; fragmentShader: string; uniforms: Record<string, unknown> }) {
+  Object.assign(sh.uniforms, RECORTE);
+  sh.vertexShader = sh.vertexShader
+    .replace('#include <common>', `#include <common>\n${RECORTE_VERT_DECL}`)
+    .replace('#include <project_vertex>', `#include <project_vertex>\n${RECORTE_VERT}`);
+  sh.fragmentShader = sh.fragmentShader
+    .replace('#include <common>', `#include <common>\n${RECORTE_FRAG_DECL}`)
+    .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>\n${RECORTE_FRAG}`);
+}
+
 let gradiente: THREE.DataTexture | null = null;
 /** Rampa de 3 tons (sombra, meio-tom, luz) com filtro "mais próximo": as faixas ficam com borda dura. */
 export function rampaToon(): THREE.DataTexture {
@@ -31,6 +67,8 @@ export interface OpcoesToon {
   lados?: THREE.Side;
   /** ilhas flutuantes: sobe e desce pelo atributo `balanco` (0 = parado; senão a fase da onda) */
   balanco?: boolean;
+  /** pontilha o que estiver entre a câmera e quem joga (pilares); ver RECORTE */
+  recorte?: boolean;
 }
 
 /** Trecho de vertex shader: ilhazinhas que sobem e descem (atributo `balanco`, uniform `uTempo`). */
@@ -74,8 +112,9 @@ export function materialToon(o: OpcoesToon = {}): THREE.MeshToonMaterial & { use
   outgoingLight = mix(outgoingLight, vec3(1.0, 0.97, 0.9), uClarao);
 }
 #include <opaque_fragment>`);
+    if (o.recorte) comRecorte(sh);
   };
-  mat.customProgramCacheKey = () => `arena-toon-${o.balanco ? 1 : 0}`;
+  mat.customProgramCacheKey = () => `arena-toon-${o.balanco ? 1 : 0}-${o.recorte ? 1 : 0}`;
   return mat as THREE.MeshToonMaterial & { userData: { u: UniformsToon } };
 }
 
@@ -83,7 +122,7 @@ export function materialToon(o: OpcoesToon = {}): THREE.MeshToonMaterial & { use
  * Contorno: casco de faces de trás, empurrado na tela ao longo da normal suavizada. `px` é a espessura em pixels
  * numa tela de 720 linhas (escala com a altura); longe da câmera (mais de `longe` m) afina.
  */
-export function materialContorno(cor = 0x1c0c2c, px = 2.4, longe = 12): THREE.MeshBasicMaterial {
+export function materialContorno(cor = 0x1c0c2c, px = 2.4, longe = 12, recorte = false): THREE.MeshBasicMaterial {
   const mat = new THREE.MeshBasicMaterial({ color: cor, side: THREE.BackSide, fog: false });
   const uEsp = { value: px }, uLonge = { value: longe };
   mat.userData.uEsp = uEsp;
@@ -108,8 +147,9 @@ export function materialContorno(cor = 0x1c0c2c, px = 2.4, longe = 12): THREE.Me
   float esp = uEsp * uRes.y / 720.0;
   gl_Position.xy += d * esp * 2.0 / uRes * min(gl_Position.w, uLonge);
 }`);
+    if (recorte) comRecorte(sh);
   };
-  mat.customProgramCacheKey = () => 'arena-contorno';
+  mat.customProgramCacheKey = () => `arena-contorno-${recorte ? 1 : 0}`;
   return mat;
 }
 

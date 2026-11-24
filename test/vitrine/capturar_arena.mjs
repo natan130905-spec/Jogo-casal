@@ -34,6 +34,13 @@ const foto = async (nome) => {
 
 const cenas = {
   async inicio() { await abrir(); await A('quadros', 40); await foto('00_inicio'); },
+  /** pilar entre a câmera e quem joga: deve ficar pontilhado (recorte de visão), sem tapar o Natan */
+  async recorte() {
+    await abrir(); await A('bots', false);
+    const a = Math.PI / 6;
+    await A('por', 0, 5.5 * Math.sin(a), 5.5 * Math.cos(a), a + Math.PI); await A('por', 1, 0, 6.5, Math.PI);
+    await A('quadros', 60); await foto('02_recorte_pilar');
+  },
   async fase1() {
     await abrir();
     await A('ate', "e.perigos.some(p => p.tipo === 'onda' && p.aviso > 0 && p.aviso < 0.45)");

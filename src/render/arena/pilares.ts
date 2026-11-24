@@ -93,10 +93,10 @@ export class Pilares {
 
   constructor(contorno: boolean) {
     const n = PILARES.pos.length + CRISTAIS.pos.length;
-    this.cristais = new THREE.InstancedMesh(geoCristal(), materialToon({ vertexColors: true, proprio: 0.55, borda: 0xf0d8ff, forcaBorda: 0.4 }), n);
+    this.cristais = new THREE.InstancedMesh(geoCristal(), materialToon({ vertexColors: true, proprio: 0.55, borda: 0xf0d8ff, forcaBorda: 0.4, recorte: true }), n);
     this.cristais.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     for (let i = 0; i < n; i++) this.cristais.setColorAt(i, this.c.setScalar(1));
-    this.contorno = contornoDe(this.cristais, materialContorno(0x2a1050, 2.2));
+    this.contorno = contornoDe(this.cristais, materialContorno(0x2a1050, 2.2, 12, true));
     this.contorno.visible = contorno;
     this.rachas = new THREE.InstancedMesh(geoRachas(), new THREE.MeshBasicMaterial({ color: 0xfff4ff, toneMapped: false, side: THREE.DoubleSide }), PILARES.pos.length);
     this.cacos = new THREE.InstancedMesh(geoCacos(), this.cristais.material as THREE.Material, PILARES.pos.length);
