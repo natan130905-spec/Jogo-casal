@@ -98,4 +98,4 @@ export function faseDoCap(n: number): Fase {
 
 /** Estrelinhas possíveis numa fase: as espalhadas + uma por bichinho (o Rei não conta). */
 export const estrelinhasPossiveis = (f: Fase) =>
-  (f.estrelinhas?.length ?? 0) + (f.inimigos ?? []).filter((n) => n.tipo !== 'rei').length;
+  (f.estrelinhas?.length ?? 0) + (f.inimigos ?? []).length; // cada bichinho derrotado (o Rei também) solta uma
