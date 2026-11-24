@@ -10,9 +10,32 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import type { DefEspecial, Estado, Fase } from '../core/types';
 import type { Qualidade } from './cena';
 import type { Tema } from './tema';
-import { materialBolha, materialMundo } from './materiais';
+import { marcarBrilho, materialBolha, materialMundo } from './materiais';
 import { colocar, misturar, pintar } from './util';
 import { Cel, type Particulas } from './particulas';
+
+/**
+ * Contorno de desenho por casco invertido DENTRO da mesma geometria (0 chamadas a mais): cópia pintada de escuro,
+ * aumentada `esp` metros em volta do centro e com a ordem dos triângulos invertida (só as faces de trás aparecem,
+ * então ela vira um traço em volta da silhueta). Média e alta (docs/revisao/ARTE_DIAGNOSTICO.md §6.3).
+ */
+function casco(g: THREE.BufferGeometry, esp: number, cor: number): THREE.BufferGeometry {
+  const c = (g.index ? g.toNonIndexed() : g.clone());
+  c.computeBoundingBox();
+  const bb = c.boundingBox!, ctr = bb.getCenter(new THREE.Vector3()), tam = bb.getSize(new THREE.Vector3());
+  c.translate(-ctr.x, -ctr.y, -ctr.z);
+  c.scale(1 + (2 * esp) / Math.max(0.05, tam.x), 1 + (2 * esp) / Math.max(0.05, tam.y), 1 + (2 * esp) / Math.max(0.05, tam.z));
+  c.translate(ctr.x, ctr.y, ctr.z);
+  const out = pintar(c, cor);
+  const pos = out.getAttribute('position') as THREE.BufferAttribute, nor = out.getAttribute('normal') as THREE.BufferAttribute;
+  for (let i = 0; i + 2 < pos.count; i += 3) for (const at of [pos, nor]) {
+    const x = at.getX(i + 1), y = at.getY(i + 1), z = at.getZ(i + 1);
+    at.setXYZ(i + 1, at.getX(i + 2), at.getY(i + 2), at.getZ(i + 2)); at.setXYZ(i + 2, x, y, z);
+  }
+  for (let i = 0; i < nor.count; i++) nor.setXYZ(i, -nor.getX(i), -nor.getY(i), -nor.getZ(i));
+  return out;
+}
+const COR_TRACO = 0x1a0e24;
 
 const AMARRA = 0.6;
 
@@ -169,7 +192,7 @@ export class Elementos {
     }
     if (lanternas.length) {
       const vidro = new THREE.CylinderGeometry(0.115, 0.115, 0.32, 6);
-      this.vidros = new THREE.InstancedMesh(vidro, new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false }), lanternas.length);
+      this.vidros = new THREE.InstancedMesh(vidro, marcarBrilho(new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false }), 'brilho-vidro'), lanternas.length);
       lanternas.forEach((l, k) => {
         this.vidros!.setMatrixAt(k, this.m.makeTranslation(l.x + 0.4, l.y + 1.3, -0.95));
         this.vidros!.setColorAt(k, this.corApagada);
@@ -222,6 +245,7 @@ export class Elementos {
           const nuvem = new THREE.SphereGeometry(0.5, 10, 6); colocar(nuvem, d.w / 2, -0.05, 0, [d.w * 0.95, 0.35, prof * 0.85]);
           parts.push(pintar(nuvem, (_p, n, c) => misturar(c, P.lado, 0xffffff, 0.35 + Math.max(0, -n.y) * 0.3)));
           for (const s of [0.2, 0.8]) { const gm = new THREE.OctahedronGeometry(0.08, 0); colocar(gm, d.w * s, d.h * 0.45, prof / 2 + 0.02); parts.push(pintar(gm, P.detalhe)); }
+          if (q !== 'baixa') parts.push(casco(parts[0], 0.04, COR_TRACO));
           malha = new THREE.Mesh(mergeGeometries(parts)!, matEsp);
           break;
         }
@@ -230,6 +254,7 @@ export class Elementos {
           const g = new RoundedBoxGeometry(d.w, d.h, prof * 0.8, 2, d.h * 0.4); g.translate(d.w / 2, d.h / 2, 0);
           const parts = [pintar(g, (_p, n, c) => misturar(c, 0x8a5a24, 0xf0c860, 0.5 + n.y * 0.45))];
           const rebite = new THREE.SphereGeometry(0.07, 6, 4); colocar(rebite, d.w / 2, d.h / 2, prof * 0.4); parts.push(pintar(rebite, 0xfff0b0));
+          if (q !== 'baixa') parts.push(casco(parts[0], 0.04, COR_TRACO));
           malha = new THREE.Mesh(mergeGeometries(parts)!, matEsp);
           const haste = new THREE.BoxGeometry(1, 0.12, 0.08); haste.translate(0.5, 0, 0);
           ponteiro = new THREE.Mesh(pintar(haste, 0x3a2414), matEsp);
