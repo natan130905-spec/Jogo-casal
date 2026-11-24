@@ -63,7 +63,9 @@ export class Cena {
    * com `await`, atrás da tela de carregamento (R33). Sem `adiar`, monta tudo já (vitrine, ferramentas).
    */
   constructor(canvas: HTMLCanvasElement, private fase: Fase, readonly qualidade: Qualidade, o: { adiar?: boolean } = {}) {
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: qualidade !== 'baixa', powerPreference: 'high-performance' });
+    // MSAA do canvas só na média: na alta a cena vai para o alvo do compositor, que tem o próprio MSAA (R35, pos.ts),
+    // e o do canvas seria memória gasta à toa
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: qualidade === 'media', powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(this.razaoPixel());
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.NeutralToneMapping;

@@ -25,7 +25,10 @@ export class Pos {
   private bloom: UnrealBloomPass | null = null;
   /** `_claro` (tema de céu claro) não muda mais nada: com o limiar acima do céu, todos os temas usam o mesmo brilho. */
   constructor(renderer: THREE.WebGLRenderer, cena: THREE.Scene, camera: THREE.Camera, _claro = false) {
-    this.composer = new EffectComposer(renderer);
+    // alvo da cena com MSAA 4× (R35): antes o compositor desenhava num alvo sem amostras e a alta perdia o antialias
+    // (o MSAA do canvas só valia para o retângulo final). O canvas da alta é criado sem antialias (cena.ts).
+    const alvo = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+    this.composer = new EffectComposer(renderer, alvo);
     this.composer.addPass(new RenderPass(cena, camera));
     if (!SEM_BRILHO) {
       this.bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), BRILHO.forca, BRILHO.raio, 0);
