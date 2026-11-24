@@ -322,3 +322,15 @@ button.confirmar { background: #ff8fb8 !important; color: #3a0f22 !important; bo
 }
 @media (hover: hover) and (pointer: fine) { #controles, #controles-arena { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01s !important; animation-iteration-count: 1 !important; } }
+
+/* ---------- Testar conexão e aviso da rede (R91–R93) ---------- */
+#teste-rede { justify-content: center; }
+.teste-rede { width: min(92vw, 620px); max-height: 92vh; overflow-y: auto; gap: 6px; padding: 10px 16px; }
+.tr-lista { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+.tr-lista li { display: flex; justify-content: space-between; gap: 12px; padding: 2px 0; border-bottom: 1px solid #ffffff1a; }
+.tr-lista b { text-align: right; font-weight: 600; }
+.tr-fim { margin: 0; font-size: 14px; min-height: 1.2em; }
+#tr-texto { width: 100%; font: 11px/1.3 monospace; background: #0006; color: inherit; border: 1px solid #ffffff33; border-radius: 8px; resize: none; }
+#aviso-rede { position: fixed; z-index: 45; top: max(6px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); width: min(80vw, 560px);
+  background: #5a1f1fee; color: #fff; padding: 8px 14px; border-radius: 12px; font-size: 14px; text-align: center; }
+#aviso-rede[hidden] { display: none; }

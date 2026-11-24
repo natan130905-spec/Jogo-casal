@@ -42,6 +42,7 @@
       </div>
       <div class="linha">
         <button id="bt-treino" class="leve">Treino</button>
+        <button id="bt-testar-rede" class="leve">Testar conexão</button>
         <label class="leve">Gráficos
           <select id="qualidade"><option value="baixa">Leve</option><option value="media">Normal</option><option value="alta">Bonito</option></select>
         </label>
@@ -56,7 +57,31 @@
     <div id="sala-codigo" class="codigo">·····</div>
     <button id="bt-compartilhar">Compartilhar convite</button>
     <p id="sala-status" role="status"></p>
-    <button id="bt-voltar" class="leve">Voltar</button>
+    <div class="linha">
+      <button id="bt-voltar" class="leve">Voltar</button>
+      <button id="bt-testar-rede-sala" class="leve">Testar conexão</button>
+    </div>
+  </section>
+
+  <!-- "Testar conexão" (src/ui/testeRede.ts): o que este celular consegue na internet, para mandar o print se a sala
+       não conectar (R91, R92) -->
+  <section id="teste-rede" class="tela" hidden>
+    <div class="cartao teste-rede">
+      <strong>Testar conexão</strong>
+      <ul class="tr-lista">
+        <li><span>Navegador</span><b id="tr-nav">…</b></li>
+        <li><span>Servidor do jogo (sinalização)</span><b id="tr-sinal">…</b></li>
+        <li><span>Servidores de rede</span><b id="tr-ice">…</b></li>
+        <li><span>Caminhos obtidos (ICE)</span><b id="tr-cand">…</b></li>
+        <li><span>Retransmissão (TURN)</span><b id="tr-relay">…</b></li>
+      </ul>
+      <p id="tr-fim" class="tr-fim" role="status"></p>
+      <textarea id="tr-texto" readonly rows="3" aria-label="Resultado para copiar"></textarea>
+      <div class="linha">
+        <button id="bt-tr-copiar" class="leve">Copiar resultado</button>
+        <button id="bt-tr-voltar" class="leve">Voltar</button>
+      </div>
+    </div>
   </section>
 
   <section id="quadrinhos" class="tela" hidden>
@@ -219,6 +244,9 @@
       <button id="bt-aviso-ios" class="pequeno">Entendi</button>
     </div>
   </div>
+
+  <!-- aviso da rede fora das telas (versões diferentes nos dois celulares, R93) -->
+  <div id="aviso-rede" role="alert" hidden></div>
 
   <div id="girar">Gire o celular para jogar na horizontal ↻</div>
   <script type="module" src="./src/main.ts"></script>

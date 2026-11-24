@@ -10,6 +10,8 @@ import './estilo.css';
 import './ui/menu.css';
 import type { Estado } from './core/types';
 import { criarSala, entrarSala, normalizarCodigo, type Conexao, type Mensagem, type NomeCena, type Pedido } from './net/rede';
+import { mensagemFalha, navegadorDeApp } from './net/falhas';
+import { testarRede } from './ui/testeRede';
 import type { Qualidade } from './render/cena';
 import { FINAL, FUGA, PROLOGO, estrelinhasPossiveis, faseDoCap, info, lembranca, type Quadro } from './ui/historia';
 import { ESTRELA_SVG } from './ui/ilustracoes';
@@ -26,6 +28,9 @@ import { som } from './ui/som';
 import { $, Hud, Mapa, mostrarCaiu, mostrarConcluido, mostrarCreditos, mostrarPausa, mostrarTela, Quadrinhos, comConfirmacao, tocavel } from './ui/telas';
 
 const VERSAO = '0.4.0';
+/** o pacote do jogo deste aparelho: o hash do arquivo principal do build ('dev' no vite dev). Dois celulares com
+ *  pacotes diferentes (um com o jogo velho na memória ou no cache) simulam diferente: avisa os dois (R93). */
+const BUILD = /index-([\w-]+)\.js/.exec(import.meta.url)?.[1] ?? 'dev';
 const params = new URLSearchParams(location.search);
 document.body.classList.toggle('depurar', params.has('debug'));
 const qualidadePadrao = (): Qualidade => {
@@ -311,7 +316,10 @@ function outroSumiu(on: boolean) {
   }
 }
 
+/** quando o app foi para segundo plano (para renovar a sinalização na volta, R92) */
+let escondidoEm = -1;
 function aoEsconder() {
+  if (escondidoEm < 0) escondidoEm = performance.now();
   som.suspender();
   gravarAoSair();
   if (!emJogo(atual)) { if (con && modo !== 'treino') con.enviar({ t: 'ausente', on: true }); return; }
@@ -323,6 +331,8 @@ function aoEsconder() {
 }
 function aoVoltar() {
   som.retomar();
+  // o celular pode ter derrubado a ligação com o servidor de sinalização: refaz com o mesmo código (R92)
+  if (escondidoEm >= 0) { con?.aoVoltarAoApp(performance.now() - escondidoEm); escondidoEm = -1; }
   if (con && modo !== 'treino') con.enviar({ t: 'ausente', on: false });
 }
 document.addEventListener('visibilitychange', () => (document.hidden ? aoEsconder() : aoVoltar()));
@@ -334,7 +344,14 @@ function receber(m: Mensagem) {
   switch (m.t) {
     case 'in': case 'st': partida?.receber(m); break;
     case 'ina': case 'sta': arena?.receber(m); break;
-    case 'oi': if (m.versao !== VERSAO) console.warn(`Versões diferentes: ${m.versao} × ${VERSAO}`); break;
+    case 'oi': {
+      // R93: versões diferentes nos dois celulares (o 'build' só vem dos pacotes com este aviso; sem ele, só a versão)
+      const outra = m.versao !== VERSAO || (typeof m.build === 'string' && m.build !== BUILD);
+      const av = $('#aviso-rede');
+      av.hidden = !outra;
+      if (outra) av.textContent = `${mensagemFalha('versao')} (${VERSAO}·${BUILD} × ${m.versao}·${m.build ?? '?'})`;
+      break;
+    }
     case 'ausente': outroSumiu(!!m.on); break;
     case 'pedido':
       if (modo === 'anfitriao' && ['avancar', 'pular', 'pausa', 'continuar', 'mapa'].includes(m.acao)) executar(m.acao, 'Pausado por Bruna (quem entrou na sala).');
@@ -371,6 +388,7 @@ async function tentarDeNovo() {
 
 function ligarConexao(c: Conexao) {
   con = c;
+  (window as unknown as { __edmRede: Conexao }).__edmRede = c; // testes (test/e2e/rede.mjs) e depuração
   c.aoReceber = receber;
   c.aoMudarEstado = (st, det) => {
     if (st === 'caiu') {
@@ -439,32 +457,49 @@ $('#bt-criar').onclick = async () => {
   mostrarTela('sala'); $('#sala-status').textContent = 'Criando a sala…';
   try {
     modo = 'anfitriao';
-    const c = await criarSala(VERSAO);
+    const c = await criarSala(VERSAO, BUILD);
     ligarConexao(c);
     $('#sala-codigo').textContent = c.codigo;
-    $('#sala-status').textContent = 'Envie o código para a outra pessoa. Esperando…';
+    $('#sala-status').textContent = 'Mande o convite e volte para esta tela: a outra pessoa entra quando você voltar.';
+    // o link já entra na sala (?sala=CÓDIGO), sem digitar
     const link = `${location.origin}${location.pathname}?sala=${c.codigo}`;
     $('#bt-compartilhar').onclick = async () => {
-      if (navigator.share) await navigator.share({ title: 'Entre Dois Mundos', text: `Entra na minha sala: ${c.codigo}`, url: link }).catch(() => {});
-      else { await navigator.clipboard?.writeText(link); $('#sala-status').textContent = 'Link copiado!'; }
+      if (navigator.share) {
+        await navigator.share({ title: 'Entre Dois Mundos', text: `Vem jogar comigo! Toque no link para entrar na sala ${c.codigo}:`, url: link }).catch(() => {});
+        return;
+      }
+      try { await navigator.clipboard.writeText(link); $('#sala-status').textContent = `Link copiado! Cole no WhatsApp: ${link}`; }
+      catch { $('#sala-status').textContent = `Mande este link: ${link}`; }
     };
-  } catch (e) { $('#sala-status').textContent = `Não foi possível criar a sala: ${(e as Error).message}`; }
+  } catch (e) { modo = 'treino'; $('#sala-status').textContent = `Não foi possível criar a sala. ${(e as Error).message}`; }
 };
-$('#bt-entrar').onclick = async () => {
-  const codigo = normalizarCodigo($<HTMLInputElement>('#codigo').value);
+let entrando = false;
+/** Entra na sala (botão Entrar ou link de convite). Insiste por até 60 s, com o texto do que está acontecendo. */
+async function entrarNaSala(codigo: string, comGesto: boolean) {
+  if (entrando || con) return;
+  // o código nunca tem I, L, O, 0 nem 1 (se confundem; src/net/rede.ts ALFABETO): avisa já, sem procurar 60 s
+  if (/[ILO01]/.test(codigo)) { $('#menu-erro').textContent = 'O código não tem as letras I, L, O nem os números 0 e 1. Confira de novo.'; return; }
   if (codigo.length !== 5) { $('#menu-erro').textContent = 'O código tem 5 letras/números.'; return; }
-  som.destravar(); som.tocarMusica('menu');
-  await telaCheia();
+  entrando = true;
+  if (comGesto) { som.destravar(); som.tocarMusica('menu'); await telaCheia(); }
   $('#menu-erro').textContent = 'Conectando…';
   try {
     modo = 'convidado';
     minhaCampanha = campanha;
-    ligarConexao(await entrarSala(codigo, VERSAO));
+    const c = await entrarSala(codigo, VERSAO, BUILD, (t) => { $('#menu-erro').textContent = t; });
+    ligarConexao(c);
     // o 'conectado' da primeira vez dispara dentro de entrarSala, antes de ligarConexao: a oferta vai daqui
-    con?.enviar({ t: 'salvo', c: minhaCampanha });
+    c.enviar({ t: 'salvo', c: minhaCampanha });
     $('#menu-erro').textContent = 'Conectado! Esperando quem criou a sala…';
-  } catch (e) { modo = 'treino'; $('#menu-erro').textContent = (e as Error).message; }
-};
+  } catch (e) {
+    modo = 'treino'; con = null;
+    // R94: aberto dentro do Instagram/Facebook/WhatsApp, o navegador do app pode bloquear ou derrubar a conexão
+    const app = navegadorDeApp(navigator.userAgent);
+    $('#menu-erro').textContent = `${(e as Error).message}${app ? ` (O link abriu dentro do ${app}: abra no Chrome ou no Safari.)` : ''}`;
+  }
+  finally { entrando = false; }
+}
+$('#bt-entrar').onclick = () => void entrarNaSala(normalizarCodigo($<HTMLInputElement>('#codigo').value), true);
 // campanha sozinho: começa sem sala (R22). "Continuar" vai direto à última lanterna.
 $('#bt-solo').onclick = async () => {
   som.destravar();
@@ -534,7 +569,26 @@ addEventListener('keydown', (e) => {
     for (const id of ['#bt-criar', '#bt-entrar', '#bt-treino', '#bt-solo', '#bt-continuar-jornada']) $(id).addEventListener('click', () => { $('#aviso-ios').hidden = true; });
   }
 }
+// link de convite (?sala=CÓDIGO): já entra na sala, sem digitar nem tocar (R92)
 const salaUrl = params.get('sala');
-if (salaUrl) $<HTMLInputElement>('#codigo').value = normalizarCodigo(salaUrl);
+if (salaUrl) {
+  $<HTMLInputElement>('#codigo').value = normalizarCodigo(salaUrl);
+  // tira o código do endereço: recarregar a página não entra de novo numa sala que já acabou
+  try { const u = new URL(location.href); u.searchParams.delete('sala'); history.replaceState(null, '', u); } catch { /* ok */ }
+  void entrarNaSala(normalizarCodigo(salaUrl), false);
+}
+
+// "Testar conexão" (menu e sala): volta para a tela de onde veio
+let telaAntesDoTeste: 'menu' | 'sala' = 'menu';
+const abrirTesteRede = (de: 'menu' | 'sala') => { telaAntesDoTeste = de; mostrarTela('teste-rede'); void testarRede(VERSAO, BUILD); };
+$('#bt-testar-rede').onclick = () => abrirTesteRede('menu');
+$('#bt-testar-rede-sala').onclick = () => abrirTesteRede('sala');
+$('#bt-tr-voltar').onclick = () => mostrarTela(telaAntesDoTeste);
+$('#bt-tr-copiar').onclick = async () => {
+  const t = $<HTMLTextAreaElement>('#tr-texto').value;
+  try { await navigator.clipboard.writeText(t); $('#bt-tr-copiar').textContent = 'Copiado!'; }
+  catch { $<HTMLTextAreaElement>('#tr-texto').select(); }
+};
+for (const id of ['#bt-testar-rede', '#bt-testar-rede-sala', '#bt-tr-voltar', '#bt-tr-copiar']) tocavel($(id));
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) navigator.serviceWorker.register('./sw.js').catch(() => {});

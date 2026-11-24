@@ -15,7 +15,7 @@ const estrelinhasTotais = (p: Progresso) => Object.values(p.capitulos).reduce((s
 
 export const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s)!;
 
-export type IdTela = 'menu' | 'sala' | 'quadrinhos' | 'mapa' | 'jogo' | 'concluido' | 'creditos';
+export type IdTela = 'menu' | 'sala' | 'quadrinhos' | 'mapa' | 'jogo' | 'concluido' | 'creditos' | 'teste-rede';
 export function mostrarTela(id: IdTela) {
   for (const el of document.querySelectorAll<HTMLElement>('.tela')) el.hidden = el.id !== id;
   document.body.classList.toggle('jogando', id === 'jogo');
