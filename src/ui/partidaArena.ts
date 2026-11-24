@@ -175,11 +175,12 @@ export class PartidaArena {
       pronta: () => this.pronta && (o.modo !== 'anfitriao' || this.convidadoPronto),
       info: () => this.cena?.info?.() ?? { chamadas: 0, triangulos: 0 },
       /** recomeça a luta e joga as entradas gravadas (uma [Natan, Bruna] por tick; aceita o formato compacto) */
-      roteiro: (lista: (Compacta | EntradaArena)[][]) => {
+      roteiro: (lista: (Compacta | EntradaArena)[][], opcoes?: { dupla?: boolean }) => {
         if (o.modo === 'convidado') return false;
         this.roteiro = lista.map((par) => par.map(descompactar));
-        // os roteiros gravados jogam com o Natan no treino (solo 0)
-        this.estado = estadoInicialArena({ treino: o.modo === 'treino', solo: 0 });
+        // os roteiros gravados jogam com o Natan no treino (solo 0). `dupla` (capturas): a luta de dois, mesmo no
+        // treino (só assim aparecem o Jardim de Luz e o Golpe do Fio Vermelho num aparelho só)
+        this.estado = estadoInicialArena({ treino: o.modo === 'treino' && !opcoes?.dupla, solo: 0 });
         this.euControlo = 0;
         this.hud.eu(this.euControlo);
         this.acumulado = 0; this.avisou = false; this.musicaFinal = false;
@@ -194,6 +195,8 @@ export class PartidaArena {
       },
       acelerar: (k: number) => { this.aceleracao = Math.max(1, Math.min(60, Math.round(k) || 1)); },
       contagem: () => ({ ...this.contagem }),
+      /** câmera deste aparelho: altura de cada personagem em fração da tela, distância e ângulos (src/render/arena) */
+      camera: () => (this.cena as { medirCamera?: (e: EstadoArena, eu: number) => unknown } | null)?.medirCamera?.(this.ultimo, this.euControlo) ?? null,
       /** posições (x, z) dos dois no tick t (anfitrião/treino; só os últimos 512 ticks) */
       posicoes: (t: number) => {
         if (o.modo === 'convidado' || t < 0 || t > this.estado.tick || this.estado.tick - t >= 512) return null;

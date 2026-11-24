@@ -220,6 +220,19 @@ export class CenaArena {
     return p;
   }
 
+  /** Câmera do último quadro: altura projetada de cada personagem (fração da altura da tela, pés à cabeça), se está
+   *  dentro do quadro, distância da câmera a quem joga aqui e os ângulos. Para testes e capturas. */
+  medirCamera(e: EstadoArena, local: number = this.eu) {
+    const cam = this.cam.camera, v = new THREE.Vector3();
+    const herois = e.jogadores.map((j) => {
+      const pe = v.set(j.x, j.y, j.z).project(cam).clone();
+      const cab = v.set(j.x, j.y + 1.15, j.z).project(cam).clone();
+      return { altura: +((cab.y - pe.y) / 2).toFixed(3), dentro: Math.abs(pe.x) < 1 && Math.abs(cab.y) < 1 && pe.y > -1 && pe.z < 1, x: +pe.x.toFixed(2), y: +pe.y.toFixed(2) };
+    });
+    const j = e.jogadores[local];
+    return { eu: local, herois, distancia: +cam.position.distanceTo(v.set(j.x, j.y + 0.8, j.z)).toFixed(2), yaw: +this.cam.yaw.toFixed(3), pitch: +(-cam.rotation.x).toFixed(3), fov: cam.fov };
+  }
+
   /** Medidas do último quadro (renderer.info). */
   info() {
     const r = this.renderer.info.render;
