@@ -268,3 +268,36 @@ export function carona(k: number, espera: number, xEmbarque: number, xDesce: num
     },
   };
 }
+
+/** Segura o fio (✋) parado até `ate`. */
+export const segurarFio = (ate: (c: Ctx) => boolean) => esperar(ate, { act: true }, 'segurar o fio');
+/** Desce da beira andando para `dir` até sair do chão. */
+export const descerDaBeira = (dir: 1 | -1) => fazer('descer da beira', () => ({ x: dir }), (c) => !c.eu.noChao);
+/** Previsão do voo depois de soltar o fio (mesma física do sim: no ar o joystick leva vx a ±5,2 m/s). Devolve a
+ *  altura dos pés quando o centro passa de `xAlvo` (ou -Infinity se cair antes). */
+export function preverVoo(x: number, y: number, vx: number, vy: number, dir: 1 | -1, xAlvo: number): number {
+  for (let t = 0; t < 180; t++) {
+    vx += Math.max(-0.5, Math.min(0.5, dir * 5.2 - vx));
+    vy = Math.max(-18, vy - 0.5);
+    x += vx / 60; y += vy / 60;
+    if ((x - xAlvo) * dir >= 0) return y;
+  }
+  return -Infinity;
+}
+/** Pendurado no fio: bombeia o balanço e solta (✋) quando a previsão do voo passa por cima da beira de lá
+ *  (centro em `alvo`, pés acima de `yAlvo`); voa até pousar. */
+export function balancar(dir: 1 | -1, alvo: number, yAlvo: number, o: { folga?: number } = {}): Passo {
+  return {
+    nome: `balançar e soltar para ${alvo}`,
+    fn: (c) => {
+      const { eu, m } = c;
+      if (c.e.eventos.includes(`soltou:${c.i}`)) m.solto = 1;
+      if (m.solto) {
+        if (eu.noChao) return null;
+        return { x: dir, jump: true };
+      }
+      const solta = eu.pendurado && c.t > 30 && eu.vx * dir > 0 && preverVoo(eu.x, eu.y, eu.vx, Math.max(eu.vy, 0) + 3, dir, alvo) >= yAlvo + (o.folga ?? 0.15);
+      return { x: eu.vx >= 0 ? 1 : -1, act: solta };
+    },
+  };
+}
