@@ -1,0 +1,22 @@
+/* Balões de fala (src/ui/baloes.ts). DOM por cima do canvas: não custa chamada de desenho. */
+#baloes { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
+#baloes .balao { position: absolute; left: 0; top: 0; max-width: min(230px, 42vw); padding: 6px 11px 7px; border-radius: 14px;
+  background: #fffaf0f2; color: #2b1f3d; font: 600 15px/1.25 system-ui, sans-serif; box-shadow: 0 2px 8px #0005;
+  border: 2px solid #ffb36b; will-change: transform; overflow-wrap: break-word; }
+#baloes .balao.p2 { border-color: #c9a0ff; }
+#baloes .balao.lume { border-color: #ffe9a0; background: #2b1f5cf0; color: #fff6dc; font-style: italic; }
+#baloes .balao.lume::before { content: '🦉 '; font-style: normal; }
+#baloes .balao.entra { animation: balao-entra .18s ease-out; }
+#baloes .ponta { position: absolute; left: 0; top: 0; width: 0; height: 0; margin-left: -7px; border: 7px solid transparent;
+  border-top-color: inherit; border-bottom: 0; }
+#baloes .balao.p1 .ponta { border-top-color: #ffb36b; }
+#baloes .balao.p2 .ponta { border-top-color: #c9a0ff; }
+#baloes .balao.lume .ponta { display: none; }
+#baloes .balao.borda { opacity: .92; }
+@keyframes balao-entra { from { opacity: 0; scale: .85; } to { opacity: 1; scale: 1; } }
+
+/* repetição da dica (20 s): o botão da mecânica pisca */
+.dica-pisca { animation: dica-pisca .7s ease-in-out infinite alternate; }
+@keyframes dica-pisca { from { box-shadow: 0 0 0 0 #ffe9a000; } to { box-shadow: 0 0 0 6px #ffe9a0cc, 0 0 18px #ffe9a0; } }
+
+#bt-baloes { margin-top: 6px; }

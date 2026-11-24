@@ -38,6 +38,11 @@ class Som {
     if (this.musica?.paused) void this.musica.play().catch(() => {});
   }
 
+  /** O AudioContext, se o som está ligado e rodando (efeitos sintetizados de fora, como o murmúrio dos balões). */
+  contexto(): AudioContext | null {
+    return this.ligado && this.ctx?.state === 'running' ? this.ctx : null;
+  }
+
   alternar() {
     this.ligado = !this.ligado;
     try { localStorage.setItem(CHAVE, this.ligado ? '1' : '0'); } catch { /* sem armazenamento */ }
