@@ -20,6 +20,7 @@ import { $, Hud, Mapa, mostrarCaiu, mostrarConcluido, mostrarCreditos, mostrarPa
 
 const VERSAO = '0.3.0';
 const params = new URLSearchParams(location.search);
+document.body.classList.toggle('depurar', params.has('debug'));
 const qualidadePadrao = (): Qualidade => {
   const q = params.get('q');
   if (q === 'baixa' || q === 'media' || q === 'alta') return q;

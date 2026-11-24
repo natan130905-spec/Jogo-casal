@@ -239,12 +239,13 @@ export class Partida {
     }
 
     this.fps.n++;
-    if (agora - this.fps.t > 1000) {
+    // fps, ping e contagens só com ?debug (R34: o jogador via "24 fps" e achava que estava quebrado)
+    if (DEPURAR && agora - this.fps.t > 1000) {
       const inf = this.cena.info();
       const ping = o.con ? ` · ${Math.round(o.con.ping)} ms` : '';
-      $('#hud-info').textContent = `${Math.round((this.fps.n * 1000) / (agora - this.fps.t))} fps${ping}${DEPURAR ? ` · ${inf.chamadas} ch · ${inf.triangulos} tri` : ''}`;
+      $('#hud-info').textContent = `${Math.round((this.fps.n * 1000) / (agora - this.fps.t))} fps${ping} · ${inf.chamadas} ch · ${inf.triangulos} tri`;
       this.fps = { n: 0, t: agora };
-    }
+    } else if (!DEPURAR && agora - this.fps.t > 1000) this.fps = { n: 0, t: agora };
 
     // fim do capítulo: deixa a festa do pedaço da estrela aparecer um instante e avisa o fluxo
     if (o.modo !== 'convidado' && this.estado.concluida && !this.avisou) {

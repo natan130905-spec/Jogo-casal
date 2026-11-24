@@ -163,6 +163,10 @@ body.jogando #ceu { display: none; }
 .hud-cap { font-size: 12px; }
 .hud-info { font-size: 11px; opacity: .8; }
 .hud-info:empty { display: none; }
+/* R34: o nome do capítulo some depois de 3 s; o fps (#hud-info) só aparece com ?debug (classe no body) */
+.hud-cap { transition: opacity .6s; }
+.hud-cap.some { opacity: 0; }
+body:not(.depurar) .hud-info { display: none; }
 #controles { position: absolute; inset: 0; pointer-events: none; }
 #joystick { position: absolute; left: max(4vw, env(safe-area-inset-left)); bottom: 6vh; width: min(36vh, 170px); aspect-ratio: 1; border-radius: 50%;
   background: #1a124038; border: 2px solid #ffffff66; pointer-events: auto; display: grid; place-items: center; touch-action: none; }

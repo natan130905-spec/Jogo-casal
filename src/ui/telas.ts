@@ -175,8 +175,15 @@ export class Hud {
   constructor() {
     for (const i of [0, 1]) $(`#cor-${i}`).innerHTML = '<i>❤</i><i>❤</i><i>❤</i>';
   }
+  private some: ReturnType<typeof setTimeout> | null = null;
   configurar(cap: number, eu: number) {
     $('#hud-cap').textContent = `Capítulo ${cap} · ${info(cap).nome}`;
+    // o nome do capítulo aparece ao entrar e some depois de 3 s (ficava em cima das estrelinhas altas; R34)
+    const el = $('#hud-cap');
+    el.classList.remove('some');
+    if (this.some) clearTimeout(this.some);
+    this.some = setTimeout(() => el.classList.add('some'), 3000);
+    $('#hud-info').textContent = '';
     this.eu(eu);
     this.chave = ''; this.estrelinhas = -1;
   }
