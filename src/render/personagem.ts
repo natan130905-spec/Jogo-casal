@@ -463,7 +463,7 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
   raiz.add(bolha);
 
   // estado da animação
-  const st = { fase: 0, achatar: 0, pisca: 2 + Math.random() * 2, piscando: 0, maos: 0, recebe: 0, superpulo: 0, caiu: 0, yaw: 0, iniciou: false, tiro: 0, dano: 0, inclina: 0, bolha: 0 };
+  const st = { fase: 0, achatar: 0, salta: 0, pisca: 2 + Math.random() * 2, piscando: 0, maos: 0, recebe: 0, superpulo: 0, caiu: 0, yaw: 0, iniciou: false, tiro: 0, dano: 0, inclina: 0, bolha: 0 };
   const [quadril, tronco, cabeca, bracoE, bracoD, pernaE, pernaD, cauda] = ossos;
 
   return {
@@ -472,6 +472,7 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       raiz.position.set(j.x, j.y, 0);
       for (const ev of eventos) {
         if (ev === `pouso:${i}`) st.achatar = 1;
+        else if (ev === `pulo:${i}`) st.salta = 1;
         else if (ev === `maos:${i}`) st.maos = 0.6;
         else if (ev === `superpulo:${i}`) st.superpulo = 0.75;
         else if (ev === `caiu:${i}` || ev === `renasce:${i}`) st.caiu = 0.9;
@@ -485,7 +486,9 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       st.bolha = j.bolha ? Math.min(1, st.bolha + dt * 4) : Math.max(0, st.bolha - dt * 6);
       const naCorda = !j.bolha && (j.pendurado || j.argola >= 0);
       const segurando = !j.bolha && j.segurando && !naCorda;
-      st.achatar = Math.max(0, st.achatar - dt * 5);
+      // squash & stretch (PESQUISA_ARTE_CAMERA.md plano #9): 0,85 no pouso e 1,15 na saída do pulo, por ~110 ms
+      st.achatar = Math.max(0, st.achatar - dt * 9);
+      st.salta = Math.max(0, st.salta - dt * 9);
       st.maos = Math.max(0, st.maos - dt);
       st.superpulo = Math.max(0, st.superpulo - dt);
       st.caiu = Math.max(0, st.caiu - dt);
@@ -596,7 +599,7 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       corpo.visible = !(j.invencivel > 0 && !j.bolha && Math.floor(relogio * 14) % 2 === 1);
       if (st.dano > 0) raiz.position.x += Math.sin(relogio * 60) * 0.03 * st.dano;
       // achatar no pouso, esticar no ar, agachar quando pronto para o impulso; "pop" ao reaparecer depois de cair
-      let estica = j.noChao ? 1 - st.achatar * 0.2 - st.recebe * 0.08 : 1 + Math.min(0.1, Math.abs(j.vy) * 0.008);
+      let estica = j.noChao ? 1 - st.achatar * 0.15 - st.recebe * 0.08 : 1 + Math.max(Math.min(0.1, Math.abs(j.vy) * 0.008), st.salta * 0.15);
       if (st.maos > 0 && j.noChao) estica *= 1 - Math.sin((st.maos / 0.6) * Math.PI) * 0.06;
       const pop = (st.caiu > 0 ? 0.25 + 0.75 * elastico(1 - st.caiu / 0.9) : 1) * (1 - st.bolha * 0.18);
       const lat = 1 / Math.sqrt(estica);
