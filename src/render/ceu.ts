@@ -34,7 +34,10 @@ export function ceu(t?: Tema['ceu']): THREE.Mesh {
         c = mix(c, cTopo, smoothstep(0.32, 0.85, y));
         c = mix(c, cBaixo, smoothstep(0.0, -0.25, y));
         float s = max(dot(d, uSol), 0.0);
-        c += cSol * (pow(s, 900.0) * 6.0 + pow(s, 60.0) * 0.9 + pow(s, 8.0) * 0.35 + pow(s, 2.0) * 0.08);
+        // halo do sol limitado abaixo de 1 (linear): o céu nunca passa do limiar do brilho da alta (pos.ts) nem
+        // vira uma parede branca; só o disco pequeno do sol passa
+        c = min(c + cSol * (pow(s, 60.0) * 0.9 + pow(s, 8.0) * 0.35 + pow(s, 2.0) * 0.08), vec3(0.8));
+        c += cSol * pow(s, 900.0) * 6.0;
         // nuvens finas, iluminadas por baixo pelo sol
         vec2 uv = d.xz / (abs(y) + 0.18) * 1.6 + vec2(uTempo * 0.01, 0.0);
         float nv = n2(uv) * 0.6 + n2(uv * 2.7 + 3.0) * 0.4;
@@ -44,6 +47,8 @@ export function ceu(t?: Tema['ceu']): THREE.Mesh {
         float est = step(0.996, h2(floor(d.xy * 260.0 + d.z * 91.0))) * smoothstep(0.35, 0.7, y);
         c += vec3(est) * uEstrelas;
         gl_FragColor = vec4(c, 1.0);
+        // mesma curva de tons em todas as qualidades (na alta o OutputPass já a aplicava ao céu; na média não)
+        #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
   });

@@ -6,6 +6,7 @@ import type { Fase, Retangulo } from '../core/types';
 import type { ChaveTema, CoresChao } from './tema';
 import { colocar, deformar, fbm, Juntador, misturar, pintar } from './util';
 import { Quadros } from './efeitos';
+import { semHalo } from './materiais';
 
 export interface Contexto {
   mundo: Juntador; brilho: Juntador; luz: Quadros; nevoa: Quadros;
@@ -58,7 +59,8 @@ export function criarKit(chave: Exclude<ChaveTema, 'floresta'>, k: Contexto): Ki
     for (const q of [g, p]) {
       colocar(q, x, y, z, 1, [incl[0], rnd() * 3, incl[1]]);
       const pint = pintar(q, (_pp, n, c) => misturar(c, cor, claro, 0.35 + Math.abs(n.x) * 0.4 + Math.max(0, n.y) * 0.5));
-      (brilha ? bri : mundo).add(pint);
+      // cristal gigante que brilha: sem luz, mas sem halo na alta (só os pequenos espalham luz)
+      (brilha ? bri : mundo).add(brilha && h > 2.5 ? semHalo(pint) : pint);
     }
   };
   /** Engrenagem de pé (de frente para a câmera): disco com dentes e furo central. */
@@ -81,7 +83,8 @@ export function criarKit(chave: Exclude<ChaveTema, 'floresta'>, k: Contexto): Ki
     const aro = new THREE.TorusGeometry(raio, raio * 0.08, 6, seg(32)); colocar(aro, x, y, z + 0.02);
     mundo.add(pintar(aro, 0xc89a40));
     const disco = new THREE.CircleGeometry(raio, seg(32)); colocar(disco, x, y, z);
-    bri.add(pintar(disco, (p, _n, c) => misturar(c, 0xfff2d0, 0xffd890, Math.hypot(p.x - x, p.y - y) / raio)));
+    // mostrador grande: sem luz, mas fora do halo da alta (era um disco que florescia por inteiro)
+    bri.add(semHalo(pintar(disco, (p, _n, c) => misturar(c, 0xfff2d0, 0xffd890, Math.hypot(p.x - x, p.y - y) / raio))));
     for (let i = 0; i < 12; i++) {
       const a = (i / 12) * Math.PI * 2, m = new THREE.BoxGeometry(raio * (i % 3 ? 0.05 : 0.09), raio * 0.16, 0.03);
       colocar(m, x + Math.sin(a) * raio * 0.82, y + Math.cos(a) * raio * 0.82, z + 0.03, 1, [0, 0, -a]);
@@ -429,7 +432,7 @@ export function criarKit(chave: Exclude<ChaveTema, 'floresta'>, k: Contexto): Ki
         } else { // espelho alto com moldura
           const h = alto * 0.5, w = raio * 3;
           const p = new THREE.BoxGeometry(w, h, 0.2); p.translate(0, h / 2, 0); colocar(p, x, base + alto * 0.35, z, 1, [0, r(-0.4, 0.4), 0]);
-          bri.add(pintar(p, (q, _n, c) => misturar(c, 0x9ab8f0, 0xe8f0ff, (q.y - base - alto * 0.35) / h * 0.8 + 0.1)));
+          bri.add(semHalo(pintar(p, (q, _n, c) => misturar(c, 0x9ab8f0, 0xe8f0ff, (q.y - base - alto * 0.35) / h * 0.8 + 0.1))));
           const m = new THREE.BoxGeometry(w + 0.5, h + 0.5, 0.15); m.translate(0, h / 2, -0.12); colocar(m, x, base + alto * 0.35 - 0.25, z, 1, [0, 0, 0]);
           mundo.add(pintar(m, 0x5a46a8));
         }

@@ -13,6 +13,7 @@ import { INIMIGO } from '../core/inimigos';
 import type { Qualidade } from './cena';
 import { colocar, fbm, misturar, pintar } from './util';
 import { Cel, type Particulas } from './particulas';
+import { marcarBrilho } from './materiais';
 
 /** partes que o shader anima */
 const P = { corpo: 0, peE: 1, peD: 2, asaE: 3, asaD: 4, maoE: 5, maoD: 6 } as const;
@@ -391,7 +392,7 @@ export class Bichinhos {
         const s = new THREE.Shape();
         for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2 + Math.PI / 2, rr = i % 2 ? 0.07 : 0.3; i ? s.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : s.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); }
         const g = new THREE.ExtrudeGeometry(s, { depth: 0.04, bevelEnabled: true, bevelSize: 0.02, bevelThickness: 0.02, bevelSegments: 1 });
-        estrela = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffe9a0, toneMapped: false }));
+        estrela = new THREE.Mesh(g, marcarBrilho(new THREE.MeshBasicMaterial({ color: 0xffe9a0, toneMapped: false }), 'brilho-estrela'));
         estrela.position.set(0, 1.15, 0.73);
         corpo.add(estrela);
       }
