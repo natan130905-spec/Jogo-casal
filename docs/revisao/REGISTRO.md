@@ -201,10 +201,14 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   1e-4 m dentro do piso vizinho (o vão de 0,6 m é igual à largura do corpo). A resolução horizontal escolhe o lado pela
   direção do movimento, não pela menor penetração, e encadeia o empurrão até o fim do piso de 34 m. Isso também cria
   uma ligação falsa no grafo de alcance.
-- **Correção:** resolver pelo lado de menor penetração; empurrão de quina só para lugar livre. Estado: **planejado**
-  (L2a). No `main` atual a função continua igual.
-- **Teste que impede a volta:** T15: nos 7 planos, nenhum passo move o corpo mais que \|vx·dt\| + 0,35 m na horizontal;
-  `teleporte_cap6.ts` como caso fixo.
+- **Correção:** resolver pelo lado de menor penetração; empurrão de quina só para lugar livre. Estado: **corrigido**
+  (L2a, `ac61f15`). Os 7 planos de bots fecham no mesmo tick e com o mesmo rastro de posições; a ligação falsa 0 → 2
+  do cap. 6 sumiu do grafo (o caminho mínimo voltou às 4 portas espelhadas + o muro, `test/apoio.test.ts`). Efeito
+  colateral medido: a colisão dos bichinhos usa a mesma função, e no cap. 7 os bots pegam 39 estrelinhas em vez de 38
+  (uma estrelinha solta por bichinho cai noutro lugar), sem mudar tick nem posições dos jogadores.
+- **Teste que impede a volta:** T15: nos 7 planos, nenhum passo move o corpo mais que \|vx·dt\| + 0,35 m na horizontal
+  (`fases.test.ts`; maior medido 0,20 m no cap. 3, o deslize da quina da cabeça); `teleporte_cap6.ts` como caso fixo
+  e 3 casos de `moverEixo` (`test/colisao.test.ts`, 3 de 4 reprovam com o código antigo).
 - Fonte: ARQUITETURA_MODOS §3.
 
 ## Armas e combate
@@ -567,8 +571,12 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
 - **Causa:** **confirmada no PC** (até 3,0 s no cap. 3: 303 nós e 155 mil saltos simulados); no celular é **hipótese**
   (3–10×).
 - **Correção:** mapa de apoio gerado no build (`tools/gerar_apoio.ts` → `apoio/capN.json` com `hashFase`). Estado:
-  **planejado** (L2a).
-- **Teste que impede a volta:** T14 (o hash confere; o teste falha se a fase mudar sem regenerar).
+  **corrigido** (L2a, `7703f7c`): `npm run apoio` grava os 7 mapas (4,3–60 KB em listas curtas; o cap. 3 tem 303 nós
+  e 5 027 ligações) e o companheiro carrega com `carregarApoio(n)` (import dinâmico, um pedaço por capítulo).
+- **Teste que impede a volta:** T14 (`test/apoio.test.ts`): o hash confere, o json gravado é idêntico ao que o
+  gerador monta hoje (pega mudança de física e de colisão, não só de fase), todo PontoCoop cobre uma ligação de ajuda
+  e toda ajuda do caminho mínimo tem PontoCoop; um controle prova que fase mudada, papel fora do lugar e ponto apagado
+  reprovam. **Regra:** mudou fase, física, colisão ou o campo `apoio`? `npm run apoio`.
 - Fonte: ARQUITETURA_MODOS §2.3.
 
 ### R60 · Toques curtos podem se perder com quadros longos
@@ -694,3 +702,32 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
 - **Teste que impede a volta:** `RELATORIO.md` cita o commit do núcleo usado e a lista de posições
   (`capturas.json`).
 - Fonte: QA do Lote 0.
+
+## Núcleo, Lote L2a (2026-11-24)
+
+### R71 · Estrelinha do relógio de dois ponteiros (cap. 3 #24) com janela de 0,1 m a partir do chão fixo
+- **Sintoma:** a janela de decolagem (`test/fases/janela.ts`, no `npm run test:lento`) mede 0,1 m (0,62 m com o pulo
+  tardio do coyote) para a estrelinha #24 (114; 4), abaixo do mínimo de 0,4 m (0,9 m com o coyote).
+- **Causa (confirmada pela geometria; hipótese quanto ao jogador):** ela fica no alto do relógio de dois ponteiros
+  (centro 114; 1,6, raio 2,2) e o caminho pensado é subir no ponteiro. A ferramenta só conta pulos de chão fixo, e o
+  pulo do chão que também a pega é um acaso de 0,1 m. Se a busca completa (que usa os ponteiros) a pega com folga
+  alta, não há defeito. Não há relato do jogador sobre esta estrelinha.
+- **Correção:** nenhuma na fase. Fica como exceção nomeada (`JANELA_EXCECOES` em `test/lento/comum.ts`); a folga ≥ 100
+  da busca completa continua exigida nela. Estado: **lição** (a janela de chão fixo não vale para estrelinha de
+  plataforma especial). Revisitar no R3 (L10), com o trecho do cap. 3.
+- **Teste que impede a volta:** `npm run test:lento` (folga e janela por capítulo).
+- Fonte: L2a, medida de `tools/revisao/l2a/rodar.sh janela 3`.
+
+### R72 · Os abismos do Fio Vermelho também se atravessam de mãos dadas
+- **Sintoma:** no mapa de apoio, o caminho mínimo dos caps. 2 e 4 não usa o fio: os pontos de cooperação dos dois
+  abismos do cap. 2 e da jangada do cap. 4 são impulso + puxar (superpulo de mãos dadas por cima do vão); só o cap. 7
+  tem um ponto de fio (a ilha alta).
+- **Causa (confirmada no grafo, que voa com a física real):** o superpulo vence 5,6 m correndo no mesmo nível e mais
+  descendo; os abismos de 6,2 m (R14) têm o outro lado 3 m mais baixo. Com o parceiro do outro lado puxando, ou dando
+  impulso antes, a ligação `super` existe. O ARQUITETURA_MODOS §2.1 já notava que "o grafo prefere mãos dadas ao fio".
+- **Correção:** nenhuma no núcleo. É decisão de design (o fio é a novidade do cap. 2): ou se aceita o atalho de mãos
+  dadas, ou o abismo cresce até o superpulo não passar (rodar a busca de novo, R14). Para o companheiro (L6), o mapa
+  traz as duas ligações e os pontos `cap2:abismo*` são de mãos dadas. Estado: **planejado** (decisão no R2/L10).
+- **Teste que impede a volta:** T14 mostra os pontos gerados; se o abismo mudar, `npm run apoio` e o T14 acusam.
+- Fonte: L2a, `npm run apoio`.
+
