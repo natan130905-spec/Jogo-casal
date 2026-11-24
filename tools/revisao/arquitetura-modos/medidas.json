@@ -1,0 +1,794 @@
+{
+ "cap1-brinquedos": {
+  "largura": 184,
+  "nos": 58,
+  "ajudasObrigatorias": 7,
+  "porTipo": {
+   "porta": 4,
+   "super": 3
+  },
+  "ajudas": [
+   {
+    "tipo": "porta",
+    "porta": "tampa",
+    "quem": 1,
+    "x": 33.7,
+    "y": 0,
+    "paraX": 46.3,
+    "paraY": 0,
+    "parceiroX": 33.7,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "porta",
+    "porta": "tampa",
+    "quem": 0,
+    "x": 33.7,
+    "y": 0,
+    "paraX": 46.3,
+    "paraY": 0,
+    "parceiroX": 46.3,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 46.3,
+    "y": 0,
+    "paraX": 55,
+    "paraY": 2.8,
+    "parceiroX": 46.3,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 46.3,
+    "y": 0,
+    "paraX": 55,
+    "paraY": 2.8,
+    "parceiroX": 55,
+    "parceiroY": 2.8
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 136.7,
+    "y": 0,
+    "paraX": 143,
+    "paraY": 3.2,
+    "parceiroX": 136.7,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "porta",
+    "porta": "portao",
+    "quem": 0,
+    "x": 136.7,
+    "y": 0,
+    "paraX": 158.3,
+    "paraY": 0,
+    "parceiroX": 143,
+    "parceiroY": 3.2
+   },
+   {
+    "tipo": "porta",
+    "porta": "portao",
+    "quem": 1,
+    "x": 136.7,
+    "y": 0,
+    "paraX": 158.3,
+    "paraY": 0,
+    "parceiroX": 158.3,
+    "parceiroY": 0
+   }
+  ],
+  "salvamento": {
+   "concluida": true,
+   "segundos": 66.8,
+   "lanternas": 5,
+   "retomadas": [
+    {
+     "lanterna": 0,
+     "etapa": 2,
+     "ok": true,
+     "segundos": 60.2,
+     "bytes": 108
+    },
+    {
+     "lanterna": 1,
+     "etapa": 5,
+     "ok": true,
+     "segundos": 66.8,
+     "bytes": 128
+    },
+    {
+     "lanterna": 2,
+     "etapa": 7,
+     "ok": true,
+     "segundos": 66.8,
+     "bytes": 149
+    },
+    {
+     "lanterna": 3,
+     "etapa": 14,
+     "ok": true,
+     "segundos": 65.8,
+     "bytes": 166
+    },
+    {
+     "lanterna": 4,
+     "etapa": 16,
+     "ok": true,
+     "segundos": 66.5,
+     "bytes": 174
+    }
+   ],
+   "bytesEstadoMax": 2304,
+   "bytesInstantaneoMax": 349,
+   "bytesInstantaneoMedio": 288
+  },
+  "ms": 1179
+ },
+ "cap2-floresta": {
+  "largura": 200,
+  "nos": 24,
+  "ajudasObrigatorias": 8,
+  "porTipo": {
+   "super": 8
+  },
+  "ajudas": [
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 39.4,
+    "y": 0,
+    "paraX": 54.3,
+    "paraY": -3,
+    "parceiroX": 39.4,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 39.4,
+    "y": 0,
+    "paraX": 54.3,
+    "paraY": -3,
+    "parceiroX": 54.3,
+    "parceiroY": -3
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 106,
+    "y": 0,
+    "paraX": 127.5,
+    "paraY": -3,
+    "parceiroX": 106,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 106,
+    "y": 0,
+    "paraX": 127.5,
+    "paraY": -3,
+    "parceiroX": 127.5,
+    "parceiroY": -3
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 127.5,
+    "y": -3,
+    "paraX": 143,
+    "paraY": 0,
+    "parceiroX": 127.5,
+    "parceiroY": -3
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 127.5,
+    "y": -3,
+    "paraX": 143,
+    "paraY": 0,
+    "parceiroX": 143,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 175.4,
+    "y": 2.4,
+    "paraX": 181.8,
+    "paraY": 5.2,
+    "parceiroX": 175.4,
+    "parceiroY": 2.4
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 175.4,
+    "y": 2.4,
+    "paraX": 181.8,
+    "paraY": 5.2,
+    "parceiroX": 181.8,
+    "parceiroY": 5.2
+   }
+  ],
+  "salvamento": {
+   "concluida": true,
+   "segundos": 70.1,
+   "lanternas": 5,
+   "retomadas": [
+    {
+     "lanterna": 0,
+     "etapa": 2,
+     "ok": true,
+     "segundos": 70,
+     "bytes": 104
+    },
+    {
+     "lanterna": 1,
+     "etapa": 7,
+     "ok": true,
+     "segundos": 70,
+     "bytes": 122
+    },
+    {
+     "lanterna": 2,
+     "etapa": 9,
+     "ok": true,
+     "segundos": 70.1,
+     "bytes": 143
+    },
+    {
+     "lanterna": 3,
+     "etapa": 16,
+     "ok": true,
+     "segundos": 69.7,
+     "bytes": 163
+    },
+    {
+     "lanterna": 4,
+     "etapa": 18,
+     "ok": true,
+     "segundos": 70.1,
+     "bytes": 188
+    }
+   ],
+   "bytesEstadoMax": 2885,
+   "bytesInstantaneoMax": 464,
+   "bytesInstantaneoMedio": 372
+  },
+  "ms": 647
+ },
+ "cap3-relogio": {
+  "largura": 214,
+  "nos": 303,
+  "ajudasObrigatorias": 4,
+  "porTipo": {
+   "porta": 3,
+   "super": 1
+  },
+  "ajudas": [
+   {
+    "tipo": "porta",
+    "porta": "porta-rua",
+    "quem": 1,
+    "x": 73,
+    "y": 0,
+    "paraX": 91.5,
+    "paraY": 0,
+    "parceiroX": 73,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "porta",
+    "porta": "porta-sacada",
+    "quem": 0,
+    "x": 76.5,
+    "y": 5.5,
+    "paraX": 82.3,
+    "paraY": 5.5,
+    "parceiroX": 82.3,
+    "parceiroY": 5.5
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 144.1,
+    "y": 0,
+    "paraX": 161,
+    "paraY": 4.2,
+    "parceiroX": 144.1,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "porta",
+    "porta": "portao-tempo",
+    "quem": 0,
+    "x": 144.1,
+    "y": 0,
+    "paraX": 163.1,
+    "paraY": 0,
+    "parceiroX": 163.1,
+    "parceiroY": 0
+   }
+  ],
+  "salvamento": {
+   "concluida": true,
+   "segundos": 122.6,
+   "lanternas": 5,
+   "retomadas": [
+    {
+     "lanterna": 0,
+     "etapa": 2,
+     "ok": true,
+     "segundos": 122.6,
+     "bytes": 106
+    },
+    {
+     "lanterna": 1,
+     "etapa": 4,
+     "ok": true,
+     "segundos": 122.6,
+     "bytes": 126
+    },
+    {
+     "lanterna": 2,
+     "etapa": 6,
+     "ok": true,
+     "segundos": 122.6,
+     "bytes": 142
+    },
+    {
+     "lanterna": 3,
+     "etapa": 10,
+     "ok": true,
+     "segundos": 122.6,
+     "bytes": 168
+    },
+    {
+     "lanterna": 4,
+     "etapa": 12,
+     "ok": true,
+     "segundos": 122.6,
+     "bytes": 176
+    }
+   ],
+   "bytesEstadoMax": 3731,
+   "bytesInstantaneoMax": 481,
+   "bytesInstantaneoMedio": 377
+  },
+  "ms": 4098
+ },
+ "cap4-oceano": {
+  "largura": 220,
+  "nos": 117,
+  "ajudasObrigatorias": 4,
+  "porTipo": {
+   "super": 2,
+   "porta": 2
+  },
+  "ajudas": [
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 77,
+    "y": 3,
+    "paraX": 99.8,
+    "paraY": 0,
+    "parceiroX": 77,
+    "parceiroY": 3
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 77,
+    "y": 3,
+    "paraX": 99.8,
+    "paraY": 0,
+    "parceiroX": 99.8,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "porta",
+    "porta": "comporta",
+    "quem": 1,
+    "x": 137.5,
+    "y": 4,
+    "paraX": 152.5,
+    "paraY": 4,
+    "parceiroX": 136,
+    "parceiroY": 7.6
+   },
+   {
+    "tipo": "porta",
+    "porta": "comporta",
+    "quem": 0,
+    "x": 137.5,
+    "y": 4,
+    "paraX": 152.5,
+    "paraY": 4,
+    "parceiroX": 152.5,
+    "parceiroY": 4
+   }
+  ],
+  "salvamento": {
+   "concluida": true,
+   "segundos": 93.2,
+   "lanternas": 6,
+   "retomadas": [
+    {
+     "lanterna": 0,
+     "etapa": 2,
+     "ok": true,
+     "segundos": 93.2,
+     "bytes": 104
+    },
+    {
+     "lanterna": 1,
+     "etapa": 3,
+     "ok": true,
+     "segundos": 93.2,
+     "bytes": 108
+    },
+    {
+     "lanterna": 2,
+     "etapa": 6,
+     "ok": true,
+     "segundos": 93.2,
+     "bytes": 126
+    },
+    {
+     "lanterna": 3,
+     "etapa": 10,
+     "ok": true,
+     "segundos": 93.2,
+     "bytes": 147
+    },
+    {
+     "lanterna": 4,
+     "etapa": 13,
+     "ok": true,
+     "segundos": 92,
+     "bytes": 170
+    },
+    {
+     "lanterna": 5,
+     "etapa": 15,
+     "ok": true,
+     "segundos": 93.2,
+     "bytes": 179
+    }
+   ],
+   "bytesEstadoMax": 3220,
+   "bytesInstantaneoMax": 433,
+   "bytesInstantaneoMedio": 347
+  },
+  "ms": 1232
+ },
+ "cap5-doces": {
+  "largura": 210,
+  "nos": 28,
+  "ajudasObrigatorias": 4,
+  "porTipo": {
+   "porta": 2,
+   "super": 2
+  },
+  "ajudas": [
+   {
+    "tipo": "porta",
+    "porta": "portao-pirulito",
+    "quem": 1,
+    "x": 68.7,
+    "y": 2.5,
+    "paraX": 97.5,
+    "paraY": 2.5,
+    "parceiroX": 82,
+    "parceiroY": 7.5
+   },
+   {
+    "tipo": "porta",
+    "porta": "portao-pirulito",
+    "quem": 0,
+    "x": 68.7,
+    "y": 2.5,
+    "paraX": 97.5,
+    "paraY": 2.5,
+    "parceiroX": 97.5,
+    "parceiroY": 2.5
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 137.7,
+    "y": 2.5,
+    "paraX": 152,
+    "paraY": 5.9,
+    "parceiroX": 137.7,
+    "parceiroY": 2.5
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 137.7,
+    "y": 2.5,
+    "paraX": 152,
+    "paraY": 5.9,
+    "parceiroX": 152,
+    "parceiroY": 5.9
+   }
+  ],
+  "salvamento": {
+   "concluida": true,
+   "segundos": 71.3,
+   "lanternas": 5,
+   "retomadas": [
+    {
+     "lanterna": 0,
+     "etapa": 2,
+     "ok": true,
+     "segundos": 70.3,
+     "bytes": 106
+    },
+    {
+     "lanterna": 1,
+     "etapa": 4,
+     "ok": true,
+     "segundos": 71.4,
+     "bytes": 117
+    },
+    {
+     "lanterna": 2,
+     "etapa": 6,
+     "ok": true,
+     "segundos": 71.4,
+     "bytes": 145
+    },
+    {
+     "lanterna": 3,
+     "etapa": 8,
+     "ok": true,
+     "segundos": 71.3,
+     "bytes": 174
+    },
+    {
+     "lanterna": 4,
+     "etapa": 11,
+     "ok": true,
+     "segundos": 76,
+     "bytes": 201
+    }
+   ],
+   "bytesEstadoMax": 4578,
+   "bytesInstantaneoMax": 599,
+   "bytesInstantaneoMedio": 502
+  },
+  "ms": 810
+ },
+ "cap6-espelhos": {
+  "largura": 190,
+  "nos": 75,
+  "ajudasObrigatorias": 6,
+  "porTipo": {
+   "super": 6
+  },
+  "ajudas": [
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 16,
+    "y": 0,
+    "paraX": 58.8,
+    "paraY": 0,
+    "parceiroX": 16,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 16,
+    "y": 0,
+    "paraX": 58.8,
+    "paraY": 0,
+    "parceiroX": 58.8,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 58.8,
+    "y": 0,
+    "paraX": 105.5,
+    "paraY": 0,
+    "parceiroX": 58.8,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 58.8,
+    "y": 0,
+    "paraX": 105.5,
+    "paraY": 0,
+    "parceiroX": 105.5,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 140.6,
+    "y": 0,
+    "paraX": 152,
+    "paraY": 3.4,
+    "parceiroX": 140.6,
+    "parceiroY": 0
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 140.6,
+    "y": 0,
+    "paraX": 152,
+    "paraY": 3.4,
+    "parceiroX": 152,
+    "parceiroY": 3.4
+   }
+  ],
+  "salvamento": {
+   "concluida": true,
+   "segundos": 53.8,
+   "lanternas": 5,
+   "retomadas": [
+    {
+     "lanterna": 0,
+     "etapa": 1,
+     "ok": true,
+     "segundos": 53.8,
+     "bytes": 93
+    },
+    {
+     "lanterna": 1,
+     "etapa": 2,
+     "ok": true,
+     "segundos": 53.8,
+     "bytes": 130
+    },
+    {
+     "lanterna": 2,
+     "etapa": 3,
+     "ok": true,
+     "segundos": 53.8,
+     "bytes": 163
+    },
+    {
+     "lanterna": 3,
+     "etapa": 5,
+     "ok": true,
+     "segundos": 53.8,
+     "bytes": 175
+    },
+    {
+     "lanterna": 4,
+     "etapa": 8,
+     "ok": true,
+     "segundos": 53.9,
+     "bytes": 188
+    }
+   ],
+   "bytesEstadoMax": 2891,
+   "bytesInstantaneoMax": 405,
+   "bytesInstantaneoMedio": 327
+  },
+  "ms": 1307
+ },
+ "cap7-cosmos": {
+  "largura": 216,
+  "nos": 113,
+  "ajudasObrigatorias": 4,
+  "porTipo": {
+   "super": 3,
+   "fio": 1
+  },
+  "ajudas": [
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 61,
+    "y": 3.4,
+    "paraX": 92.8,
+    "paraY": 0.4,
+    "parceiroX": 61,
+    "parceiroY": 3.4
+   },
+   {
+    "tipo": "super",
+    "quem": 1,
+    "x": 61,
+    "y": 3.4,
+    "paraX": 92.8,
+    "paraY": 0.4,
+    "parceiroX": 92.8,
+    "parceiroY": 0.4
+   },
+   {
+    "tipo": "super",
+    "quem": 0,
+    "x": 92.8,
+    "y": 0.4,
+    "paraX": 117,
+    "paraY": 4.4,
+    "parceiroX": 92.8,
+    "parceiroY": 0.4
+   },
+   {
+    "tipo": "fio",
+    "quem": 1,
+    "x": 92.8,
+    "y": 0.4,
+    "paraX": 117,
+    "paraY": 4.4,
+    "parceiroX": 117,
+    "parceiroY": 4.4
+   }
+  ],
+  "salvamento": {
+   "concluida": true,
+   "segundos": 77.6,
+   "lanternas": 6,
+   "retomadas": [
+    {
+     "lanterna": 0,
+     "etapa": 2,
+     "ok": true,
+     "segundos": 74.9,
+     "bytes": 106
+    },
+    {
+     "lanterna": 1,
+     "etapa": 6,
+     "ok": true,
+     "segundos": 75,
+     "bytes": 123
+    },
+    {
+     "lanterna": 2,
+     "etapa": 9,
+     "ok": true,
+     "segundos": 75.3,
+     "bytes": 146
+    },
+    {
+     "lanterna": 3,
+     "etapa": 11,
+     "ok": true,
+     "segundos": 78.1,
+     "bytes": 155
+    },
+    {
+     "lanterna": 4,
+     "etapa": 13,
+     "ok": true,
+     "segundos": 76.9,
+     "bytes": 171
+    },
+    {
+     "lanterna": 5,
+     "etapa": 14,
+     "ok": true,
+     "segundos": 76.6,
+     "bytes": 179
+    }
+   ],
+   "bytesEstadoMax": 3981,
+   "bytesInstantaneoMax": 551,
+   "bytesInstantaneoMedio": 408
+  },
+  "ms": 1601
+ }
+}

@@ -1,0 +1,437 @@
+[
+ {
+  "tag": "antes_alta_iphone14_c2_clareira",
+  "m": [
+   {
+    "x": 98,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 99.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 55
+   },
+   {
+    "chamadas": 49,
+    "triangulos": 368286,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_alta_iphone14_c1_meio",
+  "m": [
+   {
+    "x": 30,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 31.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 51,
+    "triangulos": 109686,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_alta_iphone14_c5_doces",
+  "m": [
+   {
+    "x": 20,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 21.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 45,
+    "triangulos": 146708,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_bloom_0_alta_iphone14_c2_clareira",
+  "m": [
+   {
+    "x": 98,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 99.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 55
+   },
+   {
+    "chamadas": 27,
+    "triangulos": 353912,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_bloom_0_alta_iphone14_c1_meio",
+  "m": [
+   {
+    "x": 30,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 31.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 37,
+    "triangulos": 109670,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_bloom_0_alta_iphone14_c5_doces",
+  "m": [
+   {
+    "x": 20,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 21.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 31,
+    "triangulos": 146694,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_luz_0_alta_iphone14_c2_clareira",
+  "m": [
+   {
+    "x": 98,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 99.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 55
+   },
+   {
+    "chamadas": 40,
+    "triangulos": 353770,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_luz_0_alta_iphone14_c1_meio",
+  "m": [
+   {
+    "x": 30,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 31.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 50,
+    "triangulos": 109606,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_luz_0_alta_iphone14_c5_doces",
+  "m": [
+   {
+    "x": 20,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 21.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 44,
+    "triangulos": 146626,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_nevoa_0_alta_iphone14_c2_clareira",
+  "m": [
+   {
+    "x": 98,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 99.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 55
+   },
+   {
+    "chamadas": 48,
+    "triangulos": 368214,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_nevoa_0_alta_iphone14_c1_meio",
+  "m": [
+   {
+    "x": 30,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 31.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 50,
+    "triangulos": 109624,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_nevoa_0_alta_iphone14_c5_doces",
+  "m": [
+   {
+    "x": 20,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 21.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 44,
+    "triangulos": 146642,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_bloom_0_luz_0_nevoa_0_alta_iphone14_c2_clareira",
+  "m": [
+   {
+    "x": 98,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 99.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 33,
+    "triangulos": 368044,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_bloom_0_luz_0_nevoa_0_alta_iphone14_c1_meio",
+  "m": [
+   {
+    "x": 30,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 31.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 27,
+    "triangulos": 95166,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_bloom_0_luz_0_nevoa_0_alta_iphone14_c5_doces",
+  "m": [
+   {
+    "x": 20,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 46
+   },
+   {
+    "x": 21.2,
+    "y": 0,
+    "alturaPx": 61,
+    "pct": 17.9,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 54
+   },
+   {
+    "chamadas": 29,
+    "triangulos": 146546,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ }
+]

@@ -1,0 +1,1172 @@
+{
+ "capitulos": [
+  {
+   "capitulo": 1,
+   "modo": "atual",
+   "concluida": true,
+   "segundos": 66.8,
+   "erro": "",
+   "tiros": [
+    4,
+    7
+   ],
+   "acertos": 5,
+   "defendeu": 0,
+   "derrotas": 5,
+   "pisoes": 1,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 36,
+   "bichinhos": 5,
+   "porTipo": {
+    "bolotinha": 5
+   },
+   "vidaTotal": 5
+  },
+  {
+   "capitulo": 1,
+   "modo": "sem-tiro",
+   "concluida": true,
+   "segundos": 68.5,
+   "erro": "",
+   "tiros": [
+    0,
+    0
+   ],
+   "acertos": 2,
+   "defendeu": 0,
+   "derrotas": 2,
+   "pisoes": 2,
+   "danos": [
+    4,
+    3
+   ],
+   "bolhas": 2,
+   "voltas": 0,
+   "estrelinhas": 33,
+   "bichinhos": 5,
+   "porTipo": {
+    "bolotinha": 5
+   },
+   "vidaTotal": 5
+  },
+  {
+   "capitulo": 1,
+   "modo": "20",
+   "concluida": true,
+   "segundos": 66.8,
+   "erro": "",
+   "tiros": [
+    4,
+    7
+   ],
+   "acertos": 5,
+   "defendeu": 0,
+   "derrotas": 5,
+   "pisoes": 1,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 36,
+   "bichinhos": 5,
+   "porTipo": {
+    "bolotinha": 5
+   },
+   "vidaTotal": 5
+  },
+  {
+   "capitulo": 1,
+   "modo": "10",
+   "concluida": true,
+   "segundos": 66.8,
+   "erro": "",
+   "tiros": [
+    4,
+    7
+   ],
+   "acertos": 5,
+   "defendeu": 0,
+   "derrotas": 5,
+   "pisoes": 1,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 36,
+   "bichinhos": 5,
+   "porTipo": {
+    "bolotinha": 5
+   },
+   "vidaTotal": 5
+  },
+  {
+   "capitulo": 1,
+   "modo": "5",
+   "concluida": true,
+   "segundos": 66.8,
+   "erro": "",
+   "tiros": [
+    5,
+    5
+   ],
+   "acertos": 5,
+   "defendeu": 0,
+   "derrotas": 5,
+   "pisoes": 1,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 36,
+   "bichinhos": 5,
+   "porTipo": {
+    "bolotinha": 5
+   },
+   "vidaTotal": 5
+  },
+  {
+   "capitulo": 2,
+   "modo": "atual",
+   "concluida": true,
+   "segundos": 70.1,
+   "erro": "",
+   "tiros": [
+    14,
+    11
+   ],
+   "acertos": 9,
+   "defendeu": 0,
+   "derrotas": 7,
+   "pisoes": 1,
+   "danos": [
+    1,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 39,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 10
+  },
+  {
+   "capitulo": 2,
+   "modo": "sem-tiro",
+   "concluida": true,
+   "segundos": 71.3,
+   "erro": "",
+   "tiros": [
+    0,
+    0
+   ],
+   "acertos": 2,
+   "defendeu": 0,
+   "derrotas": 2,
+   "pisoes": 2,
+   "danos": [
+    4,
+    4
+   ],
+   "bolhas": 2,
+   "voltas": 0,
+   "estrelinhas": 35,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 10
+  },
+  {
+   "capitulo": 2,
+   "modo": "20",
+   "concluida": true,
+   "segundos": 70.1,
+   "erro": "",
+   "tiros": [
+    14,
+    11
+   ],
+   "acertos": 9,
+   "defendeu": 0,
+   "derrotas": 7,
+   "pisoes": 1,
+   "danos": [
+    1,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 39,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 10
+  },
+  {
+   "capitulo": 2,
+   "modo": "10",
+   "concluida": true,
+   "segundos": 70.7,
+   "erro": "",
+   "tiros": [
+    10,
+    10
+   ],
+   "acertos": 7,
+   "defendeu": 0,
+   "derrotas": 5,
+   "pisoes": 1,
+   "danos": [
+    3,
+    2
+   ],
+   "bolhas": 1,
+   "voltas": 0,
+   "estrelinhas": 37,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 10
+  },
+  {
+   "capitulo": 2,
+   "modo": "5",
+   "concluida": true,
+   "segundos": 70.9,
+   "erro": "",
+   "tiros": [
+    5,
+    5
+   ],
+   "acertos": 3,
+   "defendeu": 0,
+   "derrotas": 3,
+   "pisoes": 2,
+   "danos": [
+    4,
+    4
+   ],
+   "bolhas": 2,
+   "voltas": 0,
+   "estrelinhas": 36,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 10
+  },
+  {
+   "capitulo": 3,
+   "modo": "atual",
+   "concluida": true,
+   "segundos": 122.6,
+   "erro": "",
+   "tiros": [
+    14,
+    12
+   ],
+   "acertos": 12,
+   "defendeu": 0,
+   "derrotas": 8,
+   "pisoes": 1,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 38,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 3,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 13
+  },
+  {
+   "capitulo": 3,
+   "modo": "sem-tiro",
+   "concluida": false,
+   "segundos": 89.1,
+   "erro": "etapa \"rua do relojoeiro\" passou do limite; passos esperar / ir(92.4); Natan (78.70, 5.50) Bruna (81.70, 1.10)",
+   "tiros": [
+    0,
+    0
+   ],
+   "acertos": 2,
+   "defendeu": 0,
+   "derrotas": 2,
+   "pisoes": 2,
+   "danos": [
+    3,
+    4
+   ],
+   "bolhas": 2,
+   "voltas": 1,
+   "estrelinhas": 18,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 3,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 13
+  },
+  {
+   "capitulo": 3,
+   "modo": "20",
+   "concluida": true,
+   "segundos": 122.6,
+   "erro": "",
+   "tiros": [
+    14,
+    12
+   ],
+   "acertos": 12,
+   "defendeu": 0,
+   "derrotas": 8,
+   "pisoes": 1,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 38,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 3,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 13
+  },
+  {
+   "capitulo": 3,
+   "modo": "10",
+   "concluida": true,
+   "segundos": 122.6,
+   "erro": "",
+   "tiros": [
+    10,
+    10
+   ],
+   "acertos": 10,
+   "defendeu": 0,
+   "derrotas": 6,
+   "pisoes": 1,
+   "danos": [
+    2,
+    2
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 36,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 3,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 13
+  },
+  {
+   "capitulo": 3,
+   "modo": "5",
+   "concluida": false,
+   "segundos": 121.8,
+   "erro": "etapa \"plataformas que caem\" passou do limite; passos fim / esperar; Natan (119.01, 1.40) Bruna (119.41, 1.40)",
+   "tiros": [
+    5,
+    5
+   ],
+   "acertos": 4,
+   "defendeu": 0,
+   "derrotas": 3,
+   "pisoes": 6,
+   "danos": [
+    3,
+    2
+   ],
+   "bolhas": 1,
+   "voltas": 0,
+   "estrelinhas": 28,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 3,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 13
+  },
+  {
+   "capitulo": 4,
+   "modo": "atual",
+   "concluida": true,
+   "segundos": 93.2,
+   "erro": "",
+   "tiros": [
+    8,
+    11
+   ],
+   "acertos": 9,
+   "defendeu": 0,
+   "derrotas": 7,
+   "pisoes": 0,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 37,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 5,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 4,
+   "modo": "sem-tiro",
+   "concluida": true,
+   "segundos": 93,
+   "erro": "",
+   "tiros": [
+    0,
+    0
+   ],
+   "acertos": 2,
+   "defendeu": 0,
+   "derrotas": 2,
+   "pisoes": 2,
+   "danos": [
+    6,
+    6
+   ],
+   "bolhas": 4,
+   "voltas": 0,
+   "estrelinhas": 31,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 5,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 4,
+   "modo": "20",
+   "concluida": true,
+   "segundos": 93.2,
+   "erro": "",
+   "tiros": [
+    8,
+    11
+   ],
+   "acertos": 9,
+   "defendeu": 0,
+   "derrotas": 7,
+   "pisoes": 0,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 37,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 5,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 4,
+   "modo": "10",
+   "concluida": true,
+   "segundos": 93.2,
+   "erro": "",
+   "tiros": [
+    8,
+    10
+   ],
+   "acertos": 9,
+   "defendeu": 0,
+   "derrotas": 7,
+   "pisoes": 0,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 37,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 5,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 4,
+   "modo": "5",
+   "concluida": true,
+   "segundos": 93,
+   "erro": "",
+   "tiros": [
+    5,
+    5
+   ],
+   "acertos": 5,
+   "defendeu": 0,
+   "derrotas": 4,
+   "pisoes": 0,
+   "danos": [
+    3,
+    3
+   ],
+   "bolhas": 2,
+   "voltas": 0,
+   "estrelinhas": 34,
+   "bichinhos": 9,
+   "porTipo": {
+    "bolotinha": 5,
+    "morcego": 2,
+    "cogumelo": 1,
+    "espinhudo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 5,
+   "modo": "atual",
+   "concluida": true,
+   "segundos": 71.3,
+   "erro": "",
+   "tiros": [
+    26,
+    20
+   ],
+   "acertos": 18,
+   "defendeu": 0,
+   "derrotas": 14,
+   "pisoes": 1,
+   "danos": [
+    1,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 46,
+   "bichinhos": 16,
+   "porTipo": {
+    "bolotinha": 8,
+    "cogumelo": 2,
+    "morcego": 4,
+    "espinhudo": 2
+   },
+   "vidaTotal": 20
+  },
+  {
+   "capitulo": 5,
+   "modo": "sem-tiro",
+   "concluida": false,
+   "segundos": 71.5,
+   "erro": "etapa \"biscoitos que quebram\" passou do limite; passos fim / ir(103.2); Natan (113.78, 2.70) Bruna (113.90, 2.63)",
+   "tiros": [
+    0,
+    0
+   ],
+   "acertos": 2,
+   "defendeu": 0,
+   "derrotas": 2,
+   "pisoes": 2,
+   "danos": [
+    6,
+    10
+   ],
+   "bolhas": 5,
+   "voltas": 0,
+   "estrelinhas": 25,
+   "bichinhos": 16,
+   "porTipo": {
+    "bolotinha": 8,
+    "cogumelo": 2,
+    "morcego": 4,
+    "espinhudo": 2
+   },
+   "vidaTotal": 20
+  },
+  {
+   "capitulo": 5,
+   "modo": "20",
+   "concluida": true,
+   "segundos": 71.8,
+   "erro": "",
+   "tiros": [
+    20,
+    20
+   ],
+   "acertos": 16,
+   "defendeu": 0,
+   "derrotas": 12,
+   "pisoes": 1,
+   "danos": [
+    3,
+    2
+   ],
+   "bolhas": 1,
+   "voltas": 0,
+   "estrelinhas": 45,
+   "bichinhos": 16,
+   "porTipo": {
+    "bolotinha": 8,
+    "cogumelo": 2,
+    "morcego": 4,
+    "espinhudo": 2
+   },
+   "vidaTotal": 20
+  },
+  {
+   "capitulo": 5,
+   "modo": "10",
+   "concluida": true,
+   "segundos": 72.4,
+   "erro": "",
+   "tiros": [
+    10,
+    10
+   ],
+   "acertos": 10,
+   "defendeu": 0,
+   "derrotas": 8,
+   "pisoes": 3,
+   "danos": [
+    5,
+    6
+   ],
+   "bolhas": 3,
+   "voltas": 0,
+   "estrelinhas": 43,
+   "bichinhos": 16,
+   "porTipo": {
+    "bolotinha": 8,
+    "cogumelo": 2,
+    "morcego": 4,
+    "espinhudo": 2
+   },
+   "vidaTotal": 20
+  },
+  {
+   "capitulo": 5,
+   "modo": "5",
+   "concluida": false,
+   "segundos": 76.5,
+   "erro": "etapa \"biscoitos que quebram\" passou do limite; passos fim / ir(103.2); Natan (113.58, 0.68) Bruna (112.40, 0.08)",
+   "tiros": [
+    5,
+    5
+   ],
+   "acertos": 3,
+   "defendeu": 0,
+   "derrotas": 3,
+   "pisoes": 2,
+   "danos": [
+    6,
+    6
+   ],
+   "bolhas": 4,
+   "voltas": 0,
+   "estrelinhas": 26,
+   "bichinhos": 16,
+   "porTipo": {
+    "bolotinha": 8,
+    "cogumelo": 2,
+    "morcego": 4,
+    "espinhudo": 2
+   },
+   "vidaTotal": 20
+  },
+  {
+   "capitulo": 6,
+   "modo": "atual",
+   "concluida": true,
+   "segundos": 53.8,
+   "erro": "",
+   "tiros": [
+    12,
+    14
+   ],
+   "acertos": 10,
+   "defendeu": 0,
+   "derrotas": 7,
+   "pisoes": 0,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 40,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 2,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 6,
+   "modo": "sem-tiro",
+   "concluida": true,
+   "segundos": 65.9,
+   "erro": "",
+   "tiros": [
+    0,
+    0
+   ],
+   "acertos": 0,
+   "defendeu": 0,
+   "derrotas": 0,
+   "pisoes": 0,
+   "danos": [
+    6,
+    5
+   ],
+   "bolhas": 3,
+   "voltas": 0,
+   "estrelinhas": 30,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 2,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 6,
+   "modo": "20",
+   "concluida": true,
+   "segundos": 53.8,
+   "erro": "",
+   "tiros": [
+    12,
+    14
+   ],
+   "acertos": 10,
+   "defendeu": 0,
+   "derrotas": 7,
+   "pisoes": 0,
+   "danos": [
+    0,
+    0
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 40,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 2,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 6,
+   "modo": "10",
+   "concluida": true,
+   "segundos": 54,
+   "erro": "",
+   "tiros": [
+    10,
+    10
+   ],
+   "acertos": 9,
+   "defendeu": 0,
+   "derrotas": 6,
+   "pisoes": 0,
+   "danos": [
+    1,
+    1
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 39,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 2,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 6,
+   "modo": "5",
+   "concluida": true,
+   "segundos": 54.4,
+   "erro": "",
+   "tiros": [
+    5,
+    5
+   ],
+   "acertos": 5,
+   "defendeu": 0,
+   "derrotas": 4,
+   "pisoes": 0,
+   "danos": [
+    3,
+    3
+   ],
+   "bolhas": 2,
+   "voltas": 0,
+   "estrelinhas": 37,
+   "bichinhos": 8,
+   "porTipo": {
+    "bolotinha": 4,
+    "espinhudo": 2,
+    "morcego": 1,
+    "cogumelo": 1
+   },
+   "vidaTotal": 11
+  },
+  {
+   "capitulo": 7,
+   "modo": "atual",
+   "concluida": true,
+   "segundos": 77.6,
+   "erro": "",
+   "tiros": [
+    42,
+    38
+   ],
+   "acertos": 25,
+   "defendeu": 27,
+   "derrotas": 6,
+   "pisoes": 2,
+   "danos": [
+    0,
+    1
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 36,
+   "bichinhos": 10,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 3,
+    "espinhudo": 1,
+    "cogumelo": 1,
+    "rei": 1
+   },
+   "vidaTotal": 31
+  },
+  {
+   "capitulo": 7,
+   "modo": "sem-tiro",
+   "concluida": false,
+   "segundos": 211.4,
+   "erro": "etapa \"Rei-Pesadelo\" passou do limite; passos lutar com o Rei-Pesadelo / lutar com o Rei-Pesadelo; Natan (195.32, 0.00) Bruna (207.96, 0.00)",
+   "tiros": [
+    0,
+    0
+   ],
+   "acertos": 2,
+   "defendeu": 0,
+   "derrotas": 2,
+   "pisoes": 2,
+   "danos": [
+    3,
+    4
+   ],
+   "bolhas": 2,
+   "voltas": 0,
+   "estrelinhas": 33,
+   "bichinhos": 10,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 3,
+    "espinhudo": 1,
+    "cogumelo": 1,
+    "rei": 1
+   },
+   "vidaTotal": 31
+  },
+  {
+   "capitulo": 7,
+   "modo": "20",
+   "concluida": false,
+   "segundos": 211.1,
+   "erro": "etapa \"Rei-Pesadelo\" passou do limite; passos lutar com o Rei-Pesadelo / lutar com o Rei-Pesadelo; Natan (195.32, 0.00) Bruna (207.94, 0.00)",
+   "tiros": [
+    20,
+    20
+   ],
+   "acertos": 11,
+   "defendeu": 8,
+   "derrotas": 5,
+   "pisoes": 2,
+   "danos": [
+    9,
+    14
+   ],
+   "bolhas": 7,
+   "voltas": 1,
+   "estrelinhas": 36,
+   "bichinhos": 10,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 3,
+    "espinhudo": 1,
+    "cogumelo": 1,
+    "rei": 1
+   },
+   "vidaTotal": 31
+  },
+  {
+   "capitulo": 7,
+   "modo": "10",
+   "concluida": false,
+   "segundos": 211.1,
+   "erro": "etapa \"Rei-Pesadelo\" passou do limite; passos lutar com o Rei-Pesadelo / lutar com o Rei-Pesadelo; Natan (195.26, 0.00) Bruna (207.95, 0.00)",
+   "tiros": [
+    10,
+    10
+   ],
+   "acertos": 5,
+   "defendeu": 0,
+   "derrotas": 5,
+   "pisoes": 2,
+   "danos": [
+    0,
+    1
+   ],
+   "bolhas": 0,
+   "voltas": 0,
+   "estrelinhas": 36,
+   "bichinhos": 10,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 3,
+    "espinhudo": 1,
+    "cogumelo": 1,
+    "rei": 1
+   },
+   "vidaTotal": 31
+  },
+  {
+   "capitulo": 7,
+   "modo": "5",
+   "concluida": false,
+   "segundos": 211.4,
+   "erro": "etapa \"Rei-Pesadelo\" passou do limite; passos lutar com o Rei-Pesadelo / lutar com o Rei-Pesadelo; Natan (195.31, 0.00) Bruna (207.96, 0.00)",
+   "tiros": [
+    5,
+    5
+   ],
+   "acertos": 3,
+   "defendeu": 0,
+   "derrotas": 3,
+   "pisoes": 2,
+   "danos": [
+    2,
+    3
+   ],
+   "bolhas": 1,
+   "voltas": 0,
+   "estrelinhas": 34,
+   "bichinhos": 10,
+   "porTipo": {
+    "bolotinha": 4,
+    "morcego": 3,
+    "espinhudo": 1,
+    "cogumelo": 1,
+    "rei": 1
+   },
+   "vidaTotal": 31
+  }
+ ],
+ "arena": [
+  {
+   "perfil": "mediana",
+   "semente": 1,
+   "vitoria": true,
+   "tempo": 264.6,
+   "dano": {
+    "tiro": 183.5,
+    "golpe": 1780.5,
+    "cometa": 675,
+    "jardim": 611,
+    "fio": 150
+   },
+   "total": 3400,
+   "golpes": 788,
+   "tiros": 383,
+   "poderes": 42,
+   "fio": 8,
+   "escudoQuebra": 17,
+   "cristaisJuntos": 7,
+   "curas": 10
+  },
+  {
+   "perfil": "mediana",
+   "semente": 2,
+   "vitoria": true,
+   "tempo": 249.9,
+   "dano": {
+    "tiro": 153.5,
+    "golpe": 1791.5,
+    "cometa": 750,
+    "fio": 105,
+    "jardim": 600
+   },
+   "total": 3400,
+   "golpes": 783,
+   "tiros": 339,
+   "poderes": 40,
+   "fio": 6,
+   "escudoQuebra": 16,
+   "cristaisJuntos": 6,
+   "curas": 9
+  },
+  {
+   "perfil": "mediana",
+   "semente": 3,
+   "vitoria": true,
+   "tempo": 253.2,
+   "dano": {
+    "tiro": 180.5,
+    "golpe": 1712,
+    "cometa": 780,
+    "fio": 127.5,
+    "jardim": 600
+   },
+   "total": 3400,
+   "golpes": 728,
+   "tiros": 399,
+   "poderes": 41,
+   "fio": 7,
+   "escudoQuebra": 16,
+   "cristaisJuntos": 7,
+   "curas": 11
+  },
+  {
+   "perfil": "perfeita",
+   "semente": 1,
+   "vitoria": true,
+   "tempo": 217.8,
+   "dano": {
+    "tiro": 193,
+    "golpe": 1729.5,
+    "cometa": 705,
+    "fio": 157.5,
+    "jardim": 615
+   },
+   "total": 3400,
+   "golpes": 625,
+   "tiros": 259,
+   "poderes": 39,
+   "fio": 9,
+   "escudoQuebra": 15,
+   "cristaisJuntos": 6,
+   "curas": 0
+  },
+  {
+   "perfil": "perfeita",
+   "semente": 2,
+   "vitoria": true,
+   "tempo": 217.8,
+   "dano": {
+    "tiro": 193,
+    "golpe": 1729.5,
+    "cometa": 705,
+    "fio": 157.5,
+    "jardim": 615
+   },
+   "total": 3400,
+   "golpes": 625,
+   "tiros": 259,
+   "poderes": 39,
+   "fio": 9,
+   "escudoQuebra": 15,
+   "cristaisJuntos": 6,
+   "curas": 0
+  },
+  {
+   "perfil": "perfeita",
+   "semente": 3,
+   "vitoria": true,
+   "tempo": 217.8,
+   "dano": {
+    "tiro": 193,
+    "golpe": 1729.5,
+    "cometa": 705,
+    "fio": 157.5,
+    "jardim": 615
+   },
+   "total": 3400,
+   "golpes": 625,
+   "tiros": 259,
+   "poderes": 39,
+   "fio": 9,
+   "escudoQuebra": 15,
+   "cristaisJuntos": 6,
+   "curas": 0
+  }
+ ]
+}

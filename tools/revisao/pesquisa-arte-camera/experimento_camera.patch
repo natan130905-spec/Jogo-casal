@@ -1,0 +1,194 @@
+diff --git a/src/render/cena.ts b/src/render/cena.ts
+index ea4834d..e4994a6 100644
+--- a/src/render/cena.ts
++++ b/src/render/cena.ts
+@@ -21,6 +21,17 @@ export type Qualidade = 'baixa' | 'media' | 'alta';
+ 
+ /** `?resfixa` desliga a resolução dinâmica (capturas de tela comparáveis em máquina sem GPU). */
+ const RES_FIXA = typeof location !== 'undefined' && new URLSearchParams(location.search).has('resfixa');
++// EXPERIMENTO (pesquisa-arte-camera, só na worktree): ?cam=nova&eu=0|1 câmera por jogador; ?frente primeiro plano;
++// ?tom=agx|aces|neutral&exp=<n> tone mapping; ?bloom=<forca> ; ?alt=<fração da altura da tela do personagem>
++const PSX = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
++const CAM_NOVA = PSX.get('cam') === 'nova';
++const EU = Number(PSX.get('eu') ?? 0) as 0 | 1;
++const FRENTE = PSX.has('frente');
++const ALT_BASE = Number(PSX.get('alt') ?? 0.21);
++const FOV_NOVA = Number(PSX.get('fov') ?? 35);
++// v=2: câmera baixa (olho a OLHO m acima dos pés), sem inclinação, enquadramento por deslocamento de lente
++const V2 = PSX.get('v') === '2';
++const OLHO = Number(PSX.get('olho') ?? 1.0);
+ 
+ export class Cena {
+   readonly renderer: THREE.WebGLRenderer;
+@@ -54,7 +65,11 @@ export class Cena {
+     this.renderer.setPixelRatio(this.razaoPixel());
+     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+     this.renderer.toneMapping = THREE.NeutralToneMapping;
+-    this.renderer.toneMappingExposure = 1.0;
++    this.renderer.toneMappingExposure = Number(PSX.get('exp') ?? 1.0);
++    const tom = PSX.get('tom');
++    if (tom === 'agx') this.renderer.toneMapping = THREE.AgXToneMapping;
++    else if (tom === 'aces') this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
++    if (CAM_NOVA) { this.camera.fov = FOV_NOVA; this.camera.updateProjectionMatrix(); }
+     // sombras de verdade só na alta; na média e na baixa, sombra-bolha sob os personagens (bem mais barato)
+     this.renderer.shadowMap.enabled = qualidade === 'alta';
+     this.renderer.shadowMap.type = THREE.PCFShadowMap;
+@@ -70,7 +85,7 @@ export class Cena {
+     this.bichos = new Bichinhos(fase, qualidade);
+     this.elementos = new Elementos(fase, qualidade, this.tema);
+     this.scene.add(this.bichos.raiz, this.elementos.raiz, this.fx.raiz);
+-    if (qualidade === 'alta') this.pos = new Pos(this.renderer, this.scene, this.camera, ['oceano', 'doces', 'espelhos'].includes(this.tema.chave));
++    if (qualidade === 'alta' && PSX.get('bloom') !== '0') this.pos = new Pos(this.renderer, this.scene, this.camera, ['oceano', 'doces', 'espelhos'].includes(this.tema.chave));
+   }
+ 
+   private razaoPixel() { return Math.min(devicePixelRatio, this.qualidade === 'alta' ? 2 : this.qualidade === 'media' ? 1.5 : 1); }
+@@ -126,8 +141,9 @@ export class Cena {
+     const nevoa = c.nevoa.malha(luzTex, false); nevoa.renderOrder = 3;
+     const luz = c.luz.malha(luzTex, true); luz.renderOrder = 4;
+     // na baixa, sem névoa em camadas (sobreposição transparente pesa no celular fraco)
+-    this.scene.add(luz);
+-    if (q !== 'baixa') this.scene.add(nevoa);
++    if (PSX.get('luz') !== '0') this.scene.add(luz);
++    if (q !== 'baixa' && PSX.get('nevoa') !== '0') this.scene.add(nevoa);
++    if (FRENTE) this.scene.add(this.primeiroPlano());
+     this.vagalumes = vagalumes(q === 'baixa' ? 70 : q === 'media' ? 150 : 240, this.fase.largura, sorteio(19), luzTex, t.vagalumes);
+     this.vagalumes.renderOrder = 5;
+     this.scene.add(this.vagalumes);
+@@ -293,6 +309,7 @@ export class Cena {
+ 
+     // câmera: segue o meio dos dois, afasta quando eles se separam e fica um pouco acima, olhando levemente para
+     // baixo, para mostrar a floresta (copas, casas, cascata) acima dos personagens, como na arte conceitual
++    if (CAM_NOVA) { this.cameraNova(e, dt); } else {
+     const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+     const sep = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y) * 1.6);
+     const dist = Math.min(22, Math.max(7.6, 6 + sep * 0.9));
+@@ -300,6 +317,7 @@ export class Cena {
+     if (!this.iniciou) { this.camera.position.copy(this.alvoCam); this.iniciou = true; }
+     this.camera.position.lerp(this.alvoCam, Math.min(1, dt * 4));
+     this.camera.lookAt(this.camera.position.x, this.camera.position.y - 0.9 - dist * 0.04, 0);
++    }
+     this.ceu.position.copy(this.camera.position);
+     this.sol.position.set(this.camera.position.x - 8, 20, 7);
+     this.sol.target.position.set(this.camera.position.x, 0, 0);
+@@ -338,5 +356,82 @@ export class Cena {
+     }
+   }
+ 
++  // ---------- EXPERIMENTO: câmera por jogador ----------
++  private cam = { x: 0, y: 0, anc: 0, ahead: 0, alt: ALT_BASE, ini: false };
++  private cameraNova(e: Estado, dt: number) {
++    const eu = e.jogadores[EU], ou = e.jogadores[1 - EU], c = this.cam;
++    const meia = (h: number) => 1 - Math.exp(-dt * 0.6931 / h);
++    if (!c.ini) { c.anc = eu.y; c.x = eu.x; }
++    // âncora vertical: só muda ao pousar (o pulo não balança a câmera) ou se sair da faixa [-0,8; +2,4] m
++    if (eu.noChao) c.anc += (eu.y - c.anc) * meia(0.18);
++    else if (eu.y > c.anc + 2.4) c.anc = eu.y - 2.4;
++    else if (eu.y < c.anc - 0.8) c.anc = eu.y + 0.8;
++    // olhar à frente: 1,0 m parado, até 1,8 m correndo, para o lado em que olha
++    const frente = eu.olhando * (1.0 + Math.min(1, Math.abs(eu.vx) / 5) * 0.8);
++    c.ahead += (frente - c.ahead) * meia(0.45);
++    let fx = eu.x + c.ahead, fy = c.anc, alt = ALT_BASE;
++    const asp = this.camera.aspect;
++    const dx = ou.x - eu.x, dy = ou.y - eu.y;
++    // parceiro perto: enquadra os dois (afasta até 14 %); longe: só eu + indicador na borda
++    if (!ou.bolha && Math.abs(dx) < 12 && Math.abs(dy) < 4.5) {
++      const V = Math.max(1.1 / ALT_BASE, (Math.abs(dx) + 4.5) / asp, Math.abs(dy) + 3.2);
++      alt = Math.max(0.14, 1.1 / V);
++      const peso = Math.min(1, Math.max(0, (12 - Math.abs(dx)) / 4)); // entra/sai suave entre 8 e 12 m
++      fx = eu.x + c.ahead * (1 - 0.5 * peso) + dx * 0.5 * peso;
++      fy = c.anc + Math.max(-1.5, Math.min(1.5, dy * 0.5)) * peso;
++      alt = ALT_BASE + (alt - ALT_BASE) * peso;
++    }
++    c.alt += (alt - c.alt) * meia(0.6);
++    // zona morta horizontal de ±0,35 m
++    const zx = fx - c.x, zm = 0.35;
++    if (Math.abs(zx) > zm) c.x += (zx - Math.sign(zx) * zm) * meia(0.14);
++    c.y += (fy - c.y) * meia(0.25);
++    if (!c.ini) { c.x = fx; c.y = fy; c.alt = alt; c.ini = true; }
++    const V = 1.1 / c.alt, tg = Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2));
++    const dist = V / (2 * tg);
++    // pés a ~30 % da altura da tela: centro do quadro 0,2·V acima dos pés (+0,1 m)
++    const cy = c.y + 0.2 * V + 0.1;
++    if (V2) {
++      // câmera na altura do olhar (vê a face dos barrancos, o chão vira uma faixa, como na arte conceitual);
++      // os pés ficam a 30 % da altura da tela por deslocamento de lente (sem inclinar a câmera)
++      this.camera.position.set(c.x, c.y + OLHO, dist);
++      this.camera.lookAt(c.x, c.y + OLHO, 0);
++      this.camera.updateProjectionMatrix();
++      this.camera.projectionMatrix.elements[9] = 0.4 - 2 * OLHO / V; // pés em NDC −0,4
++      this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();
++      return;
++    }
++    this.camera.position.set(c.x, cy + 0.7, dist);
++    this.camera.lookAt(c.x, cy, 0);
++  }
++
++  /** EXPERIMENTO: projeta um ponto do mundo para coordenadas normalizadas da tela (-1..1). */
++  projetar(x: number, y: number, z = 0) { const v = new THREE.Vector3(x, y, z).project(this.camera); return { x: v.x, y: v.y }; }
++
++  /** EXPERIMENTO: camada de primeiro plano escurecida (folhagem entre a câmera e o plano de jogo), 1 chamada. */
++  private primeiroPlano() {
++    const r = sorteio(77), geos: THREE.BufferGeometry[] = [];
++    for (let x = -10; x < this.fase.largura + 10; x += 6 + r() * 7) {
++      let topo = -1; for (const q of this.chao) if (x >= q.x && x <= q.x + q.w) topo = Math.max(topo, q.y + q.h);
++      const z = 3.0 + r() * 1.6, base = topo - 1.5 - r() * 0.5;
++      const n = 3 + Math.floor(r() * 3);
++      for (let k = 0; k < n; k++) {
++        const g = new THREE.IcosahedronGeometry(0.7 + r() * 0.8, 1);
++        colocar(g, x + (k - n / 2) * 0.9 + r() * 0.4, base + r() * 0.9, z + r() * 0.4, [1.3, 0.8 + r() * 0.5, 0.6]);
++        geos.push(pintar(g, 0x22143c));
++      }
++      if (r() < 0.55) { // folha alta (samambaia) que sobe pela borda do quadro
++        for (let f = 0; f < 4; f++) {
++          const g = new THREE.ConeGeometry(0.18, 2.4 + r() * 1.2, 4, 1);
++          colocar(g, x + 1.2 + f * 0.25, base + 1.6, z + 0.2, [1, 1, 0.3], [0, 0, (f - 1.5) * 0.28]);
++          geos.push(pintar(g, 0x1a1030));
++        }
++      }
++    }
++    const m = new THREE.Mesh(mergeGeometries(geos.map((g) => g.index ? g.toNonIndexed() : g))!, new THREE.MeshBasicMaterial({ vertexColors: true, fog: false }));
++    m.frustumCulled = false;
++    return m;
++  }
++
+   info() { const r = this.renderer.info.render; return { chamadas: r.calls, triangulos: r.triangles }; }
+ }
+diff --git a/test/vitrine/vitrine.ts b/test/vitrine/vitrine.ts
+index 34d7bf3..2d10531 100644
+--- a/test/vitrine/vitrine.ts
++++ b/test/vitrine/vitrine.ts
+@@ -35,6 +35,7 @@ let pausado = false;
+   entradas(a: Partial<Input> | null, b: Partial<Input> = {}) { roteiro = a ? [a, b] : null; },
+   pausar(p: boolean) { pausado = p; },
+   info: () => cena.info(),
++  cena,
+ };
+ let anterior = performance.now(), acum = 0, fpsN = 0, fpsT = anterior;
+ const quadro = (agora: number) => {
+@@ -54,8 +55,26 @@ const quadro = (agora: number) => {
+   }
+   estado.eventos = eventos; // todos os eventos dos passos deste quadro (como o convidado recebe)
+   cena.desenhar(estado, dt);
++  if (ps.get('cam') === 'nova') indicador();
+   fpsN++;
+   if (agora - fpsT > 1000) { const i = cena.info(); document.querySelector('#info')!.textContent = `${fase.id} · ${fpsN} fps · ${i.chamadas} ch · ${i.triangulos} tri`; fpsN = 0; fpsT = agora; }
+   requestAnimationFrame(quadro);
+ };
+ requestAnimationFrame(quadro);
++
++// EXPERIMENTO: indicador do parceiro na borda (rostinho + seta + distância) quando ele sai do quadro
++const ind = document.createElement('div');
++ind.style.cssText = 'position:fixed;width:46px;height:46px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px #0008;display:none;font:bold 11px system-ui;color:#fff;text-align:center;line-height:40px;text-shadow:0 1px 2px #000;transform:translate(-50%,-50%)';
++document.body.appendChild(ind);
++function indicador() {
++  const eu = Number(ps.get('eu') ?? 0), ou = estado.jogadores[1 - eu], me = estado.jogadores[eu];
++  const p = (cena as unknown as { projetar(x: number, y: number): { x: number; y: number } }).projetar(ou.x, ou.y + 0.55);
++  const fora = Math.abs(p.x) > 1 || Math.abs(p.y) > 1;
++  ind.style.display = fora ? 'block' : 'none';
++  if (!fora) return;
++  const k = Math.max(Math.abs(p.x) / 0.9, Math.abs(p.y) / 0.78);
++  const nx = p.x / k, ny = p.y / k;
++  ind.style.left = `${(nx + 1) / 2 * innerWidth}px`; ind.style.top = `${(1 - ny) / 2 * innerHeight}px`;
++  ind.style.background = eu === 0 ? '#9b6ad6' : '#d8433a';
++  ind.textContent = `${Math.round(Math.hypot(ou.x - me.x, ou.y - me.y))} m`;
++}

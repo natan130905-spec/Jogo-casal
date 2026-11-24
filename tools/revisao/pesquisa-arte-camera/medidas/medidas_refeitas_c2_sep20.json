@@ -1,0 +1,118 @@
+[
+ {
+  "tag": "antes_media_iphone14_c2_sep20",
+  "m": [
+   {
+    "x": 70,
+    "y": 0,
+    "alturaPx": 22,
+    "pct": 6.4,
+    "naTela": true,
+    "pesPctDeBaixo": 42,
+    "xPct": 23
+   },
+   {
+    "x": 90,
+    "y": -0.34,
+    "alturaPx": 22,
+    "pct": 6.4,
+    "naTela": true,
+    "pesPctDeBaixo": 40,
+    "xPct": 77
+   },
+   {
+    "chamadas": 40,
+    "triangulos": 208634,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "antes_media_redmi11_c2_sep20",
+  "m": [
+   {
+    "x": 70,
+    "y": 0,
+    "alturaPx": 25,
+    "pct": 6.4,
+    "naTela": true,
+    "pesPctDeBaixo": 42,
+    "xPct": 24
+   },
+   {
+    "x": 90,
+    "y": -0.34,
+    "alturaPx": 25,
+    "pct": 6.4,
+    "naTela": true,
+    "pesPctDeBaixo": 40,
+    "xPct": 76
+   },
+   {
+    "chamadas": 40,
+    "triangulos": 208634,
+    "W": 873,
+    "H": 393
+   }
+  ]
+ },
+ {
+  "tag": "depois_v_2_olho_1.7_alt_0.23_media_iphone14_c2_sep20",
+  "m": [
+   {
+    "x": 70,
+    "y": 0,
+    "alturaPx": 78,
+    "pct": 23,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 44
+   },
+   {
+    "x": 90,
+    "y": -1.33,
+    "alturaPx": 78,
+    "pct": 23,
+    "naTela": false,
+    "pesPctDeBaixo": 2,
+    "xPct": 234
+   },
+   {
+    "chamadas": 35,
+    "triangulos": 202798,
+    "W": 750,
+    "H": 340
+   }
+  ]
+ },
+ {
+  "tag": "depois_v_2_olho_1.7_alt_0.23_media_redmi11_c2_sep20",
+  "m": [
+   {
+    "x": 70,
+    "y": 0,
+    "alturaPx": 90,
+    "pct": 23,
+    "naTela": true,
+    "pesPctDeBaixo": 30,
+    "xPct": 44
+   },
+   {
+    "x": 90,
+    "y": -0.06,
+    "alturaPx": 90,
+    "pct": 23,
+    "naTela": false,
+    "pesPctDeBaixo": 28,
+    "xPct": 232
+   },
+   {
+    "chamadas": 35,
+    "triangulos": 202798,
+    "W": 873,
+    "H": 393
+   }
+  ]
+ }
+]

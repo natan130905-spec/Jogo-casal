@@ -1,0 +1,2582 @@
+[
+ {
+  "cap": 1,
+  "id": "cap1-brinquedos",
+  "sementesDoFio": 0,
+  "estados": {
+   "C": 223,
+   "A": 1704,
+   "B": 1467
+  },
+  "gestosSimulados": 104468,
+  "segundos": 19.37,
+  "estrelas": [
+   {
+    "variante": "C",
+    "folga": 304,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 282,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 317,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 6.17,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 286,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 8.42,
+     "y": 1
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 231,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 10.71,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 269,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 20.64,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 146,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 22.5,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 241,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 24.28,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1069,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 48.92,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 919,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 52.38,
+     "y": 2.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 677,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 53.08,
+     "y": 2.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 312,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 57.15,
+     "y": 2.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 487,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 57.15,
+     "y": 2.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1321,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 58.35,
+     "y": 1.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 2272,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 60.51,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1950,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 63.31,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1831,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 66.86,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 260,
+    "gesto": "pula-vert-h99",
+    "de": {
+     "x": 78.32,
+     "y": 1
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 294,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 78.32,
+     "y": 1
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 304,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 84.92,
+     "y": 2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 258,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 87.86,
+     "y": 1
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 189,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 87.86,
+     "y": 1
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "B",
+    "folga": 456,
+    "gesto": "pula-atrasa-1-h99-imp",
+    "de": {
+     "x": 117.61,
+     "y": 1.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "B",
+    "folga": 435,
+    "gesto": "pula-reto-1-h99-imp",
+    "de": {
+     "x": 117.61,
+     "y": 1.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "B",
+    "folga": 430,
+    "gesto": "corre-pula-1-imp",
+    "de": {
+     "x": 121.29,
+     "y": 0.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 180,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 121.69,
+     "y": 0.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 202,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 121.69,
+     "y": 0.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 924,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 144.74,
+     "y": 3.2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 990,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 150.45,
+     "y": 8.2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 305,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 159.98,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 233,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 162.95,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 260,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 162.95,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 266,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 164.14,
+     "y": 0
+    },
+    "mecanica": ""
+   }
+  ],
+  "lanternas": [
+   "C",
+   "A",
+   "A",
+   "A",
+   "A"
+  ],
+  "placas": {
+   "placa-tampa-a": "C",
+   "placa-tampa-b": "A",
+   "placa-prateleira": "A",
+   "placa-portao": "A"
+  },
+  "portal": "A",
+  "soloMaxX": 39.7,
+  "soloEstrelas": 8
+ },
+ {
+  "cap": 2,
+  "id": "cap2-floresta",
+  "sementesDoFio": 0,
+  "estados": {
+   "C": 172,
+   "A": 6378,
+   "B": 7697
+  },
+  "gestosSimulados": 466227,
+  "segundos": 85.87,
+  "estrelas": [
+   {
+    "variante": "C",
+    "folga": 282,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 221,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 6.17,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 259,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 8.45,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 254,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 13.02,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 85,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 15.13,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 220,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 16.66,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 279,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 33.82,
+     "y": 0.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 295,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 36.76,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 268,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 38.32,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 274,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 55.84,
+     "y": -3
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 266,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 55.84,
+     "y": -3
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 299,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 60.08,
+     "y": -1.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 261,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 64,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 307,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 67.31,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 18043,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 87.47,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 12529,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 91.02,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 12532,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 92.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 22905,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 95,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "B",
+    "folga": 2074,
+    "gesto": "pula-reto1-h99-imp",
+    "de": {
+     "x": 95.51,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "B",
+    "folga": 1015,
+    "gesto": "pula-reto1-h99-imp",
+    "de": {
+     "x": 98.31,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "B",
+    "folga": 528,
+    "gesto": "pula-reto1-h99-imp",
+    "de": {
+     "x": 98.31,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 261,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 130.69,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 282,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 133.49,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 200,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 133.49,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 262,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 134,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 293,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 134,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 299,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 137.31,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 230,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 159.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 91,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 161.49,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 250,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 162,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 280,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 170.05,
+     "y": 1.2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 288,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 171.37,
+     "y": 1.2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 263,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 172.91,
+     "y": 2.4
+    },
+    "mecanica": ""
+   }
+  ],
+  "lanternas": [
+   "C",
+   "A",
+   "A",
+   "A",
+   "A"
+  ],
+  "placas": {},
+  "portal": "B",
+  "soloMaxX": 49.4,
+  "soloEstrelas": 9
+ },
+ {
+  "cap": 3,
+  "id": "cap3-relogio",
+  "sementesDoFio": 0,
+  "estados": {
+   "C": 15770,
+   "A": 60001,
+   "B": 60003,
+   "LIMITE": 1
+  },
+  "gestosSimulados": 3498681,
+  "segundos": 1111.092,
+  "estrelas": [
+   {
+    "variante": "C",
+    "folga": 325,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 2.01,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 226,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 309,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 263,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 11.83,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 97,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 13.28,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 222,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 15.47,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 32546,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 35.23,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 26892,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 38.93,
+     "y": 1.53
+    },
+    "mecanica": "giratoria"
+   },
+   {
+    "variante": "C",
+    "folga": 18287,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 40.66,
+     "y": 2.39
+    },
+    "mecanica": "giratoria"
+   },
+   {
+    "variante": "C",
+    "folga": 25736,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 40.73,
+     "y": 1.91
+    },
+    "mecanica": "giratoria"
+   },
+   {
+    "variante": "C",
+    "folga": 34985,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 44.79,
+     "y": 1.19
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 13286,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 48.32,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 11667,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 48.32,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 8026,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 48.99,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 10010,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 70.4,
+     "y": 5.18
+    },
+    "mecanica": "giratoria"
+   },
+   {
+    "variante": "C",
+    "folga": 9031,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 73.87,
+     "y": 5.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 6947,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 73.87,
+     "y": 5.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 222,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 88.5,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 181,
+    "gesto": "pula-atrasa-1-h99",
+    "de": {
+     "x": 91.33,
+     "y": 1.6
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 491,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 94.19,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 4359,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 97.5,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 10511,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 99.69,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 14073,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 101.39,
+     "y": 0
+    },
+    "mecanica": "movel"
+   },
+   {
+    "variante": "A",
+    "folga": 46420,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 108.29,
+     "y": 0.6
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 58411,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 112.14,
+     "y": 0.48
+    },
+    "mecanica": "giratoria"
+   },
+   {
+    "variante": "A",
+    "folga": 190479,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 112.71,
+     "y": -0.03
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 104523,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 127.02,
+     "y": 1
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 31033,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 131,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 209,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 163.75,
+     "y": 2.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 229,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 163.75,
+     "y": 2.8
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 14151,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 195.3,
+     "y": 1.02
+    },
+    "mecanica": "giratoria"
+   },
+   {
+    "variante": "A",
+    "folga": 6055,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 192.71,
+     "y": 3.58
+    },
+    "mecanica": "giratoria"
+   },
+   {
+    "variante": "A",
+    "folga": 1860,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 193.73,
+     "y": 3.58
+    },
+    "mecanica": "giratoria"
+   },
+   {
+    "variante": "A",
+    "folga": 5630,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 195.25,
+     "y": 1.14
+    },
+    "mecanica": "giratoria"
+   }
+  ],
+  "lanternas": [
+   "C",
+   "C",
+   "A",
+   "A",
+   "A"
+  ],
+  "placas": {
+   "placa-rua-a": "C",
+   "placa-rua-b": "C",
+   "placa-sacada": "A",
+   "placa-tempo-a": "A",
+   "placa-tempo-b": "A"
+  },
+  "portal": "B",
+  "soloMaxX": 81.7,
+  "soloEstrelas": 17
+ },
+ {
+  "cap": 4,
+  "id": "cap4-oceano",
+  "sementesDoFio": 0,
+  "estados": {
+   "C": 2171,
+   "A": 9732,
+   "B": 9083
+  },
+  "gestosSimulados": 682118,
+  "segundos": 137.739,
+  "estrelas": [
+   {
+    "variante": "C",
+    "folga": 307,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 2.01,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 249,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 292,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 5.48,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 258,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 15.47,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 92,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 17.03,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 231,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 19.11,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 13643,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 38.87,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 12856,
+    "gesto": "pula-vert-h99",
+    "de": {
+     "x": 42.68,
+     "y": 1.3
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 3369,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 46.31,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 2863,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 47.01,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 798,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 50.47,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 293,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 53.59,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 41,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 57.23,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 216,
+    "gesto": "argola1>1@20",
+    "de": {
+     "x": 57.23,
+     "y": 4
+    },
+    "mecanica": "argola"
+   },
+   {
+    "variante": "C",
+    "folga": 301,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 80.47,
+     "y": 3
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 299,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 82.03,
+     "y": 3
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 258,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 84.11,
+     "y": 3
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 2884,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 101.58,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 3982,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 104.81,
+     "y": 0.68
+    },
+    "mecanica": "bolha"
+   },
+   {
+    "variante": "A",
+    "folga": 6306,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 105.48,
+     "y": 0.56
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 13883,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 110,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 15890,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 137.56,
+     "y": 7.6
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 15684,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 142.43,
+     "y": 12.2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1077,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 148,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 868,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 148,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 593,
+    "gesto": "em pé",
+    "de": {
+     "x": 148,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 11825,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 159.11,
+     "y": 4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 3054,
+    "gesto": "pula-vert-h99",
+    "de": {
+     "x": 166.12,
+     "y": 3.28
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 7739,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 170.78,
+     "y": 2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 298,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 187.88,
+     "y": 2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 231,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 190.28,
+     "y": 2
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 339,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 191.96,
+     "y": 2
+    },
+    "mecanica": ""
+   }
+  ],
+  "lanternas": [
+   "C",
+   "C",
+   "C",
+   "A",
+   "A",
+   "A"
+  ],
+  "placas": {
+   "placa-mastro": "A",
+   "placa-cais": "A"
+  },
+  "portal": "A",
+  "soloMaxX": 95.3,
+  "soloEstrelas": 17
+ },
+ {
+  "cap": 5,
+  "id": "cap5-doces",
+  "sementesDoFio": 0,
+  "estados": {
+   "C": 405,
+   "A": 7986,
+   "B": 14900
+  },
+  "gestosSimulados": 803893,
+  "segundos": 332.001,
+  "estrelas": [
+   {
+    "variante": "C",
+    "folga": 306,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 263,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 303,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 6.17,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 250,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 17.03,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 84,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 19.11,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 217,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 20.15,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 48,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 39.65,
+     "y": 0
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "C",
+    "folga": 35,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 39.65,
+     "y": 0
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "C",
+    "folga": 60,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 39.65,
+     "y": 0
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "C",
+    "folga": 17,
+    "gesto": "pula-reto1-h6",
+    "de": {
+     "x": 40.17,
+     "y": 0
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "C",
+    "folga": 274,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 49.1,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 295,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 52.13,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 293,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 53.17,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 399,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 73.02,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "C",
+    "folga": 314,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 73.02,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "C",
+    "folga": 978,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 73.02,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "C",
+    "folga": 919,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 81.16,
+     "y": 7.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1148,
+    "gesto": "anda-1",
+    "de": {
+     "x": 94,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 2009,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 94,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 22973,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 100.78,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 23201,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 102.66,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 20298,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 105.37,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 24166,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 108.92,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 26025,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 109.44,
+     "y": 2.5
+    },
+    "mecanica": "cai"
+   },
+   {
+    "variante": "A",
+    "folga": 230,
+    "gesto": "anda-1",
+    "de": {
+     "x": 151.84,
+     "y": 5.9
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 265,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 162,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 295,
+    "gesto": "pula-atrasa-1-h99",
+    "de": {
+     "x": 162,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 295,
+    "gesto": "pula-volta-1-h99",
+    "de": {
+     "x": 161.49,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 247,
+    "gesto": "pula-meio1-h99",
+    "de": {
+     "x": 158.11,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 259,
+    "gesto": "pula-volta-1-h99",
+    "de": {
+     "x": 161.49,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 250,
+    "gesto": "pula-volta-1-h99",
+    "de": {
+     "x": 161.49,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 131,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 172.33,
+     "y": 2.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 64,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 172.33,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 88,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 172.33,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 34,
+    "gesto": "pula-reto1-h6",
+    "de": {
+     "x": 172.85,
+     "y": 2.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 159,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 181.34,
+     "y": 4.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 26,
+    "gesto": "pula-meio1-h99",
+    "de": {
+     "x": 182.9,
+     "y": 4.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 45,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 181.34,
+     "y": 4.5
+    },
+    "mecanica": "gelatina"
+   },
+   {
+    "variante": "A",
+    "folga": 56,
+    "gesto": "pula-reto1-h6",
+    "de": {
+     "x": 181.86,
+     "y": 4.5
+    },
+    "mecanica": "gelatina"
+   }
+  ],
+  "lanternas": [
+   "C",
+   "C",
+   "A",
+   "A",
+   "A"
+  ],
+  "placas": {
+   "placa-torre": "C",
+   "placa-pirulito": "A"
+  },
+  "portal": "A",
+  "soloMaxX": 89.7,
+  "soloEstrelas": 17
+ },
+ {
+  "cap": 6,
+  "id": "cap6-espelhos",
+  "sementesDoFio": 0,
+  "estados": {
+   "C": 378,
+   "A": 1775,
+   "B": 1587
+  },
+  "gestosSimulados": 114586,
+  "segundos": 24.934,
+  "estrelas": [
+   {
+    "variante": "C",
+    "folga": 260,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 28.83,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 88,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 31.95,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 217,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 32.47,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 352,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 27.69,
+     "y": 4.6
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 354,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 30.55,
+     "y": 5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 506,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 30.55,
+     "y": 5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 369,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 50.67,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1097,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 54.83,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 539,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 58.99,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 318,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 41.21,
+     "y": 5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 282,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 45.37,
+     "y": 5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 292,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 49.01,
+     "y": 5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 370,
+    "gesto": "pula-vert-h99",
+    "de": {
+     "x": 66,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 340,
+    "gesto": "anda1",
+    "de": {
+     "x": 66.2,
+     "y": 1.7
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 524,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 67.2,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 711,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 71.57,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1052,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 71.57,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 312,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 78.85,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 291,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 80.06,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 285,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 83.01,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 547,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 86.54,
+     "y": 5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1120,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 89.66,
+     "y": 5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 927,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 92.61,
+     "y": 5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 735,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 116.49,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 153,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 128.47,
+     "y": 0
+    },
+    "mecanica": "movel"
+   },
+   {
+    "variante": "A",
+    "folga": 604,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 128.47,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1852,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 132.69,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 244,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 154,
+     "y": 3.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 253,
+    "gesto": "pula-atrasa-1-h99",
+    "de": {
+     "x": 154,
+     "y": 3.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 268,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 155.2,
+     "y": 1.7
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 305,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 166.95,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 288,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 168.14,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 278,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 170.59,
+     "y": 0
+    },
+    "mecanica": ""
+   }
+  ],
+  "lanternas": [
+   "C",
+   "A",
+   "A",
+   "A",
+   "A"
+  ],
+  "placas": {
+   "placa-baixo-1": "C",
+   "placa-cima-1": "A",
+   "placa-cima-2": "A",
+   "placa-baixo-2": "A"
+  },
+  "portal": "A",
+  "soloMaxX": 55.7,
+  "soloEstrelas": 9
+ },
+ {
+  "cap": 7,
+  "id": "cap7-cosmos",
+  "sementesDoFio": 0,
+  "estados": {
+   "C": 3349,
+   "A": 5003,
+   "B": 5095
+  },
+  "gestosSimulados": 400991,
+  "segundos": 77.43,
+  "estrelas": [
+   {
+    "variante": "C",
+    "folga": 306,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 288,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 4.81,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 303,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 6.17,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 260,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 8.42,
+     "y": 1
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 113,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 11.83,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 225,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 11.83,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 3883,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 28.12,
+     "y": 0.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 6293,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 31.24,
+     "y": 0.5
+    },
+    "mecanica": "movel"
+   },
+   {
+    "variante": "C",
+    "folga": 9136,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 33.82,
+     "y": 0.75
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 12655,
+    "gesto": "anda1",
+    "de": {
+     "x": 39.76,
+     "y": 0.9
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 12214,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 39.76,
+     "y": 0.9
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 10303,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 40.01,
+     "y": 0.9
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 267,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 60.9,
+     "y": 3.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 306,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 62.46,
+     "y": 3.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 298,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 64.54,
+     "y": 3.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "C",
+    "folga": 253,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 66.1,
+     "y": 3.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 286,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 82.69,
+     "y": 0.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 277,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 85.49,
+     "y": 0.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 282,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 86,
+     "y": 0.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 260,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 115.49,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 375,
+    "gesto": "pula-reto-1-h99",
+    "de": {
+     "x": 116,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 716,
+    "gesto": "anda-1",
+    "de": {
+     "x": 116,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 761,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 122.95,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 683,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 123.47,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1719,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 127.69,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 1906,
+    "gesto": "corre-pula-1",
+    "de": {
+     "x": 138.89,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 205,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 156.95,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 294,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 157.47,
+     "y": 4.4
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 151,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 161.2,
+     "y": 3
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 125,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 162.9,
+     "y": 3
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 44,
+    "gesto": "corre-pula1",
+    "de": {
+     "x": 165.44,
+     "y": 1.5
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 275,
+    "gesto": "anda1",
+    "de": {
+     "x": 182,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 284,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 182,
+     "y": 0
+    },
+    "mecanica": ""
+   },
+   {
+    "variante": "A",
+    "folga": 293,
+    "gesto": "pula-reto1-h99",
+    "de": {
+     "x": 182,
+     "y": 0
+    },
+    "mecanica": ""
+   }
+  ],
+  "lanternas": [
+   "C",
+   "C",
+   "A",
+   "A",
+   "A",
+   "A"
+  ],
+  "placas": {},
+  "portal": "A",
+  "soloMaxX": 78.4,
+  "soloEstrelas": 16
+ }
+]
