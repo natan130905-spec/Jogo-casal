@@ -428,7 +428,7 @@ function quinaDosPes(j: EstadoJogador, sol: readonly Retangulo[], xQuer: number,
 export function normalizarInput(i: unknown): Input {
   const o = (i ?? {}) as Record<string, unknown>;
   const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.max(-1, Math.min(1, v)) : 0);
-  const troca = typeof o.troca === 'number' && Number.isInteger(o.troca) && o.troca >= 1 && o.troca <= 6 ? o.troca : 0;
+  const troca = typeof o.troca === 'number' && Number.isInteger(o.troca) && o.troca >= 1 && o.troca <= 7 ? o.troca : 0;
   return {
     x: num(o.x), y: num(o.y), jump: o.jump === true, act: o.act === true, shoot: o.shoot === true || o.atk === true,
     ...(troca ? { troca } : {}), ...(o.dar === true ? { dar: true } : {}),

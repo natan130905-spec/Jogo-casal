@@ -5,6 +5,7 @@ import type { Estado } from '../core/types';
 import { CAPITULOS_INFO, info, type Quadro } from './historia';
 import { ESTRELA_SVG, ilustracao } from './ilustracoes';
 import { concluido, estrelinhasTotais, liberado, pedacos, TOTAL_CAPITULOS, type Progresso } from './progresso';
+import { HudArmas } from './hudArmas';
 
 export const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s)!;
 
@@ -172,6 +173,9 @@ export function mostrarCreditos(controla: boolean) {
 export class Hud {
   private chave = '';
   private estrelinhas = -1;
+  /** armas (L4): chips, ícone do ATACAR e anel do ⇆ (src/ui/hudArmas.ts) */
+  private armas = new HudArmas();
+  private euI = 0;
   constructor() {
     for (const i of [0, 1]) $(`#cor-${i}`).innerHTML = '<i>❤</i><i>❤</i><i>❤</i>';
   }
@@ -188,10 +192,12 @@ export class Hud {
     this.chave = ''; this.estrelinhas = -1;
   }
   eu(eu: number) {
+    this.euI = eu;
     $('#hud-p1').classList.toggle('eu', eu === 0);
     $('#hud-p2').classList.toggle('eu', eu === 1);
   }
   atualizar(e: Estado, eventos: readonly string[]) {
+    this.armas.atualizar(e, this.euI);
     const chave = e.jogadores.map((j) => `${j.coracoes}${j.bolha ? 'b' : ''}`).join('|');
     if (chave !== this.chave) {
       this.chave = chave;

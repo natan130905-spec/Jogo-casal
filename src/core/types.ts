@@ -15,7 +15,8 @@ export interface Input {
   shoot?: boolean;
   /** troca de arma (vale a borda: o valor mudou desde o tick anterior). 1–4: espaço direto (corpo, tiro 1, tiro 2,
    *  ferramenta); 5: na lanterna acesa, troca o item do espaço atual pelo próximo da mochila do casal; 6: próxima
-   *  arma (corpo → tiro 1 → tiro 2 → ferramenta, pulando os vazios). 0 ou ausente: nada. */
+   *  arma (corpo → tiro 1 → tiro 2 → ferramenta, pulando os vazios); 7: segurar ⇆ no celular (a mochila na
+   *  lanterna acesa; longe dela, 🎁 dar ao parceiro). 0 ou ausente: nada. */
   troca?: number;
   /** 🎁 dar ao parceiro (borda): com arma de tiro, metade das miçangas; com corpo a corpo ou ferramenta, o item */
   dar?: boolean;

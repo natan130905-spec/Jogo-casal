@@ -1,9 +1,10 @@
 // Som: música de fundo (uma por tela/capítulo) e efeitos ligados aos eventos da simulação.
 // Usa os arquivos de public/som. Só começa depois do primeiro toque (regra dos navegadores). Liga/desliga salvo
-// no aparelho.
+// no aparelho. As armas de brinquedo (L4) são sintetizadas na hora (src/ui/somArmas.ts), como o pulo.
+import { SONS_ARMAS, somDoEvento } from './somArmas';
 
 const SFX: Record<string, string> = {
-  tiro: 'sfx_tiro', derrota: 'sfx_estouro', estrelinha: 'sfx_estrelinha', dano: 'sfx_dano', bolha: 'sfx_bolha',
+  derrota: 'sfx_estouro', estrelinha: 'sfx_estrelinha', dano: 'sfx_dano', bolha: 'sfx_bolha',
   lanterna: 'sfx_lanterna', 'porta-abriu': 'sfx_porta', pedaco: 'sfx_pedaco_estrela', maos: 'sfx_maos',
   pulo: 'sfx_pulo', superpulo: 'sfx_pulo', 'fio-preso': 'sfx_corda', 'ponto-fraco': 'sfx_rei', 'chefe-derrotado': 'sfx_rei',
 };
@@ -77,6 +78,14 @@ class Som {
     if (!this.ligado || !this.ctx || this.ctx.state !== 'running' || !evs.length) return;
     const agora = performance.now();
     for (const ev of evs) {
+      // armas (só no 2.5D; a arena tem a tabela dela)
+      const sint = tabela === SFX ? somDoEvento(ev) : null;
+      if (sint) {
+        if (agora - (this.ultimo.get(sint) ?? 0) < 80) continue;
+        this.ultimo.set(sint, agora);
+        try { SONS_ARMAS[sint](this.ctx, ev); } catch { /* áudio indisponível */ }
+        continue;
+      }
       const nome = tabela[ev.split(':')[0]];
       if (!nome || agora - (this.ultimo.get(nome) ?? 0) < 80) continue;
       this.ultimo.set(nome, agora);

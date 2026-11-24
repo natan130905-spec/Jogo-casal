@@ -338,12 +338,12 @@ function trocar(fase: Fase, e: Estado, i: number, t: number, ev: string[]) {
     ev.push(`troca:${i}:${s + 1}`);
     return;
   }
-  if (t !== 5) return;
-  // mochila do casal: só perto de lanterna acesa
+  if (t !== 5 && t !== 7) return;
+  // mochila do casal: só perto de lanterna acesa. 7 (segurar ⇆ no celular): mochila na lanterna, dar longe dela
   const lanternas = fase.lanternas ?? [];
   let naLanterna = false;
   for (let k = 0; k <= e.checkpoint && k < lanternas.length; k++) if (Math.abs(lanternas[k].x - j.x) <= ARSENAL.lanterna && Math.abs(lanternas[k].y - j.y) < 2.5) naLanterna = true;
-  if (!naLanterna) return;
+  if (!naLanterna) { if (t === 7) dar(e, i, ev); return; }
   const s = a.atual, atual = a.itens[s];
   // o Estilingue não sai da mão se for o único (recurso infinito, R21)
   if (atual === ITEM.estilingue && a.itens[3 - s] !== ITEM.estilingue) return;

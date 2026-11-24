@@ -1,6 +1,8 @@
 // Controles: joystick virtual + botões (toque) e teclado (PC). Produz um Input por quadro.
-// Toque: joystick à esquerda (x e y); à direita ⬆ pular, ✨ atirar (Lança-Estrelas) e ✋ mão.
-// Teclado: setas/WASD (⬆/W também pula; ⬇/S = y -1), Espaço pula, J atira, E/Shift mão.
+// Toque: joystick à esquerda (x e y); à direita ⬆ pular, ATACAR (a arma atual; o ícone muda), ✋ mão e ⇆ trocar
+// (toque: próxima arma; segurar 0,35 s: a mochila na lanterna acesa, longe dela 🎁 dar ao parceiro). L4.
+// Teclado: setas/WASD (⬆/W também pula; ⬇/S = y -1, e ⬆ mira para cima), Espaço pula, J ataca, E/Shift mão,
+// Q próxima arma, 1–4 espaço direto, G dar ao parceiro, Tab a mochila (na lanterna).
 import type { Input } from '../core/types';
 
 /** zona morta e resposta suave do joystick (0…1 → -1…1) */
@@ -15,6 +17,10 @@ export class Controles {
   private teclas = new Set<string>();
   /** botões apertados desde a última leitura: um toque mais curto que um quadro (ou que um tick) ainda conta uma vez */
   private bordas = { jump: false, act: false, shoot: false };
+  /** troca e dar pedidos desde a última leitura (a simulação usa a borda: sai numa leitura e zera na seguinte) */
+  private trocaPedida = 0;
+  private darPedido = false;
+  private trocaSegura: ReturnType<typeof setTimeout> | null = null;
   private toqueJoy: number | null = null;
   private centro = { x: 0, y: 0 };
   private raio = 50;
@@ -26,6 +32,7 @@ export class Controles {
     const bPulo = raiz.querySelector<HTMLElement>('#bt-pulo')!;
     const bMao = raiz.querySelector<HTMLElement>('#bt-mao')!;
     const bTiro = raiz.querySelector<HTMLElement>('#bt-tiro')!;
+    const bTroca = raiz.querySelector<HTMLElement>('#bt-troca');
 
     const ouvir = <K extends keyof HTMLElementEventMap>(el: HTMLElement | Window, tipo: K, f: (ev: HTMLElementEventMap[K]) => void) => {
       el.addEventListener(tipo, f as EventListener);
@@ -68,6 +75,13 @@ export class Controles {
     botao(bPulo, (v) => { this.pulo = v; if (v) this.bordas.jump = true; });
     botao(bMao, (v) => { this.mao = v; if (v) this.bordas.act = true; });
     botao(bTiro, (v) => { this.tiro = v; if (v) this.bordas.shoot = true; });
+    // ⇆: toque curto = próxima arma; segurar = mochila (na lanterna) ou dar (longe dela) — a simulação decide
+    if (bTroca) botao(bTroca, (v) => {
+      if (v) {
+        if (this.trocaSegura) clearTimeout(this.trocaSegura);
+        this.trocaSegura = setTimeout(() => { this.trocaSegura = null; this.trocaPedida = 7; navigator.vibrate?.(14); }, 350);
+      } else if (this.trocaSegura) { clearTimeout(this.trocaSegura); this.trocaSegura = null; this.trocaPedida = 6; }
+    });
 
     ouvir(window, 'keydown', (e) => {
       const c = (e as KeyboardEvent).code;
@@ -75,6 +89,11 @@ export class Controles {
       if (c === 'Space' || c === 'ArrowUp' || c === 'KeyW') this.bordas.jump = true;
       if (c === 'KeyE' || c === 'ShiftLeft' || c === 'ShiftRight') this.bordas.act = true;
       if (c === 'KeyJ') this.bordas.shoot = true;
+      if ((e as KeyboardEvent).repeat) return;
+      if (c === 'KeyQ') this.trocaPedida = 6;
+      if (c === 'Digit1' || c === 'Digit2' || c === 'Digit3' || c === 'Digit4') this.trocaPedida = Number(c.slice(5));
+      if (c === 'Tab') { this.trocaPedida = 5; e.preventDefault(); }
+      if (c === 'KeyG') this.darPedido = true;
     });
     ouvir(window, 'keyup', (e) => this.teclas.delete((e as KeyboardEvent).code));
     ouvir(window, 'blur', () => this.teclas.clear());
@@ -84,6 +103,8 @@ export class Controles {
   limpar(o: { manterJoystick?: boolean } = {}) {
     this.pulo = this.mao = this.tiro = false; this.teclas.clear();
     this.bordas = { jump: false, act: false, shoot: false };
+    this.trocaPedida = 0; this.darPedido = false;
+    if (this.trocaSegura) { clearTimeout(this.trocaSegura); this.trocaSegura = null; }
     for (const b of this.raiz.querySelectorAll('.ativo')) b.classList.remove('ativo');
     // pausa: o polegar que continua no joystick segue valendo ao continuar (R27); se ele sair durante a pausa, o
     // pointerup (capturado pelo joystick) zera do mesmo jeito
@@ -100,6 +121,8 @@ export class Controles {
   ler(): Input {
     const t = this.teclas, b = this.bordas;
     this.bordas = { jump: false, act: false, shoot: false };
+    const troca = this.trocaPedida, dar = this.darPedido;
+    this.trocaPedida = 0; this.darPedido = false;
     const kx = (t.has('ArrowRight') || t.has('KeyD') ? 1 : 0) - (t.has('ArrowLeft') || t.has('KeyA') ? 1 : 0);
     const ky = (t.has('ArrowUp') || t.has('KeyW') ? 1 : 0) - (t.has('ArrowDown') || t.has('KeyS') ? 1 : 0);
     return {
@@ -108,6 +131,7 @@ export class Controles {
       jump: b.jump || this.pulo || t.has('Space') || t.has('ArrowUp') || t.has('KeyW'),
       act: b.act || this.mao || t.has('KeyE') || t.has('ShiftLeft') || t.has('ShiftRight'),
       shoot: b.shoot || this.tiro || t.has('KeyJ'),
+      ...(troca ? { troca } : {}), ...(dar ? { dar: true } : {}),
     };
   }
 }

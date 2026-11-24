@@ -29,9 +29,11 @@ const SUAVE = 12;
 /** eventos do próprio movimento que o convidado mostra na hora (da predição) em vez de esperar o anfitrião */
 const EVENTOS_PROPRIOS = new Set(['pulo', 'superpulo', 'pouso', 'quique']);
 
-/** botões apertados em qualquer uma das duas entradas (a mais nova manda no joystick) */
+/** botões apertados em qualquer uma das duas entradas (a mais nova manda no joystick); a troca de arma e o dar (L4)
+ *  também não se perdem quando a fila junta entradas */
 const juntarBotoes = (velha: Input, nova: Input): Input => ({
   ...nova, jump: nova.jump || velha.jump, act: nova.act || velha.act, shoot: nova.shoot || velha.shoot,
+  ...(nova.troca || velha.troca ? { troca: nova.troca || velha.troca } : {}), ...(nova.dar || velha.dar ? { dar: true } : {}),
 });
 
 /** Mensagem de entrada do convidado: `i` é a entrada de número `seq`; `l` (opcional) são as entradas novas desde o

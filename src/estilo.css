@@ -179,6 +179,20 @@ body:not(.depurar) .hud-info { display: none; }
 #bt-tiro { left: 0; bottom: 4%; width: 38%; font-size: min(8vh, 34px); background: #ffcf6b33 !important; border-color: #ffe9a0aa !important; }
 #bt-mao { right: 6%; top: 0; width: 36%; font-size: min(7vh, 30px); }
 #botoes button.ativo { background: #ffcf6b88 !important; transform: scale(.94); }
+/* L4: ⇆ trocar arma no canto livre de cima à esquerda dos botões (≥ 52 px, longe do polegar em ⬆ e ATACAR), com o
+   anel da munição da arma na mão (--carga 0…1, src/ui/hudArmas.ts); chip da arma de cada um abaixo do rosto */
+#bt-troca { left: 2%; top: 4%; width: max(52px, 27%); font-size: min(5.5vh, 22px); }
+#bt-troca .anel-arma { position: absolute; inset: -5px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(#ffcf6b calc(var(--carga, 1) * 360deg), #ffffff2e 0);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  mask: radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); }
+.chip-arma { position: absolute; top: calc(100% + 2px); font: 700 12px/1 system-ui, sans-serif; color: #fff; background: #1a1240c8;
+  border-radius: 99px; padding: 3px 7px; white-space: nowrap; pointer-events: none; letter-spacing: 1px; }
+.chip-arma:empty { display: none; }
+.hud-jogador.p1 .chip-arma { left: 0; }
+.hud-jogador.p2 .chip-arma { right: 0; }
+.hud-jogador:not(.eu) .chip-arma { opacity: .75; }
+#jogo.arena .chip-arma { display: none; }
 /* indicador do parceiro (src/ui/indicador.ts posiciona pelo transform; 44 px de diâmetro) */
 #indicador { position: absolute; left: 0; top: 0; width: 44px; height: 44px; pointer-events: none; z-index: 2; will-change: transform; }
 #indicador[hidden] { display: none; }

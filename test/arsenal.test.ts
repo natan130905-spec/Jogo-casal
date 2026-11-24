@@ -244,7 +244,23 @@ describe('troca, mochila, miçangas e dar', () => {
     expect(e.portas.g).toBe(0);
   });
 
-  it('normalizarInput aceita troca 1–6 e dar; `atk` vale como `shoot` (rede nova)', () => {
+  it('segurar ⇆ (troca 7): na lanterna é a mochila; longe dela, dar ao parceiro', () => {
+    const f = criarFase({ id: 't', plataformas: [CHAO], lanternas: [{ x: 6, y: 0 }] });
+    const e = estadoInicial(f);
+    e.desbloqueadas |= 1 << ITEM.martelo;
+    pos(e, 0, 2); pos(e, 1, 4);
+    e.jogadores[1].arsenal.itens[0] = ITEM.martelo;
+    rodar(f, e, 0.1, { troca: 1 });
+    const evs = rodar(f, e, 0.1, (_e, t) => ({ troca: t < 2 ? 7 : 0 }));
+    expect(evs).toContain('dar:0:item');
+    expect(e.jogadores[0].arsenal.itens[0]).toBe(ITEM.martelo);
+    pos(e, 0, 6.4);
+    rodar(f, e, 0.1);
+    const ev2 = rodar(f, e, 0.1, (_e, t) => ({ troca: t < 2 ? 7 : 0 }));
+    expect(ev2).toContain(`mochila:0:${ITEM.espada}`);
+  });
+
+  it('normalizarInput aceita troca 1–7 e dar; `atk` vale como `shoot` (rede nova)', () => {
     expect(normalizarInput({ troca: 3, dar: true })).toEqual({ x: 0, y: 0, jump: false, act: false, shoot: false, troca: 3, dar: true });
     expect(normalizarInput({ troca: 9, dar: 1 })).toEqual({ x: 0, y: 0, jump: false, act: false, shoot: false });
     expect(normalizarInput({ atk: true }).shoot).toBe(true);
