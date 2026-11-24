@@ -21,3 +21,27 @@ menu, cap1_brinquedos, cap2_floresta, cap3_relogio, cap4_oceano, cap5_doces, cap
 tiro (Lança-Estrelas), estouro (bichinho vira brilho), pulo, estrelinha (coletar), dano, maos (mãos dadas/impulso), porta, lanterna (checkpoint), bolha, corda (Fio Vermelho esticando), pedaco_estrela (fanfarra), rei (resmungo do chefe). Modelo: mirelo_text_to_audio.
 
 Uso: referência e recurso do jogo; conferir os termos do plano antes de qualquer uso comercial.
+
+# Modelos 3D (2026-11-24) — `public/modelos/*.glb`
+Prévia: `docs/arte/previa_modelos.png`.
+
+## Higgsfield (Meshy 7 imagem→3D a partir de imagens novas no estilo da arte)
+Imagens de referência (corpo inteiro A-pose e bichinhos isolados): 7 × gpt_image_2_6 (~14 créditos). Modelos: Natan e Bruna com
+esqueleto e animação "Run_02" (id 14), 1,10 m, ~8,3 mil triângulos, textura 1024 (47,5 cada); bolotinha, morcego, cogumelo,
+espinhudo (~5,2 mil tri, textura 512) e rei (~8,3 mil tri) estáticos (38 cada). Qualidade: **ótima**, fiéis à arte.
+Saldo Higgsfield: 625,38 → (ver `balance`; rodada estimada em ~299 créditos).
+
+## Meshy (texto→3D, API oficial, `tools/meshy_gerar.sh`): 10 × 30 = **300 créditos** (saldo 821 → 521)
+| Modelo | Uso | Avaliação |
+|---|---|---|
+| lanca_estrelas | arma na mão dos personagens | boa |
+| pedaco_estrela | fim de capítulo | forma boa, cor marrom: usar material dourado emissivo no jogo |
+| lanterna | checkpoint | boa |
+| casa_arvore | cenário cap. 2 | razoável |
+| cogumelo_gigante | cenário | fraca (facetada, sem pintas) |
+| blocos_brinquedo | cenário cap. 1 | boa |
+| torre_relogio | cenário cap. 3 | boa |
+| castelo_doces | cenário cap. 5 | fraca (sem cor de doce) |
+| cristais_espelho | cenário cap. 6 | fraca (veio só o espelho) |
+| ilha_flutuante | cenário cap. 7 | fraca (escura) |
+Lição: no Meshy, texto→3D sai bem pior que imagem→3D; para refazer os fracos, gerar antes a imagem no estilo da arte.
