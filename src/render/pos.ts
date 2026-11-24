@@ -29,8 +29,11 @@ export class Pos {
     // (o MSAA do canvas só valia para o retângulo final). O canvas da alta é criado sem antialias (cena.ts).
     const alvo = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
     this.composer = new EffectComposer(renderer, alvo);
-    // o segundo alvo (troca entre passes) não precisa de MSAA: só a cena é desenhada com amostras
-    this.composer.renderTarget2.samples = 0;
+    // a cena vai para o readBuffer (renderTarget2, o clone com MSAA); o writeBuffer (renderTarget1) não recebe nada
+    // nesta cadeia (o brilho escreve no readBuffer, a saída na tela, e nada troca os dois; ver a saída abaixo): sem
+    // amostras, sem profundidade e 1×1, para não gastar memória de vídeo à toa
+    this.composer.renderTarget1.samples = 0;
+    this.composer.renderTarget1.depthBuffer = false;
     this.composer.addPass(new RenderPass(cena, camera));
     if (!SEM_BRILHO) {
       this.bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), BRILHO.forca, BRILHO.raio, 0);
@@ -45,13 +48,20 @@ export class Pos {
       f.needsUpdate = true;
       this.composer.addPass(this.bloom);
     }
-    this.composer.addPass(new OutputPass());
+    // a saída vai para a tela e não troca os alvos: assim a cena cai SEMPRE no mesmo alvo (o readBuffer, com MSAA);
+    // com a troca padrão, um quadro sim e outro não ia para o writeBuffer
+    const saida = new OutputPass();
+    saida.needsSwap = false;
+    this.composer.addPass(saida);
   }
-  /** o alvo em que a cena é desenhada (para compilar os shaders da alta com o mesmo estado: espaço linear, sem curva) */
+  /** o alvo em que a cena é desenhada (o RenderPass usa o readBuffer): para compilar os shaders da alta com o mesmo
+   *  estado (espaço linear, sem curva de tons) e para os testes conferirem o MSAA */
   get alvoCena() { return this.composer.readBuffer; }
   setSize(w: number, h: number, pr: number) {
     this.composer.setPixelRatio(pr);
     this.composer.setSize(w, h);
+    // o writeBuffer não é usado nesta cadeia (ver o construtor): 1×1 em vez de mais uma tela cheia em HalfFloat
+    this.composer.renderTarget1.setSize(1, 1);
     // o composer acabou de dar ao brilho o tamanho cheio (ele usa a metade); aqui vai para ¼ da resolução de desenho
     this.bloom?.setSize(Math.max(2, Math.round((w * pr) / 2)), Math.max(2, Math.round((h * pr) / 2)));
   }
