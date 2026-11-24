@@ -35,8 +35,9 @@ await A.waitForSelector('#quadrinhos:not([hidden])', { timeout: 30000 });
 await A.click('#bt-pular');
 await A.waitForSelector('#mapa:not([hidden])', { timeout: 15000 });
 await A.click('#bt-jogar');
-await A.waitForSelector('#jogo:not([hidden])', { timeout: 30000 });
-await B.waitForSelector('#jogo:not([hidden])', { timeout: 30000 });
+// a fase é montada atrás da tela de carregamento (L1, R33): espera a partida pronta
+await A.waitForFunction(() => !!window.__edm?.estado, null, { timeout: 120000 });
+await B.waitForFunction(() => !!window.__edm?.estado, null, { timeout: 120000 });
 await pausa(2500);
 
 /** Aperta Espaço nesta página e mede quanto tempo (e quantos quadros) até o personagem `i` subir no estado desenhado. */

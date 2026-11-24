@@ -75,8 +75,9 @@ checar(progB.prologoVisto === true, 'convidado recebeu o progresso do anfitrião
 checar(await B.isHidden('#bt-jogar') && await A.isVisible('#bt-jogar'), 'só o anfitrião escolhe o capítulo');
 await A.screenshot({ path: saida + 'A_mapa.png' }); await B.screenshot({ path: saida + 'B_mapa.png' });
 await A.click('#bt-jogar');
-await A.waitForSelector('#jogo:not([hidden])', { timeout: 30000 });
-await B.waitForSelector('#jogo:not([hidden])', { timeout: 30000 });
+// a fase é montada atrás da tela de carregamento (L1, R33): espera a partida pronta, não só a tela do jogo
+await A.waitForFunction(() => window.__edm?.cap === 1, null, { timeout: 120000 });
+await B.waitForFunction(() => window.__edm?.cap === 1, null, { timeout: 120000 });
 checar(true, 'os dois entraram no jogo');
 await pausa(1500);
 await A.screenshot({ path: saida + 'A_inicio.png' }); await B.screenshot({ path: saida + 'B_inicio.png' });
