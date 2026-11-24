@@ -4,21 +4,34 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <meta name="theme-color" content="#2b1f5c" />
+  <meta name="description" content="Aventura cooperativa para dois: juntem os sete pedaços da estrela." />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Dois Mundos" />
   <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icone.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./icone-192.png" />
   <title>Entre Dois Mundos</title>
 </head>
 <body>
+  <!-- céu animado em CSS (fundo do menu, da sala e do mapa) -->
+  <div id="ceu" aria-hidden="true">
+    <div class="camada c1"></div><div class="camada c2"></div><div class="camada c3"></div>
+    <div class="nevoa n1"></div><div class="nevoa n2"></div>
+    <div class="cadente"></div>
+  </div>
+
   <section id="menu" class="tela">
-    <h1>Entre Dois Mundos</h1>
-    <p class="sub">Uma jornada para dois</p>
+    <div class="logo">
+      <div class="logo-estrela" id="logo-estrela"></div>
+      <h1>Entre <span>Dois</span> Mundos</h1>
+      <p class="sub">Uma jornada para dois</p>
+    </div>
     <div class="botoes">
       <button id="bt-criar" class="grande">Criar sala</button>
       <div class="linha">
-        <input id="codigo" maxlength="5" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+        <input id="codigo" maxlength="5" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código da sala" />
         <button id="bt-entrar">Entrar</button>
       </div>
       <button id="bt-treino" class="leve">Treinar sozinho</button>
@@ -26,30 +39,109 @@
         <select id="qualidade"><option value="baixa">Leve</option><option value="media">Normal</option><option value="alta">Bonito</option></select>
       </label>
     </div>
-    <p id="menu-erro" class="erro"></p>
+    <p id="menu-erro" class="erro" role="status"></p>
+    <p id="menu-progresso" class="progresso-menu"></p>
   </section>
 
   <section id="sala" class="tela" hidden>
-    <p>Código da sala</p>
+    <p class="sub">Código da sala</p>
     <div id="sala-codigo" class="codigo">·····</div>
     <button id="bt-compartilhar">Compartilhar convite</button>
-    <p id="sala-status"></p>
+    <p id="sala-status" role="status"></p>
     <button id="bt-voltar" class="leve">Voltar</button>
+  </section>
+
+  <section id="quadrinhos" class="tela" hidden>
+    <div class="painel" id="qd-painel">
+      <div class="qd-arte" id="qd-arte"></div>
+      <p class="qd-texto" id="qd-texto"></p>
+    </div>
+    <div class="qd-rodape">
+      <div class="qd-pontos" id="qd-pontos"></div>
+      <span class="qd-dica" id="qd-dica">Toque para continuar</span>
+    </div>
+    <button id="bt-pular" class="leve pequeno">Pular ››</button>
+  </section>
+
+  <section id="mapa" class="tela" hidden>
+    <header class="mapa-topo">
+      <button id="bt-mapa-sair" class="leve pequeno" aria-label="Sair">✕</button>
+      <h2>Mapa da jornada</h2>
+      <button id="bt-historia" class="leve pequeno">📖 História</button>
+      <div class="mapa-placar"><span id="mapa-pedacos"></span><span id="mapa-estrelinhas"></span></div>
+    </header>
+    <div class="mapa-area"><div class="mapa-caixa" id="mapa-caixa"></div></div>
+    <footer class="mapa-info">
+      <div class="mapa-texto"><strong id="mapa-nome"></strong><span id="mapa-desc"></span></div>
+      <button id="bt-jogar" class="grande">Jogar ▶</button>
+      <span id="mapa-espera" class="mapa-espera" hidden>Esperando quem criou a sala escolher…</span>
+    </footer>
   </section>
 
   <section id="jogo" class="tela" hidden>
     <canvas id="canvas"></canvas>
-    <div id="hud"><span id="hud-sala"></span><span id="hud-info"></span><button id="bt-trocar" hidden>⇄</button><button id="bt-sair">✕</button></div>
+    <div id="hud">
+      <div class="hud-jogador p1" id="hud-p1">
+        <div class="rosto"><img src="./arte/14_rosto_natan.webp" alt="Natan" /></div>
+        <div class="coracoes" id="cor-0"></div>
+        <span class="voce">você</span>
+      </div>
+      <div class="hud-meio">
+        <div class="hud-linha">
+          <span id="hud-estrelinhas" class="pilula">★ 0</span>
+          <button id="bt-pausa" aria-label="Pausa">❚❚</button>
+          <button id="bt-trocar" hidden aria-label="Trocar personagem">⇄</button>
+        </div>
+        <span id="hud-cap" class="hud-cap"></span>
+        <span id="hud-info" class="hud-info"></span>
+      </div>
+      <div class="hud-jogador p2" id="hud-p2">
+        <span class="voce">você</span>
+        <div class="coracoes" id="cor-1"></div>
+        <div class="rosto"><img src="./arte/15_rosto_bruna.webp" alt="Bruna" /></div>
+      </div>
+    </div>
     <div id="controles">
       <div id="joystick"><div class="bola"></div></div>
       <div id="botoes">
         <button id="bt-mao" aria-label="Mão">✋</button>
+        <button id="bt-tiro" aria-label="Atirar">✨</button>
         <button id="bt-pulo" aria-label="Pular">⬆</button>
       </div>
     </div>
     <div id="aviso" hidden></div>
-    <div id="concluida" hidden>⭐ Capítulo concluído! ⭐</div>
+    <div id="pausa" class="sobreposta" hidden>
+      <div class="cartao">
+        <h2>Pausa</h2>
+        <p class="sub" id="pausa-quem"></p>
+        <button id="bt-continuar" class="grande">Continuar</button>
+        <button id="bt-pausa-mapa">Mapa da jornada</button>
+        <div class="linha"><button id="bt-som" class="leve" style="flex:1">Som: ligado</button><button id="bt-pausa-sair" class="leve" style="flex:1">Sair</button></div>
+        <p class="dica-teclas">PC: setas/WASD andar · Espaço pular · J atirar · E mão · Esc pausa</p>
+      </div>
+    </div>
   </section>
+
+  <section id="concluido" class="tela" hidden>
+    <div class="cartao festa">
+      <div class="conc-estrela" id="conc-estrela"></div>
+      <p class="sub" id="conc-cap"></p>
+      <h2>Capítulo concluído!</h2>
+      <div class="conc-estrelinhas" id="conc-estrelinhas"></div>
+      <p class="conc-frase" id="conc-frase"></p>
+      <button id="bt-conc-continuar" class="grande">Continuar</button>
+      <span id="conc-espera" class="mapa-espera" hidden>Esperando quem criou a sala…</span>
+    </div>
+  </section>
+
+  <div id="caiu" class="sobreposta" hidden>
+    <div class="cartao">
+      <h2>Conexão perdida</h2>
+      <p id="caiu-motivo" class="sub"></p>
+      <button id="bt-tentar" class="grande">Tentar de novo</button>
+      <button id="bt-caiu-sair" class="leve">Voltar ao menu</button>
+    </div>
+  </div>
 
   <div id="girar">Gire o celular para jogar na horizontal ↻</div>
   <script type="module" src="./src/main.ts"></script>
