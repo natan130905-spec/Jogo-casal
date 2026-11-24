@@ -48,3 +48,21 @@ Decisões do diretor:
   (cena e música próprias). O final normal continua igual para quem não achar.
 - Tudo entra no guia de segredos fora do jogo (`tools/guia_segredos.mjs` → `.segredos/`), no teste de alcance e
   funciona no solo e em dupla. Salvamento guarda quais segredos e finais foram vistos.
+
+## Pedido seguinte (2026-11-24, tarde): luta final
+> "A luta contra o boss final não tem uma mudança muito diferente, as habilidades não têm um som legal, parece que a
+> gente dá muito pouco dano. Queria que tivesse várias armas, mas não que o personagem já estivesse com elas todas:
+> quem estiver jogando tem que achar, e essas armas ou habilidades devem estar escondidas."
+
+Decisões do diretor (entram no L14, depois do companheiro e da conexão):
+- **Fases do Rei bem diferentes entre si** (não só mais rápido): cenário muda (a ilha racha, a noite cai, a névoa
+  cobre metade), música muda por fase, ataques novos e um "momento" de dupla diferente em cada fase; o Rei muda de
+  forma/tamanho.
+- **Sensação de dano**: números e barras que reagem forte (pedaço da barra que cai em atraso), tremida, pausa de
+  impacto de 2–4 quadros, Rei recua/achata, faíscas maiores; rever os números para os golpes "pesarem" (menos golpes
+  para cair cada fase, mantendo 3–5 min no total com ataques mais intensos).
+- **Sons**: cada arma/habilidade com som próprio caprichado (sintetizado em camadas ou gerado por IA de som, com
+  registro de custo), som de acerto diferente de defesa, rugido por fase.
+- **Armas e habilidades achadas, não dadas**: começa só com o básico; as outras ficam **escondidas** pela campanha
+  (segredos, quedas secretas, baús) e na Floresta do Coração antes do Rei; quem achou leva para a luta. Várias armas
+  com estilos diferentes (perto, longe, área, apoio). Entra no guia de segredos fora do jogo.
