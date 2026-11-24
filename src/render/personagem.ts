@@ -3,7 +3,11 @@
 // esqueleto simples (quadril, tronco, cabeça, braços, pernas e "cauda" do lenço/casaco). O rosto é uma calota
 // sobre a cabeça com textura de canvas (4 expressões num atlas). Material toon de 3 tons + luz de borda, e
 // contorno escuro (casco invertido) na média e na alta.
-// Por personagem: corpo (1 chamada) + contorno (1) + rosto (1) + rótulo (1) (+1 de sombra na alta).
+// Por personagem: corpo (1 chamada) + contorno (1) + rosto (1) + rótulo (1) (+1 de sombra na alta); o Lança-Estrelas
+// (2, só enquanto atira) e a bolha (1, só sem corações) aparecem quando precisa.
+// Poses além do andar/pular: atirando (Lança-Estrelas na mão do lado da câmera), pendurado no Fio Vermelho ou numa
+// argola (braços para cima, corpo inclinado na direção da corda), segurando a corda (inclinado para trás, braços
+// à frente) e dentro da bolha (encolhido, flutuando). Rótulos com os nomes: Natan (P1) e Bruna (P2).
 // O visual cabe na caixa de colisão (0,6 × 1,1 m): pés em y = 0, topo do cabelo ≤ 1,1 m.
 import * as THREE from 'three';
 import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
@@ -11,13 +15,18 @@ import type { EstadoJogador } from '../core/types';
 import { FISICA } from '../core/sim';
 import type { Qualidade } from './cena';
 import { colocar, pintar } from './util';
+import { materialBolha } from './materiais';
+import { geoEstrela4, inclinacaoCorda } from './elementos';
 
 export type QualPersonagem = 'P1' | 'P2';
 
 export interface Personagem {
   raiz: THREE.Group;
-  /** Anima a partir do estado do jogador (e do parceiro, para virar para ele ao dar a mão). */
-  atualizar(j: EstadoJogador, outro: EstadoJogador, dt: number, eventos: readonly string[], i: number, relogio: number): void;
+  /**
+   * Anima a partir do estado do jogador (e do parceiro, para virar para ele ao dar a mão). `corda`: ponto para onde
+   * a corda puxa quem está pendurado (o parceiro que segura, ou a argola), para inclinar o corpo.
+   */
+  atualizar(j: EstadoJogador, outro: EstadoJogador, dt: number, eventos: readonly string[], i: number, relogio: number, corda?: { x: number; y: number } | null): void;
 }
 
 // ---------------------------------------------------------------- esqueleto
@@ -356,18 +365,35 @@ function materialContorno(cor: number) {
   return mat;
 }
 
+/** Nomes nos rótulos sobre a cabeça. */
+export const NOMES: Record<QualPersonagem, string> = { P1: 'Natan', P2: 'Bruna' };
+
 function rotulo(texto: string, cor: string) {
-  const c = document.createElement('canvas'); c.width = 128; c.height = 128;
+  const c = document.createElement('canvas'); c.width = 256; c.height = 128;
   const g = c.getContext('2d')!;
-  g.font = 'bold 64px system-ui'; g.textAlign = 'center';
+  g.font = 'bold 54px system-ui, sans-serif'; g.textAlign = 'center';
   g.lineWidth = 10; g.strokeStyle = 'rgba(30,14,50,0.85)'; g.lineJoin = 'round';
-  g.strokeText(texto, 64, 64);
-  g.fillStyle = cor; g.fillText(texto, 64, 64);
-  g.beginPath(); g.moveTo(44, 80); g.lineTo(84, 80); g.lineTo(64, 110); g.closePath(); g.stroke(); g.fill();
+  g.strokeText(texto, 128, 64);
+  g.fillStyle = cor; g.fillText(texto, 128, 64);
+  g.beginPath(); g.moveTo(110, 80); g.lineTo(146, 80); g.lineTo(128, 110); g.closePath(); g.stroke(); g.fill();
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
   const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false }));
-  sp.scale.set(0.45, 0.45, 1); sp.position.y = 1.45; sp.renderOrder = 10;
+  sp.scale.set(0.9, 0.45, 1); sp.position.y = 1.45; sp.renderOrder = 10;
   return sp;
+}
+
+/** Lança-Estrelas: varinha de latão com a estrela de 4 pontas na ponta (aponta para "baixo" no osso do braço). */
+function lancaEstrelas() {
+  const g = new THREE.Group();
+  const haste = new THREE.CylinderGeometry(0.012, 0.016, 0.2, 6); haste.translate(0, -0.1, 0);
+  const anel = new THREE.TorusGeometry(0.024, 0.008, 4, 8); anel.rotateX(Math.PI / 2); anel.translate(0, -0.19, 0);
+  const geo = mergeGeometries([pintar(haste, 0xb07a3a), pintar(anel, 0xffd060)])!;
+  g.add(new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, emissive: 0x2a1404 })));
+  const est = new THREE.Mesh(geoEstrela4(0.075, 0.022, 0.018), new THREE.MeshBasicMaterial({ color: 0xfff0a8, toneMapped: false }));
+  est.position.y = -0.255; est.rotation.y = Math.PI / 2;
+  g.add(est);
+  g.visible = false;
+  return { g, est };
 }
 
 // ---------------------------------------------------------------- animação
@@ -427,22 +453,38 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
   rosto.frustumCulled = false;
   ossos[O.cabeca].add(rosto);
 
-  raiz.add(rotulo(qual, qual === 'P1' ? '#ff5a4e' : '#5aa8ff'));
+  const placa = rotulo(NOMES[qual], qual === 'P1' ? '#ff5a4e' : '#5aa8ff');
+  raiz.add(placa);
+
+  // Lança-Estrelas (na mão do lado da câmera) e a bolha de quem ficou sem corações
+  const lanca = lancaEstrelas();
+  const bolha = new THREE.Mesh(new THREE.SphereGeometry(0.64, 24, 16), materialBolha(qual === 'P1' ? 0xffc8b0 : 0xd8c0ff));
+  bolha.position.y = 0.55; bolha.renderOrder = 8; bolha.visible = false;
+  raiz.add(bolha);
 
   // estado da animação
-  const st = { fase: 0, achatar: 0, pisca: 2 + Math.random() * 2, piscando: 0, maos: 0, recebe: 0, superpulo: 0, caiu: 0, yaw: 0, iniciou: false };
+  const st = { fase: 0, achatar: 0, pisca: 2 + Math.random() * 2, piscando: 0, maos: 0, recebe: 0, superpulo: 0, caiu: 0, yaw: 0, iniciou: false, tiro: 0, dano: 0, inclina: 0, bolha: 0 };
   const [quadril, tronco, cabeca, bracoE, bracoD, pernaE, pernaD, cauda] = ossos;
 
   return {
     raiz,
-    atualizar(j, outro, dt, eventos, i, relogio) {
+    atualizar(j, outro, dt, eventos, i, relogio, corda) {
       raiz.position.set(j.x, j.y, 0);
       for (const ev of eventos) {
         if (ev === `pouso:${i}`) st.achatar = 1;
         else if (ev === `maos:${i}`) st.maos = 0.6;
         else if (ev === `superpulo:${i}`) st.superpulo = 0.75;
-        else if (ev === `caiu:${i}`) st.caiu = 0.9;
+        else if (ev === `caiu:${i}` || ev === `renasce:${i}`) st.caiu = 0.9;
+        else if (ev === `tiro:${i}`) st.tiro = 0.4;
+        else if (ev === `dano:${i}`) st.dano = 0.5;
       }
+      // a recarga recém-cheia também indica tiro (se o evento se perdeu entre dois passos da simulação)
+      if (j.recarga > 0.28) st.tiro = Math.max(st.tiro, 0.3);
+      st.tiro = Math.max(0, st.tiro - dt);
+      st.dano = Math.max(0, st.dano - dt);
+      st.bolha = j.bolha ? Math.min(1, st.bolha + dt * 4) : Math.max(0, st.bolha - dt * 6);
+      const naCorda = !j.bolha && (j.pendurado || j.argola >= 0);
+      const segurando = !j.bolha && j.segurando && !naCorda;
       st.achatar = Math.max(0, st.achatar - dt * 5);
       st.maos = Math.max(0, st.maos - dt);
       st.superpulo = Math.max(0, st.superpulo - dt);
@@ -454,8 +496,12 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
 
       // para onde olha: de frente-três-quartos parado, mais de perfil correndo; vira para o parceiro ao dar a mão
       let lado: number = j.olhando;
-      if (st.maos > 0 && Math.abs(outro.x - j.x) > 0.05) lado = Math.sign(outro.x - j.x);
-      const alvoYaw = lado * (Math.PI / 2) * (st.maos > 0 ? 0.55 : 0.38 + 0.34 * Math.min(1, vel));
+      if ((st.maos > 0 || segurando) && Math.abs(outro.x - j.x) > 0.05) lado = Math.sign(outro.x - j.x);
+      let alvoYaw = lado * (Math.PI / 2) * (st.maos > 0 ? 0.55 : 0.38 + 0.34 * Math.min(1, vel));
+      if (st.tiro > 0) alvoYaw = lado * (Math.PI / 2) * 0.8; // de perfil, mirando
+      if (segurando) alvoYaw = lado * (Math.PI / 2) * 0.7;
+      if (naCorda) alvoYaw = lado * 0.35;
+      if (j.bolha) alvoYaw = Math.sin(relogio * 0.9 + i) * 0.6;
       if (!st.iniciou) { st.yaw = alvoYaw; st.iniciou = true; }
       st.yaw += (alvoYaw - st.yaw) * Math.min(1, dt * 10);
       raiz.rotation.y = st.yaw + (st.caiu > 0 ? (st.caiu / 0.9) ** 2 * Math.PI * 4 : 0);
@@ -493,6 +539,23 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       if (st.superpulo > 0) { // superpulo: estrela com os braços para o alto e mortal para a frente
         bEz = -2.6; bDz = 2.6; bEx = 0; bDx = 0; pE = -1.0; pD = -0.7; caudaX = 1.6;
       }
+      if (naCorda) { // pendurado: as duas mãos na corda acima da cabeça, pernas soltas balançando
+        const bal = Math.max(-0.5, Math.min(0.5, -j.vx * 0.08));
+        bEz = -2.75; bDz = 2.75; bEx = -0.2; bDx = -0.2;
+        pE = 0.25 + bal + Math.sin(relogio * 2.2 + i) * 0.12; pD = -0.15 + bal - Math.sin(relogio * 2.2 + i) * 0.12;
+        incl = -0.05; cabX = -0.22; caudaX = 0.5 + Math.abs(j.vx) * 0.1; quadY = 0;
+      } else if (segurando) { // segurando a corda: inclinado para trás, braços à frente, pés firmes
+        bEx = -1.3; bDx = -1.3; bEz = 0.22; bDz = -0.22; incl = -0.32; cabX = 0.12; pE = 0.55; pD = -0.35; quadY = -0.02;
+      }
+      if (j.bolha) { // encolhido dentro da bolha
+        pE = -1.3; pD = -1.15; bEx = -0.95; bDx = -0.95; bEz = 0.35; bDz = -0.35; incl = 0.35; cabX = 0.2; caudaX = 0.3; quadY = 0;
+      }
+      if (st.tiro > 0 && !j.bolha) { // atirando: braço do lado da câmera esticado para a frente com o Lança-Estrelas
+        const t = Math.min(1, (0.4 - st.tiro) * 14);
+        if (lado > 0) { bEx = amortecer(bEx, -1.5, t); bEz = amortecer(bEz, -0.05, t); }
+        else { bDx = amortecer(bDx, -1.5, t); bDz = amortecer(bDz, 0.05, t); }
+        incl += 0.04;
+      }
       pernaE.rotation.x = amortecer(pernaE.rotation.x, pE, k);
       pernaD.rotation.x = amortecer(pernaD.rotation.x, pD, k);
       bracoE.rotation.x = amortecer(bracoE.rotation.x, bEx, k);
@@ -508,10 +571,34 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
 
       // mortal do superpulo
       giro.rotation.x = st.superpulo > 0 ? (1 - st.superpulo / 0.75) * Math.PI * 2 : 0;
+      // pendurado: o corpo acompanha a direção da corda (pêndulo)
+      let alvoInc = 0;
+      if (naCorda && corda) alvoInc = inclinacaoCorda(j, corda);
+      st.inclina += (alvoInc - st.inclina) * Math.min(1, dt * 10);
+      giro.rotation.z = st.inclina;
+
+      // Lança-Estrelas na mão do lado da câmera
+      const mao = lado > 0 ? bracoE : bracoD;
+      if (st.tiro > 0 && !j.bolha) {
+        if (lanca.g.parent !== mao) { mao.add(lanca.g); lanca.g.position.set(lado > 0 ? -0.027 : 0.027, -0.19, 0.012); }
+        lanca.g.visible = true;
+        lanca.g.scale.setScalar(Math.min(1, (0.4 - st.tiro) * 12 + 0.3));
+        lanca.est.rotation.x = relogio * 9;
+      } else lanca.g.visible = false;
+
+      // bolha: flutua, balança devagar; piscar de invencível
+      bolha.visible = st.bolha > 0;
+      if (bolha.visible) {
+        const b = 0.4 + 0.6 * elastico(st.bolha);
+        bolha.scale.set(b * (1 + Math.sin(relogio * 4) * 0.03), b * (1 + Math.sin(relogio * 4 + 1.6) * 0.04), b);
+        raiz.position.y += Math.sin(relogio * 2.4 + i) * 0.06;
+      }
+      corpo.visible = !(j.invencivel > 0 && !j.bolha && Math.floor(relogio * 14) % 2 === 1);
+      if (st.dano > 0) raiz.position.x += Math.sin(relogio * 60) * 0.03 * st.dano;
       // achatar no pouso, esticar no ar, agachar quando pronto para o impulso; "pop" ao reaparecer depois de cair
       let estica = j.noChao ? 1 - st.achatar * 0.2 - st.recebe * 0.08 : 1 + Math.min(0.1, Math.abs(j.vy) * 0.008);
       if (st.maos > 0 && j.noChao) estica *= 1 - Math.sin((st.maos / 0.6) * Math.PI) * 0.06;
-      const pop = st.caiu > 0 ? 0.25 + 0.75 * elastico(1 - st.caiu / 0.9) : 1;
+      const pop = (st.caiu > 0 ? 0.25 + 0.75 * elastico(1 - st.caiu / 0.9) : 1) * (1 - st.bolha * 0.18);
       const lat = 1 / Math.sqrt(estica);
       corpo.scale.set(lat * pop, estica * pop, lat * pop);
 
@@ -525,7 +612,8 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       if (st.pisca <= 0) { st.piscando = 0.13; st.pisca = 1.8 + Math.random() * 3.2; }
       st.piscando = Math.max(0, st.piscando - dt);
       let quadro = 0;
-      if (st.caiu > 0 || (!j.noChao && j.vy < -13)) quadro = 3;
+      if (st.caiu > 0 || st.dano > 0 || (!j.noChao && j.vy < -13 && !naCorda)) quadro = 3;
+      else if (j.bolha) quadro = 1;
       else if (st.maos > 0 || st.superpulo > 0 || st.recebe > 0.5) quadro = 2;
       else if (st.piscando > 0) quadro = 1;
       texRosto.offset.x = quadro / QUADROS;

@@ -105,3 +105,35 @@ export function materialQuadros(mapa: THREE.Texture, aditivo: boolean): THREE.Sh
     toneMapped: false,
   });
 }
+
+/**
+ * Bolha de sabão: transparente no meio, borda clara e furta-cor (fresnel), com um reflexo de janelinha.
+ * Usada na bolha do jogador sem corações e nas plataformas-bolha.
+ */
+export function materialBolha(tom = 0xbfe8ff): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    uniforms: { uTempo: TEMPO, uTom: { value: new THREE.Color(tom) }, uAlfa: { value: 1 } },
+    vertexShader: /* glsl */ `
+      varying vec3 vN; varying vec3 vV; varying vec3 vP;
+      void main(){
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); vP = position;
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform float uTempo, uAlfa; uniform vec3 uTom; varying vec3 vN; varying vec3 vV; varying vec3 vP;
+      void main(){
+        float fr = pow(1.0 - abs(dot(vN, vV)), 2.2);
+        float h = fr * 3.0 + vP.y * 2.0 + uTempo * 0.6;
+        vec3 arco = 0.5 + 0.5 * cos(6.2832 * (vec3(0.0, 0.33, 0.67) + h));
+        vec3 c = mix(uTom, arco, 0.55) * (0.35 + fr * 1.3);
+        // reflexo: manchinha clara no alto à esquerda
+        float rf = smoothstep(0.82, 0.97, dot(vN, normalize(vec3(-0.45, 0.6, 0.65))));
+        c += vec3(1.0) * rf * 1.2;
+        float a = clamp(0.08 + fr * 0.85 + rf * 0.8, 0.0, 1.0) * uAlfa;
+        gl_FragColor = vec4(c, a);
+        #include <colorspace_fragment>
+      }`,
+    transparent: true, depthWrite: false, toneMapped: false,
+  });
+}
