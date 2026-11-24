@@ -80,8 +80,14 @@ Cada capítulo tem de 184 a 220 m, 33 a 46 estrelinhas e trechos secretos; os bo
 - Tudo é procedural (geometria, shaders e texturas em canvas): nenhum arquivo de terceiros e nenhum crédito pago gasto.
   Se um recurso CC0 for usado no futuro, registre-o em `docs/arte/LICENCAS.md`.
 - Cenário: `src/render/cenario.ts`, `ceu.ts`, `agua.ts`, `efeitos.ts`, `materiais.ts`. Personagens: `src/render/personagem.ts`.
-- Qualidades: **alta** = sombras reais + bloom; **média** e **baixa** = Lambert e sombra-bolha (a baixa sem névoa em
-  camadas). Resolução dinâmica abaixo de 40 fps (`?resfixa` desliga). `?debug=1` mostra chamadas e triângulos no HUD.
+- Qualidades: **alta** = sombras reais (só dos personagens e porteiras, 1024², câmera de sombra justa ao quadro) +
+  bloom seletivo, com MSAA 4× no alvo do compositor; **média** e **baixa** = sombra-bolha (a média com MSAA no canvas;
+  a baixa sem névoa em camadas). Resolução dinâmica abaixo de 40 fps (`?resfixa` desliga). `?debug=1` mostra fps,
+  ping, chamadas e triângulos no HUD (sem ele, nada de fps na tela). `?diag=1` abre o painel de diagnóstico para medir
+  no celular (fps, tempo de quadro, GPU real, memória, carga; toque para abrir e "Copiar relatório"). `?fps=30` limita a
+  30 quadros/s (o padrão é 60, também em telas de 90/120 Hz).
+- Carga da fase: a tela de carregamento é pintada antes de montar a fase; a montagem é feita em etapas e os shaders são
+  compilados com `compileAsync` atrás dela (nenhuma compilação no meio do jogo).
 - Orçamento (Redmi Note 11, média): ≤ 80 chamadas e ≤ 250 mil triângulos. Medido em 2026-11-23 percorrendo a fase
   (Pixel 7 em paisagem): baixa ≤ 23 chamadas / 65 mil tri; média ≤ 26 / 144 mil; alta ≤ 45 / 320 mil.
 - Comparação conceito × jogo: `test-out/final_comparacao.png`. Página de poses: `test/retrato/` (só no `npm run dev`).
@@ -112,6 +118,7 @@ node test/e2e/dupla.mjs   # dois "celulares" (Pixel 7 × iPhone 14) conectando p
 node test/e2e/capitulos.mjs treino baixa,media,alta   # os 7 capítulos de ponta a ponta, medindo o orçamento
 node test/e2e/capitulos.mjs dupla                     # os 7 capítulos em dupla, conferindo a sincronia
 node test/e2e/arena.mjs [treino|dupla]                 # Arena do Coração: controles, HUD, luta inteira, final e créditos
+node test/e2e/interface.mjs [--so treino|dupla]        # L1: botões com o polegar no joystick, confirmações, carga, ?diag, iPhone, segundo plano
 ```
 Os testes e2e usam o `dist/` (rode `npm run build` antes). Para jogar um capítulo inteiro no navegador, eles gravam as
 entradas dos bots cooperativos (`test/fases/bot.ts` e `test/fases/planos/`) na simulação em Node e as reproduzem no

@@ -77,7 +77,9 @@ export class Partida {
   /** anfitrião: ticks seguidos sem entrada nova do convidado */
   private semEntrada = 0;
   private sumido = false;
-  private ajustar = () => { this.cena?.redimensionar(innerWidth, innerHeight); this.indicador?.recalcular(); };
+  private ajustar = () => { this.cena?.redimensionar(innerWidth, innerHeight); this.indicador?.recalcular(); this.desenhouPausada = false; };
+  /** pausada: a cena já foi desenhada uma vez (não precisa redesenhar até continuar ou mudar o tamanho) */
+  private desenhouPausada = false;
 
   constructor(private o: OpcoesPartida) {
     this.cap = o.cap;
@@ -183,6 +185,7 @@ export class Partida {
 
   pausar(on: boolean) {
     this.pausada = on;
+    this.desenhouPausada = false;
     // ao pausar, solta os botões, mas o joystick que continua segurado segue valendo; ao continuar, nada é solto: o
     // polegar no joystick (ou que voltou a ele durante a pausa: a sobreposta deixa o toque passar fora do cartão) já
     // vale sem levantar e tocar de novo (R27). Pausada, a entrada local é ignorada de qualquer jeito.
@@ -221,6 +224,9 @@ export class Partida {
     if (!this.vivo || !this.cena || !this.controles) return;
     const cena = this.cena, controles = this.controles;
     if (!this.limitador.quadro(agora)) { requestAnimationFrame(this.quadro); return; }
+    // pausada e já desenhada: não redesenha a mesma cena a cada quadro (bateria; a tela da pausa responde na hora)
+    if (this.pausada && this.desenhouPausada) { this.anterior = agora; requestAnimationFrame(this.quadro); return; }
+    this.desenhouPausada = this.pausada;
     const o = this.o;
     const dt = Math.min(0.1, Math.max(0, (agora - this.anterior) / 1000));
     this.anterior = agora;

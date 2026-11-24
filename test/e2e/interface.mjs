@@ -119,9 +119,10 @@ if (so !== 'dupla') {
     await C.toque.baixar(5, Cn.x, Cn.y); await pausa(80); await C.toque.soltar(5);
     const continuou = await C.page.waitForSelector('#pausa', { state: 'hidden', timeout: 4000 }).then(() => true).catch(() => false);
     checar(continuou, 'R27: Continuar responde com o polegar segurando o joystick');
-    await C.toque.mover(1, J.x + 62, J.y); await ticks(C.page, 8);
+    // o mesmo dedo (sem levantar) vai para o outro lado (para a direita o Natan pode estar parado numa parede)
+    await C.toque.mover(1, J.x - 60, J.y); await ticks(C.page, 8);
     const vx = (await estado(C.page)).j[0].vx;
-    checar(Math.abs(vx) > 3, `R27: depois de continuar, o joystick segurado anda sem levantar o dedo (vx ${vx.toFixed(2)})`);
+    checar(vx < -3, `R27: depois de continuar, o joystick segurado anda sem levantar o dedo (vx ${vx.toFixed(2)})`);
   }
   await C.toque.soltar(1); await ticks(C.page, 4);
   // ⇄ com o dedo no joystick

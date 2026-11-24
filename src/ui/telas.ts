@@ -259,6 +259,9 @@ export function tocavel(el: HTMLElement, o: { aoBaixar?: boolean } = {}) {
     if (ev.clientX >= r.left - folga && ev.clientX <= r.right + folga && ev.clientY >= r.top - folga && ev.clientY <= r.bottom + folga) disparar();
   });
   el.addEventListener('pointercancel', (ev) => { if (ev.pointerId === dedo) dedo = -1; });
+  // toque: sem o 'click' de compatibilidade depois do nosso (ele cairia no que estiver embaixo do dedo na tela NOVA,
+  // por exemplo uma ilha do mapa depois de "Mapa da jornada")
+  el.addEventListener('touchend', (ev) => { if (performance.now() - ultimo < 700 && ev.cancelable) ev.preventDefault(); }, { passive: false });
   // fase de captura no próprio alvo: roda antes do onclick e dos outros ouvintes de 'click'
   el.addEventListener('click', (ev) => {
     if (deixar) return;
@@ -272,19 +275,23 @@ export function tocavel(el: HTMLElement, o: { aoBaixar?: boolean } = {}) {
  * por 3 s; só um 2º toque nesse tempo executa `fazer`. Devolve uma função que cancela o pedido (ao fechar a tela).
  */
 export function comConfirmacao(el: HTMLElement, pergunta: string | (() => string), fazer: () => void) {
-  let original = '', timer: ReturnType<typeof setTimeout> | null = null;
-  const cancelar = () => {
-    if (timer === null) return;
-    clearTimeout(timer); timer = null;
-    el.textContent = original; el.classList.remove('confirmar');
+  // o estado é a hora do 1º toque (não um timer): com quadros longos o timer atrasa, e o pedido valeria mais ou menos
+  let armadoEm = -1e9, original = '', timer: ReturnType<typeof setTimeout> | null = null;
+  const restaurar = () => {
+    if (timer !== null) clearTimeout(timer);
+    timer = null;
+    if (el.classList.contains('confirmar')) { el.textContent = original; el.classList.remove('confirmar'); }
   };
   el.addEventListener('click', () => {
-    if (timer !== null) { cancelar(); fazer(); return; }
+    const agora = performance.now();
+    if (agora - armadoEm < 3000) { armadoEm = -1e9; restaurar(); fazer(); return; }
+    restaurar();
+    armadoEm = agora;
     original = el.textContent ?? '';
     el.textContent = typeof pergunta === 'function' ? pergunta() : pergunta; el.classList.add('confirmar');
-    timer = setTimeout(cancelar, 3000);
+    timer = setTimeout(() => { armadoEm = -1e9; restaurar(); }, 3000);
   });
-  return cancelar;
+  return () => { armadoEm = -1e9; restaurar(); };
 }
 
 // ---------- tela de carregamento da fase (R33) ----------
