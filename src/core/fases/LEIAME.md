@@ -25,9 +25,22 @@ pedaço da estrela) e `novidade` (para o mapa). O comentário no topo de cada ar
   espaço dos dois jogadores juntos: de todo par de posições alcançável ainda se chega ao fim, inclusive depois de
   voltar a qualquer lanterna. Quem passa à frente tem sempre um jeito de voltar para ajudar (degraus "do lado de lá",
   placas coladas na porta do lado de lá, o barquinho do capítulo 4).
-- **Cooperativa**: sozinho (sem mãos dadas, fio ou placa do outro) nenhuma fase chega ao fim.
+- **Cooperativa**: sozinho (sem mãos dadas, fio ou placa do outro) nenhuma fase chega ao fim. A busca sobre a
+  simulação real (`test/fases/busca.ts`) confere que um jogador sozinho, saindo do início, não passa da primeira ajuda
+  (`SOLO_ATE` em `test/fases/alcance_teste.ts`).
+- **Toda estrelinha alcançável com folga** (`test/fases_alcance*.test.ts`): a mesma busca pega cada estrelinha, cada
+  lanterna, cada placa e o pedaço em pelo menos 15 combinações de lugar e gesto (não um salto exato). As que só saem
+  de mãos dadas ficam numa lista aprovada (cap. 1 #22–24, cap. 2 #18–20) e precisam de `marcas: [{ tipo: 'maos-dadas'
+  }]` a até 6 m. Nenhuma estrelinha fica acima da tela com a dupla em pé logo abaixo (câmera de 2026-11-24).
+- **Estrelinha de pulo especial (gelatina, argola)**: ponha sobre a trajetória simulada, não por `arco()`: o arco por
+  fórmula do cap. 5 passava 1–3 m longe do corpo (ver `docs/revisao/AUDITORIA_MOVIMENTO.md` §2.3).
 
-## Medidas úteis (da física do núcleo)
-Pulo normal ≈ 1,8 m de altura e ≈ 3,6 m de distância; mãos dadas ≈ 4,5 m (o de cima puxa até 3,6 m); gelatina 3,75 m
-(segurando, 5,4 m); porta 3,2 m fecha a 1,5/s (placa a até 1,5 m da porta deixa passar sozinho). No ar, o joystick
-leva a velocidade a 5,2 m/s: soltar o fio/argola mais rápido que isso não leva mais longe.
+## Medidas úteis (da física do núcleo, medidas tick a tick; `test/sim.test.ts` trava estes números)
+Pulo normal 1,75 m de altura (pés), 0,70 s no ar e 3,64 m de distância correndo; um toque rápido sobe 1,38 m (pulo
+mínimo); de mãos dadas 4,40 m e 5,63 m correndo (o de cima puxa até 3,6 m); gelatina 3,63 m acima do topo dela
+(segurando, 5,25 m); pisão 1,27 m (segurando, 2,7 m). Coyote time 0,10 s (o pulo sai até 6 ticks depois da quina,
+≈ 0,5 m a mais de vão) e jump buffer 0,12 s. No ar, contra a parede, o corpo sobe para um topo até 0,20 m acima dos
+pés: um degrau colado de até 1,90 m sobe com o pulo cheio. **Um vão que só o fio deve vencer precisa de ≥ 6,2 m com
+3 m de queda** (5,6 m passava sozinho com o coyote). Porta 3,2 m fecha a 1,5/s (placa a até 1,5 m da porta deixa
+passar sozinho). No ar, o joystick leva a velocidade a 5,2 m/s: soltar o fio/argola mais rápido que isso não leva
+mais longe.
