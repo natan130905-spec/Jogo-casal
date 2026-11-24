@@ -22,7 +22,17 @@ export interface OpcoesPartida {
   hud: Hud;
   /** anfitrião/treino: chamado uma vez, um pouco depois de os dois tocarem o pedaço da estrela */
   aoConcluir: (e: Estado) => void;
+  /** dupla: o outro aparelho parou de mandar (entradas, no anfitrião; instantâneos, no convidado) por
+   *  SUMIDO_MS com o jogo rodando (on), ou voltou (off). O fluxo pausa com aviso (R26). */
+  aoSumir?: (on: boolean) => void;
 }
+
+/** anfitrião: a última entrada do convidado vale no máximo este número de ticks sem entrada nova (250 ms); depois
+ *  vira neutra (a página dele congelou, o app foi para segundo plano sem avisar). Contado em ticks de jogo, e não em
+ *  ms reais, para não soltar o joystick à toa num aparelho lento que manda as entradas em lotes. */
+export const TICKS_ENTRADA_VALIDA = 15;
+/** sem nada do outro aparelho por este tempo, com o jogo rodando: pausa com "… saiu do jogo" */
+export const SUMIDO_MS = 2000;
 
 const DEPURAR = new URLSearchParams(location.search).has('debug');
 
@@ -54,6 +64,11 @@ export class Partida {
   /** gancho de teste (anfitrião/treino): posições [x0, y0, x1, y1] dos últimos 512 ticks, para conferir a sincronia */
   private historico = new Float32Array(512 * 4);
   private indicador: IndicadorParceiro;
+  /** dupla: quando chegou a última mensagem de jogo do outro aparelho ('in' no anfitrião, 'st' no convidado) */
+  private ultimaDoOutro = 0;
+  /** anfitrião: ticks seguidos sem entrada nova do convidado */
+  private semEntrada = 0;
+  private sumido = false;
   private ajustar = () => { this.cena.redimensionar(innerWidth, innerHeight); this.indicador?.recalcular(); };
 
   constructor(private o: OpcoesPartida) {
@@ -109,6 +124,7 @@ export class Partida {
 
   /** Mensagens de jogo vindas da rede ('in' no anfitrião, 'st' no convidado). */
   receber(m: Mensagem) {
+    if (m.t === 'in' || m.t === 'st') this.voltou();
     if (m.t === 'in') this.remota.receber(m);
     else if (m.t === 'st') {
       const s = restaurar(this.fase, m.s);
@@ -119,11 +135,22 @@ export class Partida {
     }
   }
 
+  /** chegou mensagem de jogo do outro aparelho */
+  private voltou() {
+    this.ultimaDoOutro = performance.now();
+    if (this.sumido) { this.sumido = false; this.o.aoSumir?.(false); }
+  }
+
+  /** Este aparelho vai para segundo plano: solta os controles (o fluxo pausa e avisa o outro). */
+  soltar() { this.controles.limpar(); }
+
   pausar(on: boolean) {
     this.pausada = on;
     // ao pausar, solta tudo; ao continuar, NÃO: o polegar que voltou ao joystick durante a pausa (a sobreposta deixa
     // o toque passar fora do cartão) já vale sem precisar levantar e tocar de novo
     if (on) { this.controles.limpar(); this.remota.limpar(); }
+    // o prazo de "sumiu" só conta com o jogo rodando e depois da primeira mensagem do outro
+    if (!on && this.ultimaDoOutro) this.ultimaDoOutro = performance.now();
     this.preditor?.limpar();
   }
 
@@ -134,6 +161,13 @@ export class Partida {
     this.controles.destruir();
     this.cena.renderer.dispose();
     this.cena.renderer.forceContextLoss();
+  }
+
+  /** anfitrião: a entrada do convidado para este tick; repetir a última só vale por TICKS_ENTRADA_VALIDA ticks */
+  private entradaDoConvidado(): Input {
+    if (this.remota.tamanho > 0) { this.semEntrada = 0; return this.remota.consumir(); }
+    if (++this.semEntrada === TICKS_ENTRADA_VALIDA) this.remota.limpar();
+    return this.remota.consumir();
   }
 
   private anterior = performance.now();
@@ -168,7 +202,7 @@ export class Partida {
       while (this.acumulado >= DT) {
         const ent: [Input, Input] = this.roteiro ? (this.roteiro[this.estado.tick] ?? [INPUT_NEUTRO, INPUT_NEUTRO]) : o.modo === 'treino'
           ? (this.euControlo === 0 ? [local, INPUT_NEUTRO] : [INPUT_NEUTRO, local])
-          : [local, this.remota.consumir()];
+          : [local, this.entradaDoConvidado()];
         passo(this.fase, this.estado, ent);
         { const k = (this.estado.tick % 512) * 4, [j0, j1] = this.estado.jogadores; this.historico.set([j0.x, j0.y, j1.x, j1.y], k); }
         eventos.push(...this.estado.eventos);
@@ -184,6 +218,12 @@ export class Partida {
     } else {
       this.acumulado = 0;
       mostrar.eventos = [];
+    }
+
+    // dupla: o outro aparelho sumiu (página congelada, app em segundo plano sem aviso, sinal ruim)?
+    if (o.modo !== 'treino' && !this.pausada && !this.sumido && this.ultimaDoOutro && agora - this.ultimaDoOutro > SUMIDO_MS) {
+      this.sumido = true;
+      o.aoSumir?.(true);
     }
 
     this.cena.desenhar(mostrar, this.pausada ? 0 : dt);

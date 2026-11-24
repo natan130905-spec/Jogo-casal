@@ -25,6 +25,19 @@ class Som {
     if (this.musica && this.ligado && this.musica.paused) void this.musica.play().catch(() => {});
   }
 
+  /** App em segundo plano (R39): para a música e suspende o AudioContext (não gasta bateria nem toca escondido). */
+  suspender() {
+    this.musica?.pause();
+    void this.ctx?.suspend().catch(() => {});
+  }
+
+  /** Volta do segundo plano: retoma o que estava ligado. */
+  retomar() {
+    if (!this.ligado) return;
+    void this.ctx?.resume().catch(() => {});
+    if (this.musica?.paused) void this.musica.play().catch(() => {});
+  }
+
   alternar() {
     this.ligado = !this.ligado;
     try { localStorage.setItem(CHAVE, this.ligado ? '1' : '0'); } catch { /* sem armazenamento */ }

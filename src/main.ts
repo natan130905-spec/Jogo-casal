@@ -69,7 +69,7 @@ function aplicar(t: Tela) {
   atual = t;
   if (t.t !== 'fase' && partida) { partida.destruir(); partida = null; }
   if (t.t !== 'arena' && arena) { arena.destruir(); arena = null; }
-  if (!emJogo(t)) { pausado = false; mostrarPausa(false); }
+  if (!emJogo(t)) { pausado = false; anfitriaoAusente = false; mostrarPausa(false); }
   switch (t.t) {
     case 'menu': mostrarTela('menu'); break;
     case 'cena': {
@@ -99,6 +99,7 @@ function aplicar(t: Tela) {
           modo, con, cap: t.cap, hud,
           qualidade: ($<HTMLSelectElement>('#qualidade').value as Qualidade) || qualidadePadrao(),
           aoConcluir: (e) => concluirCapitulo(t.cap, e),
+          aoSumir: (on) => outroSumiu(on),
         });
         pausado = false;
       } else mostrarTela('jogo');
@@ -224,12 +225,47 @@ function guardar() {
   if (modo === 'anfitriao') { salvarProgresso(progresso); con?.enviar({ t: 'progresso', p: progresso }); }
 }
 
+// ---------- segundo plano e o outro aparelho sumido (R26, R39) ----------
+const nomeDoOutro = () => (modo === 'anfitriao' ? 'Bruna' : 'Natan');
+/** convidado: o anfitrião sumiu ou saiu do app (pausa só neste aparelho, até ele voltar) */
+let anfitriaoAusente = false;
+function outroSumiu(on: boolean) {
+  if (!emJogo(atual)) return;
+  const quem = nomeDoOutro(), ele = quem === 'Bruna' ? 'ela' : 'ele';
+  if (modo === 'anfitriao') {
+    if (on) definirPausa(true, `${quem} saiu do jogo. Esperando ${ele} voltar…`);
+    else if (pausado) { quemPausou = `${quem} voltou! Toquem em Continuar.`; mostrarPausa(true, quemPausou); }
+  } else if (modo === 'convidado') {
+    anfitriaoAusente = on;
+    jogo()?.pausar(on || pausado);
+    mostrarPausa(on || pausado, on ? `${quem} saiu do jogo. Esperando ${ele} voltar…` : 'Pausado.');
+  }
+}
+
+function aoEsconder() {
+  som.suspender();
+  if (!emJogo(atual)) { if (con && modo !== 'treino') con.enviar({ t: 'ausente', on: true }); return; }
+  partida?.soltar();
+  if (modo === 'treino') { if (!pausado) definirPausa(true, ''); return; }
+  if (modo === 'anfitriao' && !pausado) definirPausa(true, 'Pausado: você saiu do jogo.');
+  // o outro solta a entrada deste aparelho e pausa com aviso (no anfitrião, a pausa acima já foi ao convidado)
+  con?.enviar({ t: 'ausente', on: true });
+}
+function aoVoltar() {
+  som.retomar();
+  if (con && modo !== 'treino') con.enviar({ t: 'ausente', on: false });
+}
+document.addEventListener('visibilitychange', () => (document.hidden ? aoEsconder() : aoVoltar()));
+addEventListener('pagehide', aoEsconder);
+addEventListener('pageshow', (e) => { if ((e as PageTransitionEvent).persisted) aoVoltar(); });
+
 // ---------- rede ----------
 function receber(m: Mensagem) {
   switch (m.t) {
     case 'in': case 'st': partida?.receber(m); break;
     case 'ina': case 'sta': arena?.receber(m); break;
     case 'oi': if (m.versao !== VERSAO) console.warn(`Versões diferentes: ${m.versao} × ${VERSAO}`); break;
+    case 'ausente': outroSumiu(!!m.on); break;
     case 'pedido':
       if (modo === 'anfitriao' && ['avancar', 'pular', 'pausa', 'continuar', 'mapa'].includes(m.acao)) executar(m.acao, 'Pausado por Bruna (quem entrou na sala).');
       break;
@@ -239,7 +275,7 @@ function receber(m: Mensagem) {
       else if (m.t === 'mapa') { progresso = limparProgresso(m.p); aplicar({ t: 'mapa', sel: capValido(m.sel) }); }
       else if (m.t === 'fase') aplicar({ t: 'fase', cap: capValido(m.cap) });
       else if (m.t === 'arena') aplicar({ t: 'arena' });
-      else if (m.t === 'pausa') { pausado = !!m.on; jogo()?.pausar(pausado); mostrarPausa(pausado && emJogo(atual), 'Pausado.'); }
+      else if (m.t === 'pausa') { pausado = !!m.on; jogo()?.pausar(pausado || anfitriaoAusente); mostrarPausa((pausado || anfitriaoAusente) && emJogo(atual), 'Pausado.'); }
       else if (m.t === 'cena') {
         const cap = capValido(m.cap), q = Math.max(0, Math.round(Number(m.quadro) || 0));
         if (m.cena === 'concluido') aplicar({ t: 'concluido', cap, est: Math.max(0, Number(m.est) || 0), total: Math.max(0, Number(m.total) || 0) });

@@ -6,6 +6,7 @@
 // Mensagens de fluxo (anfitrião → convidado): 'progresso', 'mapa', 'cena', 'fase', 'arena', 'pausa'.
 // Jogo 2.5D: 'in' (convidado → anfitrião) e 'st'; Arena do Coração (3D): 'ina' e 'sta', no mesmo esquema.
 // Pedidos (convidado → anfitrião): 'pedido' (avançar quadrinho, pular, pausar, continuar, voltar ao mapa).
+// Segundo plano (nos dois sentidos): 'ausente' (saiu do app / voltou).
 // A rede mede o ping sozinha e declara a conexão caída se nada chegar por PRAZO_SILENCIO ms.
 import Peer, { type DataConnection, type PeerOptions } from 'peerjs';
 import type { Input } from '../core/types';
@@ -53,6 +54,8 @@ export type Mensagem =
   /** arena: instantâneo compacto (anfitrião → convidado, a cada 3 ticks, com os eventos acumulados) */
   | { t: 'sta'; s: InstantaneoArena }
   | { t: 'pausa'; on: boolean }
+  /** o aparelho foi para segundo plano (on) ou voltou: o outro solta a entrada dele e pausa com aviso (R26) */
+  | { t: 'ausente'; on: boolean }
   | { t: 'pedido'; acao: Pedido };
 
 export type EstadoConexao = 'aguardando' | 'conectado' | 'caiu';
