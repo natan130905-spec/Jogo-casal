@@ -1,4 +1,5 @@
-import { andar, darImpulso, esperar, fazer, ir, lutarComORei, saltarJuntos, segurarFio, superpulo, type Etapa } from '../bot';
+import { darImpulso, esperar, fazer, ir, lutarComORei, segurarFio, superpulo } from '../../../src/core/companheiro/manobras';
+import { andar, saltarJuntos, type Etapa } from '../bot';
 import { abismoDoFio } from './cap2';
 import { carona } from './comum';
 

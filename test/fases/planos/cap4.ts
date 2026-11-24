@@ -1,4 +1,5 @@
-import { andar, atravessarArgola, esperar, ir, saltarDe, saltarJuntos, subirEm, topoEsp, type Etapa } from '../bot';
+import { atravessarArgola, esperar, ir, saltarDe, subirEm, topoEsp } from '../../../src/core/companheiro/manobras';
+import { andar, saltarJuntos, type Etapa } from '../bot';
 import { abismoDoFio } from './cap2';
 
 const aberta = (id: string) => (c: { e: { portas: Record<string, number> } }) => (c.e.portas[id] ?? 0) > 0.95;

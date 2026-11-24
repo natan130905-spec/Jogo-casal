@@ -158,6 +158,13 @@ describe('fases dos capítulos: alcançabilidade por saltos', () => {
 });
 
 // ---------- vitória com bots ----------
+/** Tick em que cada plano conclui, travado (L2a: as manobras saíram de test/fases/bot.ts para
+ *  src/core/companheiro/manobras.ts sem mudar nada; medido com tools/revisao/l2a/planos_ticks.ts). Mudou a física,
+ *  uma fase ou uma manobra de propósito? Rode a ferramenta e atualize aqui, citando o motivo no commit. */
+const TICK_PLANO: Record<string, number> = {
+  'cap1-brinquedos': 4008, 'cap2-floresta': 4201, 'cap3-relogio': 7356, 'cap4-oceano': 5589,
+  'cap5-doces': 4394, 'cap6-espelhos': 3227, 'cap7-cosmos': 5343,
+};
 describe('fases dos capítulos: dois bots cooperativos vencem', () => {
   for (const f of CAPITULOS) {
     it(`${f.capitulo}. ${f.nome}`, () => {
@@ -185,6 +192,7 @@ describe('fases dos capítulos: dois bots cooperativos vencem', () => {
       expect(r.erro).toBeUndefined();
       expect(r.concluida).toBe(true);
       expect(r.voltas, 'os dois viraram bolha').toBe(0);
+      expect(r.e.tick, 'tick de conclusão (TICK_PLANO)').toBe(TICK_PLANO[f.id]);
       expect(presoDentro, 'ticks com alguém dentro de parede').toBe(0);
       expect(teleporte, `T15: maior salto além de |vx·dt| (${ondeTeleporte})`).toBeLessThanOrEqual(T15_EXTRA);
       // os bots não erram e não exploram: um casal de verdade leva de 2 a 3 vezes mais (2–4 minutos)

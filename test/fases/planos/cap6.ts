@@ -1,4 +1,5 @@
-import { andar, esperar, ir, saltar, subirComMaos, type Etapa } from '../bot';
+import { esperar, ir, saltar } from '../../../src/core/companheiro/manobras';
+import { andar, subirComMaos, type Etapa } from '../bot';
 import { carona } from './comum';
 
 const aberta = (id: string) => (c: { e: { portas: Record<string, number> } }) => (c.e.portas[id] ?? 0) > 0.95;

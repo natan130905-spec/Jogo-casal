@@ -1,4 +1,5 @@
-import { andar, balancar, darImpulso, descerDaBeira, esperar, ir, puxar, saltar, saltarJuntos, segurarFio, subirComMaos, superpulo, type Etapa } from '../bot';
+import { balancar, darImpulso, descerDaBeira, esperar, ir, puxar, saltar, segurarFio, superpulo } from '../../../src/core/companheiro/manobras';
+import { andar, saltarJuntos, subirComMaos, type Etapa } from '../bot';
 
 /** Abismo do fio: Natan segura na ponta do galho (`ponta`), Bruna balança e solta até o outro lado (`la`, chão
  *  `yLa`); depois Bruna segura na beira de lá e Natan pula: o fio o pega e ele sobe pela corda. */

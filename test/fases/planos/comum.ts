@@ -1,4 +1,5 @@
-import { carona as caronaPasso, type Ctx, type Etapa } from '../bot';
+import { carona as caronaPasso, type Ctx } from '../../../src/core/companheiro/manobras';
+import { type Etapa } from '../bot';
 
 /** Os dois pegam a plataforma k: esperam em `espera`, sobem quando o canto dela está em `xEmbarque`, descem quando
  *  está em `xDesce` e andam até `saida`. */
