@@ -5,8 +5,8 @@
 //
 // Tipos de ligação:
 //   solo   pulo normal, cair da beira, andar numa plataforma especial, argola
-//   super  superpulo de mãos dadas: vale se o parceiro está no mesmo lugar (impulso) ou em cima, até 3,5 m acima
-//          (puxa pela mão)
+//   super  superpulo de mãos dadas: vale se o parceiro está no mesmo lugar (impulso) ou lá em cima, até 3,5 m
+//          acima (puxa pela mão)
 //   fio    dentro de um trecho do Fio Vermelho: vale se o parceiro está na ponta de lá (segura e o outro sobe pela
 //          corda) ou na de cá (segura e o outro balança e solta)
 //   porta  atravessar a porta: vale se o parceiro está numa placa dela (porta dupla: um em cada placa)
@@ -206,14 +206,17 @@ export function montarGrafo(f: Fase, o: { passoAmostra?: number } = {}): Grafo {
     const saidas: [number, TipoLigacao][] = n.tipo === 'quica' ? [[15, 'solo'], [18, 'solo']]
       : n.tipo === 'fixo' ? [[FISICA.pulo, 'solo'], [0, 'solo'], [FISICA.impulsoPulo, 'super']] : [[FISICA.pulo, 'solo'], [0, 'solo']];
     for (const x0 of xs) {
-      const alvos: number[] = [];
+      // pontos de mira (arredondados a 0,5 m, sem repetir)
+      const mira = new Set<number>();
+      const mirar = (x: number) => { if (Math.abs(x - x0) <= 9.5) mira.add(Math.round(x * 2) / 2); };
       for (const m of nos) {
         if (m.id === n.id || m.tipo === 'argola') continue;
         if (m.x1 < x0 - 9 || m.x0 > x0 + 9) continue;
         if (m.y > n.y + 6 || m.y < n.y - 14) continue;
-        alvos.push(Math.max(m.x0 + 0.35, Math.min(m.x1 - 0.35, x0)), m.x0 + 0.35, m.x1 - 0.35, (m.x0 + m.x1) / 2);
+        mirar(Math.max(m.x0 + 0.35, Math.min(m.x1 - 0.35, x0))); mirar(m.x0 + 0.35); mirar(m.x1 - 0.35); mirar((m.x0 + m.x1) / 2);
       }
-      for (const g of argolas) if (Math.abs(g.x - x0) < 6) alvos.push(g.x);
+      for (const g of argolas) mirar(g.x);
+      const alvos = [...mira];
       for (const [vy, tipo] of saidas) {
         const daBeira = x0 <= n.x0 + 0.05 || x0 >= n.x1 - 0.05;
         if (vy === 0 && !daBeira) continue;
@@ -237,8 +240,6 @@ export function montarGrafo(f: Fase, o: { passoAmostra?: number } = {}): Grafo {
       }
     }
   }
-  // superpulo acima de 3,5 m não deixa o de cima puxar o outro: não conta
-  for (const n of nos) lig[n.id] = lig[n.id].filter((l) => l.tipo !== 'super' || nos[l.para].tipo === 'argola' || nos[l.para].y - n.y <= 3.5);
   // o que já se alcança sozinho não precisa de ajuda
   for (const n of nos) {
     const solo = new Set(lig[n.id].filter((l) => l.tipo === 'solo').map((l) => l.para));
@@ -276,7 +277,8 @@ export function montarGrafo(f: Fase, o: { passoAmostra?: number } = {}): Grafo {
 export function podeUsar(g: Grafo, de: number, l: Ligacao, parceiro: number): boolean {
   switch (l.tipo) {
     case 'solo': return true;
-    case 'super': return parceiro === de || parceiro === l.para;
+    // impulso (o parceiro no mesmo lugar) ou puxar de cima (o parceiro lá em cima, até 3,5 m acima)
+    case 'super': return parceiro === de || (parceiro === l.para && g.nos[l.para].y - g.nos[de].y <= 3.5);
     case 'fio': return parceiro === de || parceiro === l.para;
     case 'porta': {
       const p = g.fase.portas.find((d) => d.id === l.porta)!;

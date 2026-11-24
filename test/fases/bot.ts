@@ -301,3 +301,49 @@ export function balancar(dir: 1 | -1, alvo: number, yAlvo: number, o: { folga?: 
     },
   };
 }
+
+/** Ângulo (graus, 0–360) do ponteiro k agora. */
+export function anguloGir(c: Ctx, k: number): number {
+  const d = c.f.especiais![k];
+  if (d.tipo !== 'giratoria') return 0;
+  const a = (d.inicio ?? 0) + (d.sentido ?? -1) * (360 * (c.e.tick / 60)) / d.periodo;
+  return ((a % 360) + 360) % 360;
+}
+const naJanela = (a: number, a0: number, a1: number) => (a0 <= a1 ? a >= a0 && a <= a1 : a >= a0 || a <= a1);
+/** Espera o ponteiro k entrar na janela de ângulos [a0, a1] e pula nele (mirando o meio + dx). */
+export function subirNaGiratoria(k: number, a0: number, a1: number, o: { dx?: number } = {}): Passo {
+  return {
+    nome: `subir no ponteiro ${k}`,
+    fn: (c) => {
+      const { eu, m } = c;
+      if (c.e.eventos.includes(`caiu:${c.i}`)) { m.vai = 0; m.t2 = 0; }
+      if (eu.noChao && eu.plataforma === k) return null;
+      if (!m.vai) {
+        if (eu.noChao && naJanela(anguloGir(c, k), a0, a1)) { m.vai = 1; m.t2 = 0; }
+        else return { x: 0 };
+      }
+      m.t2++;
+      if (eu.noChao && m.t2 > 8) { m.vai = 0; return { x: 0 }; } // errou: espera a próxima volta
+      const s = c.e.especiais[k], d = c.f.especiais![k] as { w: number };
+      return { x: guiar(eu, s.x + d.w / 2 + (o.dx ?? 0), 5), jump: m.t2 > 1 };
+    },
+  };
+}
+/** Fica no ponteiro k (no meio + dx) até o ângulo entrar em [a0, a1] e pula em direção a `alvo`. */
+export function saltarDaGiratoria(k: number, a0: number, a1: number, alvo: number, o: { dx?: number } = {}): Passo {
+  const s = saltar(alvo);
+  return {
+    nome: `saltar do ponteiro ${k} para ${alvo}`,
+    fn: (c) => {
+      const { eu, m } = c;
+      if (!m.pula) {
+        if (naJanela(anguloGir(c, k), a0, a1) && eu.noChao) { m.pula = 1; m.t0 = c.t; }
+        else {
+          const p = c.e.especiais[k], d = c.f.especiais![k] as { w: number };
+          return { x: eu.plataforma === k ? guiar(eu, p.x + d.w / 2 + (o.dx ?? 0), 2) * 0.6 : 0 };
+        }
+      }
+      return s.fn({ ...c, t: c.t - m.t0 });
+    },
+  };
+}
