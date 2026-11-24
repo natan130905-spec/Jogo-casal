@@ -3,12 +3,14 @@
 // Funciona entre redes diferentes: sinalização pelo servidor público do PeerJS e, quando a conexão direta não
 // passa (NAT), retransmissão pelos servidores TURN públicos que o PeerJS já configura.
 //
-// Mensagens de fluxo (anfitrião → convidado): 'progresso', 'mapa', 'cena', 'fase', 'pausa'.
+// Mensagens de fluxo (anfitrião → convidado): 'progresso', 'mapa', 'cena', 'fase', 'arena', 'pausa'.
+// Jogo 2.5D: 'in' (convidado → anfitrião) e 'st'; Arena do Coração (3D): 'ina' e 'sta', no mesmo esquema.
 // Pedidos (convidado → anfitrião): 'pedido' (avançar quadrinho, pular, pausar, continuar, voltar ao mapa).
 // A rede mede o ping sozinha e declara a conexão caída se nada chegar por PRAZO_SILENCIO ms.
 import Peer, { type DataConnection, type PeerOptions } from 'peerjs';
 import type { Input } from '../core/types';
 import type { Instantaneo } from '../core/instantaneo';
+import type { EntradaArena, InstantaneoArena } from '../core/arena';
 import type { Progresso } from '../ui/progresso';
 
 const ALFABETO = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -23,7 +25,8 @@ export function gerarCodigo(n = 5): string {
 }
 export const normalizarCodigo = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5);
 
-export type NomeCena = 'prologo' | 'lembranca' | 'final' | 'concluido';
+/** 'fuga': o Rei arranca o pedaço da estrela e foge para a Arena (cap. 7); 'creditos': depois do final */
+export type NomeCena = 'prologo' | 'lembranca' | 'final' | 'concluido' | 'fuga' | 'creditos';
 export type Pedido = 'avancar' | 'pular' | 'pausa' | 'continuar' | 'mapa';
 
 export type Mensagem =
@@ -41,6 +44,12 @@ export type Mensagem =
   | { t: 'cena'; cena: NomeCena; quadro: number; cap?: number; est?: number; total?: number }
   /** começa (ou retoma) a fase do capítulo */
   | { t: 'fase'; cap: number }
+  /** começa (ou retoma) a Arena do Coração, a fase 3D do fim do capítulo 7 */
+  | { t: 'arena' }
+  /** arena: entrada do convidado (o primeiro 'ina' também avisa que a arena dele terminou de carregar) */
+  | { t: 'ina'; i: EntradaArena; seq: number }
+  /** arena: instantâneo compacto (anfitrião → convidado, a cada 3 ticks, com os eventos acumulados) */
+  | { t: 'sta'; s: InstantaneoArena }
   | { t: 'pausa'; on: boolean }
   | { t: 'pedido'; acao: Pedido };
 
