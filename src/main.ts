@@ -18,7 +18,7 @@ import { PartidaArena } from './ui/partidaArena';
 import {
   arenaPendente, campanhaAtiva, carregarSalvo, carregarTreino, comCampanha, comMarca, concluido, estrelinhasTotais, fundir,
   gravarSalvo, gravarTreino, liberado, limparCampanha, pedacos, pedirPersistencia, proximoCapitulo, registrarConclusao,
-  registrarRetomada, resumir, temProgresso, TOTAL_CAPITULOS, vista, type Campanha, type ResumoLanterna,
+  registrarRetomada, resumir, temJornada, temProgresso, TOTAL_CAPITULOS, vista, type Campanha, type ResumoLanterna,
 } from './ui/salvo';
 import { TREINO_QUINTAL } from './core/fases/treino_quintal';
 import { deveAvisarTelaDeInicio, infoDoNavegador } from './ui/plataforma';
@@ -54,6 +54,9 @@ let salvo = carregarSalvo().salvo;
 /** a campanha em jogo (o slot ativo; no convidado, a do anfitrião assim que chega) */
 let campanha: Campanha = campanhaAtiva(salvo);
 /** a campanha muda e grava neste aparelho: solo e anfitrião (o convidado grava o que chega; o treino nada) */
+/** convidado: a campanha deste aparelho antes de entrar na sala (é a que ele oferece ao anfitrião, mesmo que a do
+ *  anfitrião chegue antes do aviso de conectado) */
+let minhaCampanha: Campanha = campanha;
 const gravaCampanha = () => modo === 'solo' || modo === 'anfitriao';
 let atual: Tela = { t: 'menu' };
 let partida: Partida | null = null;
@@ -276,7 +279,7 @@ function receberCampanha(x: unknown) {
       const nova = fundir(campanha, c);
       if (JSON.stringify(nova) === JSON.stringify(campanha)) return;
       campanha = nova;
-    } else if (!temProgresso(campanha) && temProgresso(c)) {
+    } else if (!temJornada(campanha) && temJornada(c)) {
       // quem criou a sala ainda não tinha jornada: segue a do convidado (R23: tanto faz quem cria a sala)
       salvo = { ...salvo, slots: salvo.slots.filter((s) => s.id !== campanha.id) };
       campanha = c;
@@ -377,7 +380,7 @@ function ligarConexao(c: Conexao) {
     } else if (st === 'conectado') {
       mostrarCaiu(false);
       // o convidado oferece a cópia dele da campanha (o anfitrião funde, ou adota se a dele está vazia)
-      if (modo === 'convidado') c.enviar({ t: 'salvo', c: campanha });
+      if (modo === 'convidado') c.enviar({ t: 'salvo', c: minhaCampanha });
       if (modo === 'anfitriao') {
         if (!sessaoIniciada) { sessaoIniciada = true; c.enviar({ t: 'salvo', c: campanha }); iniciarSessao(); return; }
         // voltou: manda de novo a campanha, a tela atual e a pausa
@@ -455,7 +458,10 @@ $('#bt-entrar').onclick = async () => {
   $('#menu-erro').textContent = 'Conectando…';
   try {
     modo = 'convidado';
+    minhaCampanha = campanha;
     ligarConexao(await entrarSala(codigo, VERSAO));
+    // o 'conectado' da primeira vez dispara dentro de entrarSala, antes de ligarConexao: a oferta vai daqui
+    con?.enviar({ t: 'salvo', c: minhaCampanha });
     $('#menu-erro').textContent = 'Conectado! Esperando quem criou a sala…';
   } catch (e) { modo = 'treino'; $('#menu-erro').textContent = (e as Error).message; }
 };

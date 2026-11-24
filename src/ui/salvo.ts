@@ -253,6 +253,9 @@ export const estrelinhasTotais = (c: Campanha) => Object.values(c.capitulos).red
 export const arenaPendente = (c: Campanha) => !!c.capitulos[TOTAL_CAPITULOS]?.fuga && !concluido(c, TOTAL_CAPITULOS);
 /** algo para continuar (o menu mostra "Continuar") */
 export const temProgresso = (c: Campanha) => c.prologoVisto || !!c.retomada || Object.keys(c.capitulos).length > 0;
+/** jogou alguma fase (capítulo registrado ou retomada); o prólogo sozinho não conta: quem acabou de pular o prólogo
+ *  ao criar a sala ainda adota a jornada do convidado */
+export const temJornada = (c: Campanha) => !!c.retomada || Object.keys(c.capitulos).length > 0;
 
 /** A vista no formato v1 (mapa, placar, __edmFluxo.progresso() dos e2e). */
 export function vista(c: Campanha): Progresso {
