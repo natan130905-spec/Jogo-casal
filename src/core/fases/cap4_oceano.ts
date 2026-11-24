@@ -84,4 +84,19 @@ export const CAP4_OCEANO: FaseCapitulo = {
     // 3: barquinho entre o cais e a ilha (o caminho lento, e a volta para quem foi na frente)
     { tipo: 'movel', w: 2.4, h: 0.4, trajeto: [{ x: 162.1, y: 3.6 }, { x: 166.5, y: 1.6 }], vel: 1 },
   ],
+  // pontos de cooperação: anotações do mapa de apoio (npm run apoio; conferidas pelo T14 em test/apoio.test.ts)
+  apoio: { pontos: [
+    { id: 'cap4:jangada-impulso', tipo: 'impulso', x: 88.8,
+      dica: 'De mãos dadas, pula do píer até a jangada.',
+      dicaInverso: 'Me dá a mão que eu pulo até a jangada.' },
+    { id: 'cap4:jangada-puxar', tipo: 'puxar', x: 88.8,
+      dica: 'Da jangada eu te puxo pela mão.',
+      dicaInverso: 'Da jangada, me puxa pela mão.' },
+    { id: 'cap4:comporta', tipo: 'placa', x: 139.2, placa: 'placa-mastro',
+      dica: 'Eu subo no mastro e piso na placa: a comporta abre.',
+      dicaInverso: 'Sobe no mastro e pisa na placa para eu passar.' },
+    { id: 'cap4:comporta-volta', tipo: 'placa', x: 139.2, placa: 'placa-cais',
+      dica: 'Passei! Eu seguro a comporta aberta deste lado.',
+      dicaInverso: 'Segura a placa do cais que eu passo.' },
+  ] },
 };

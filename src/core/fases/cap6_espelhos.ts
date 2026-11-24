@@ -89,4 +89,25 @@ export const CAP6_ESPELHOS: FaseCapitulo = {
     // 0: plataforma móvel do salão final
     { tipo: 'movel', w: 2.4, h: 0.4, trajeto: [{ x: 120.2, y: -0.4 }, { x: 129.4, y: -0.4 }], vel: 1.6 },
   ],
+  // pontos de cooperação: anotações do mapa de apoio (npm run apoio; conferidas pelo T14 em test/apoio.test.ts)
+  apoio: { pontos: [
+    { id: 'cap6:porta-baixo-1', tipo: 'placa', x: 41.2,
+      dica: 'Eu piso na placa aqui em cima e a sua porta abre.',
+      dicaInverso: 'Pisa na placa daí de cima para eu passar.' },
+    { id: 'cap6:porta-cima-1', tipo: 'placa', x: 53.2,
+      dica: 'Agora eu piso na placa aqui embaixo e a sua porta abre.',
+      dicaInverso: 'Pisa na placa daí de baixo para eu passar.' },
+    { id: 'cap6:porta-cima-2', tipo: 'placa', x: 77.2,
+      dica: 'Eu seguro a placa aqui embaixo para você.',
+      dicaInverso: 'Segura a placa daí de baixo para eu passar.' },
+    { id: 'cap6:porta-baixo-2', tipo: 'placa', x: 87.2,
+      dica: 'Eu seguro a placa aqui em cima para você.',
+      dicaInverso: 'Segura a placa daí de cima para eu passar.' },
+    { id: 'cap6:muro-impulso', tipo: 'impulso', x: 148.2,
+      dica: 'De mãos dadas comigo você sobe o muro.',
+      dicaInverso: 'Me dá a mão que eu subo o muro.' },
+    { id: 'cap6:muro-puxar', tipo: 'puxar', x: 148.2,
+      dica: 'Lá de cima eu te puxo.',
+      dicaInverso: 'Sobe e me puxa pela mão.' },
+  ] },
 };

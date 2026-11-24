@@ -1,5 +1,6 @@
 // Peças comuns das fases dos capítulos. Medidas em metros, y para cima; o chão "normal" tem o topo em y = 0.
 import type { Fase, Retangulo } from '../types';
+import type { ApoioFase } from '../companheiro/apoio';
 
 /** Chave do tema visual (o artista monta o cenário por ela). */
 export type TemaVisual = 'brinquedos' | 'floresta' | 'relogio' | 'oceano' | 'doces' | 'espelhos' | 'cosmos';
@@ -13,6 +14,10 @@ export interface FaseCapitulo extends Fase {
   frase: string;
   /** novidade de jogo do capítulo (para o mapa e a tela de carregamento) */
   novidade: string;
+  /** anotações à mão dos pontos de cooperação (ids, dicas, ajuste do lugar do companheiro). O resto do mapa de
+   *  apoio é gerado fora do celular (`npm run apoio` → apoio/capN.json); o T14 confere que cada ponto gerado tem
+   *  anotação e que cada anotação casa com um ponto. Ver src/core/companheiro/apoio.ts. */
+  apoio?: ApoioFase;
 }
 
 /** Bloco com o topo em `topo`, de x0 a x1, com `h` de espessura (padrão 1). */

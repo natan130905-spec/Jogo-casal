@@ -87,4 +87,28 @@ export const CAP1_BRINQUEDOS: FaseCapitulo = {
     // trenzinho de brinquedo: vai e volta sobre o vão de 64 a 72
     { tipo: 'movel', w: 2.4, h: 0.4, trajeto: [{ x: 64.1, y: -0.4 }, { x: 69.4, y: -0.4 }], vel: 1.6 },
   ],
+  // pontos de cooperação: anotações do mapa de apoio (npm run apoio; conferidas pelo T14 em test/apoio.test.ts)
+  apoio: { pontos: [
+    { id: 'cap1:tampa', tipo: 'placa', x: 37.2, placa: 'placa-tampa-a',
+      dica: 'Eu fico na placa e seguro a tampa aberta. Pode passar!',
+      dicaInverso: 'Fica na placa que eu passo pela tampa.' },
+    { id: 'cap1:tampa-volta', tipo: 'placa', x: 37.2, placa: 'placa-tampa-b',
+      dica: 'Passei! Agora eu seguro a placa deste lado para você.',
+      dicaInverso: 'Segura a placa daí que eu passo.' },
+    { id: 'cap1:caixa-impulso', tipo: 'impulso', x: 50.2,
+      dica: 'Vem de mãos dadas comigo e pula: eu te dou impulso até a caixa.',
+      dicaInverso: 'Me dá a mão que eu pulo na caixa.' },
+    { id: 'cap1:caixa-puxar', tipo: 'puxar', x: 50.2,
+      dica: 'Lá de cima eu te puxo pela mão.',
+      dicaInverso: 'Sobe na caixa e me puxa pela mão.' },
+    { id: 'cap1:prateleira', tipo: 'impulso', x: 143,
+      dica: 'De mãos dadas comigo você sobe na prateleira.',
+      dicaInverso: 'Me dá a mão que eu subo na prateleira.' },
+    { id: 'cap1:portao', tipo: 'placa', x: 147.2, placa: 'placa-prateleira',
+      dica: 'Daqui de cima eu piso na placa e o portão abre.',
+      dicaInverso: 'Sobe na prateleira e pisa na placa para eu passar.' },
+    { id: 'cap1:portao-volta', tipo: 'placa', x: 147.2, placa: 'placa-portao',
+      dica: 'Passei! Eu seguro o portão aberto deste lado.',
+      dicaInverso: 'Segura a placa do lado de lá que eu passo.' },
+  ] },
 };

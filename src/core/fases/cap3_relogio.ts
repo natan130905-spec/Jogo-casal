@@ -104,4 +104,19 @@ export const CAP3_RELOGIO: FaseCapitulo = {
     { tipo: 'giratoria', w: 1.8, h: 0.3, cx: 196, cy: 3.4, raio: 2.8, periodo: 10, inicio: 270 },
     { tipo: 'giratoria', w: 1.8, h: 0.3, cx: 196, cy: 3.4, raio: 2.8, periodo: 10, inicio: 90 },
   ],
+  // pontos de cooperação: anotações do mapa de apoio (npm run apoio; conferidas pelo T14 em test/apoio.test.ts)
+  apoio: { pontos: [
+    { id: 'cap3:porta-rua', tipo: 'placaDupla', x: 79.2,
+      dica: 'Porta dupla: cada um numa placa ao mesmo tempo.',
+      dicaInverso: 'Fica na outra placa comigo.' },
+    { id: 'cap3:sacada', tipo: 'placa', x: 76.7,
+      dica: 'Eu piso na placa da sacada e a porta abre para você.',
+      dicaInverso: 'Pisa na placa da sacada que eu passo.' },
+    { id: 'cap3:telhado', tipo: 'impulso', x: 158.6,
+      dica: 'De mãos dadas comigo você sobe no telhado.',
+      dicaInverso: 'Me dá a mão que eu subo no telhado.' },
+    { id: 'cap3:portao-tempo', tipo: 'placaDupla', x: 157.9,
+      dica: 'O portão do tempo pede as duas placas juntas.',
+      dicaInverso: 'Fica na placa do lado de cá que eu seguro a de lá.' },
+  ] },
 };

@@ -98,4 +98,19 @@ export const CAP5_DOCES: FaseCapitulo = {
     { tipo: 'quicante', x: 176.5, y: 0, w: 2, h: 0.4 },
     { tipo: 'quicante', x: 185.5, y: 1.5, w: 2, h: 0.4 },
   ],
+  // pontos de cooperação: anotações do mapa de apoio (npm run apoio; conferidas pelo T14 em test/apoio.test.ts)
+  apoio: { pontos: [
+    { id: 'cap5:pirulito', tipo: 'placa', x: 87.2, placa: 'placa-torre',
+      dica: 'Eu fico na placa da torre de bolo e o portão abre.',
+      dicaInverso: 'Quica até a torre e pisa na placa para eu passar.' },
+    { id: 'cap5:pirulito-volta', tipo: 'placa', x: 87.2, placa: 'placa-pirulito',
+      dica: 'Passei! Eu seguro o portão deste lado.',
+      dicaInverso: 'Segura a placa do lado de lá que eu passo.' },
+    { id: 'cap5:muro-impulso', tipo: 'impulso', x: 148.2,
+      dica: 'O muro de chocolate é alto: eu te dou impulso.',
+      dicaInverso: 'Me dá a mão que eu subo o muro.' },
+    { id: 'cap5:muro-puxar', tipo: 'puxar', x: 148.2,
+      dica: 'De cima do muro eu te puxo.',
+      dicaInverso: 'Sobe no muro e me puxa pela mão.' },
+  ] },
 };

@@ -77,4 +77,19 @@ export const CAP7_COSMOS: FaseCapitulo = {
     // 2: ilha móvel depois da ilha alta
     { tipo: 'movel', w: 3.4, h: 0.5, trajeto: [{ x: 124.2, y: 3.9 }, { x: 132.6, y: 3.9 }], vel: 1.5 },
   ],
+  // pontos de cooperação: anotações do mapa de apoio (npm run apoio; conferidas pelo T14 em test/apoio.test.ts)
+  apoio: { pontos: [
+    { id: 'cap7:abismo-impulso', tipo: 'impulso', x: 70.8,
+      dica: 'De mãos dadas, pula o abismo da ponte de luz.',
+      dicaInverso: 'Me dá a mão que eu pulo o abismo.' },
+    { id: 'cap7:abismo-puxar', tipo: 'puxar', x: 70.8,
+      dica: 'Do outro lado eu te puxo.',
+      dicaInverso: 'Daí de baixo, me puxa pela mão.' },
+    { id: 'cap7:ilha-impulso', tipo: 'impulso', x: 107.5,
+      dica: 'De mãos dadas comigo você sobe na ilha alta.',
+      dicaInverso: 'Me dá a mão que eu subo na ilha alta.' },
+    { id: 'cap7:ilha-fio', tipo: 'fioAncora', x: 107.5,
+      dica: 'Eu seguro o fio lá em cima; sobe pela corda.',
+      dicaInverso: 'Lá de cima, segura o fio que eu subo pela corda.' },
+  ] },
 };
