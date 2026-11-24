@@ -16,6 +16,7 @@ import { Particulas, Cel } from './particulas';
 import { Bichinhos } from './bichinhos';
 import { Elementos } from './elementos';
 import { especiaisAtivas } from '../core/sim';
+import { CAM, CameraJogador, aplicarCamera, type Quadro } from './camera';
 
 export type Qualidade = 'baixa' | 'media' | 'alta';
 
@@ -25,7 +26,11 @@ const RES_FIXA = typeof location !== 'undefined' && new URLSearchParams(location
 export class Cena {
   readonly renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
-  private camera = new THREE.PerspectiveCamera(42, 16 / 9, 0.5, 400);
+  private camera = new THREE.PerspectiveCamera(CAM.fov, 16 / 9, 0.5, 400);
+  /** câmera por jogador: segue `eu` (o personagem deste celular; no treino, o controlado) */
+  private cam: CameraJogador;
+  private eu = 0;
+  private quadroCam: Quadro | null = null;
   private bonecos: [Personagem, Personagem];
   private sombras: THREE.Mesh[] = [];
   private portas = new Map<string, THREE.Group>();
@@ -41,9 +46,7 @@ export class Cena {
   private sol!: THREE.DirectionalLight;
   private pos: Pos | null = null;
   private chao: Retangulo[] = [];
-  private alvoCam = new THREE.Vector3();
   private relogio = 0;
-  private iniciou = false;
   // resolução dinâmica: se o aparelho não segura ~40 fps, baixa a resolução interna (até metade) e sobe de volta
   private escala = 1;
   private medida = { t: 0, n: 0 };
@@ -62,6 +65,7 @@ export class Cena {
     this.renderer.info.autoReset = false;
     TEMPO.value = 0;
     this.tema = temaDaFase(fase);
+    this.cam = new CameraJogador(fase);
     this.montarLuz();
     this.montarMundo();
     this.montarJogo();
@@ -291,15 +295,9 @@ export class Cena {
     this.elementos.atualizar(e, dt, this.relogio, this.fx);
     this.animarPedaco(e, dt);
 
-    // câmera: segue o meio dos dois, afasta quando eles se separam e fica um pouco acima, olhando levemente para
-    // baixo, para mostrar a floresta (copas, casas, cascata) acima dos personagens, como na arte conceitual
-    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-    const sep = Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y) * 1.6);
-    const dist = Math.min(22, Math.max(7.6, 6 + sep * 0.9));
-    this.alvoCam.set(mx, my + 2.0 + dist * 0.06, dist);
-    if (!this.iniciou) { this.camera.position.copy(this.alvoCam); this.iniciou = true; }
-    this.camera.position.lerp(this.alvoCam, Math.min(1, dt * 4));
-    this.camera.lookAt(this.camera.position.x, this.camera.position.y - 0.9 - dist * 0.04, 0);
+    // câmera por jogador (camera.ts): segue o próprio personagem, enquadra os dois quando estão perto
+    this.quadroCam = this.cam.atualizar(e, this.eu, this.camera.aspect, dt);
+    aplicarCamera(this.camera, this.quadroCam);
     this.ceu.position.copy(this.camera.position);
     this.sol.position.set(this.camera.position.x - 8, 20, 7);
     this.sol.target.position.set(this.camera.position.x, 0, 0);
@@ -336,6 +334,26 @@ export class Cena {
         fx.explosao(x, y, 24, 0xff9ad8, 5, 0.4, 1.0, 0.5);
       } else if (ev === 'chefe-derrotado') fx.emitir({ x, y, z: 0.5, vida: 0.8, tam: 1, tamFim: 5, cor: 0xffe8a0, alfa: 0.9, cel: Cel.Anel });
     }
+  }
+
+  /** Qual personagem a câmera deste aparelho segue (0 = Natan, 1 = Bruna). */
+  seguir(i: number) {
+    if (i === this.eu) return;
+    this.eu = i;
+    this.cam.reiniciar();
+  }
+
+  /** Projeta um ponto do plano de jogo para coordenadas normalizadas da tela (−1…1; fora disso = fora do quadro). */
+  projetar(x: number, y: number, z = 0) {
+    const v = this.vetor.set(x, y, z).project(this.camera);
+    return { x: v.x, y: v.y };
+  }
+  private vetor = new THREE.Vector3();
+
+  /** Medida (testes e capturas): fração da altura da tela ocupada por cada personagem (pés → pés + 1,1 m, projetados). */
+  medirCamera(e: Estado) {
+    const alt = e.jogadores.map((j) => (this.projetar(j.x, j.y + CAM.corpo).y - this.projetar(j.x, j.y).y) / 2);
+    return { eu: this.eu, alt, quadro: this.quadroCam, alvo: this.cam.alvo, fov: this.camera.fov };
   }
 
   info() { const r = this.renderer.info.render; return { chamadas: r.calls, triangulos: r.triangles }; }
