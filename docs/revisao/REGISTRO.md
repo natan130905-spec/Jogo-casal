@@ -220,9 +220,12 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   para pular por cima) e no cap. 7 (o Rei só leva dano aberto). **Hipótese** no cap. 5 (os bots não desviam na chuva
   de bichinhos).
 - **Correção:** regra do recurso infinito (Estilingue de 3 pedrinhas que voltam e corpo a corpo); tiro defendido vira
-  miçanga; lista de combate forçado. Estado: **planejado** (L4).
-- **Teste que impede a volta:** A2 (os 7 capítulos fecham só com recurso infinito) e A3 (nenhum obrigatório exige
-  munição finita ou item raro).
+  miçanga; lista de combate forçado (`COMBATE_FORCADO` em `src/core/arsenal.ts`). Estado: **corrigido** (L4,
+  `f71834d`): os 7 capítulos fecham com os bots só com o Estilingue ∞ e o corpo a corpo, potes desligados; no cap. 7
+  o Rei cai em 5630 ticks (28 pedrinhas defendidas viram miçanga, nenhuma "perdida").
+- **Teste que impede a volta:** A2 e A3 em `test/arsenal.test.ts` (7 capítulos sem potes; nos pontos de combate
+  forçado os dois sempre têm Estilingue + corpo a corpo; elemento que abre porta só com recurso infinito; bloco
+  rachado nunca obrigatório e com o baú do Martelo antes).
 - Fonte: DESIGN_ARMAS §1.2 e §6.
 
 ## Modos, salvamento e rede
@@ -886,3 +889,26 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
   rodada seguinte passou nos 4 tamanhos; `48d10e6`).
 - **Teste que impede a volta:** `test/e2e/baloes.mjs` (T-U1 jogando, com o diagnóstico na mensagem).
 - Fonte: L8a.
+
+### R84 · `dupla.mjs` reprova às vezes na 1ª amostra de sincronia depois do `roteiro()`
+- **Sintoma:** "posições em sincronia durante o capítulo" reprovou em 2 de 4 rodadas com o build do L4 (maior desvio
+  0,87–0,93 m, sempre na 1ª amostra, tick 21 do convidado, logo depois de o anfitrião recomeçar a fase pelo gancho
+  `roteiro`); nas outras 2 rodadas passou com 0,10–0,11 m. O build de antes do L4 passou nas 2 rodadas feitas na mesma
+  carga (0,11–0,13 m; 1ª amostra 0,02 m). A máquina estava com carga 8–10 (outros lotes rodando).
+- **Causa (hipótese, não confirmada):** a amostra pega o convidado ainda na transição do recomeço (o Natan aparece em
+  x 3,00, a posição inicial da Bruna); a predição/suavização do convidado (L3b) atravessa o salto do recomeço. Não
+  achei relação com o arsenal: o arsenal, os elementos e a mochila batem nos dois no fim (verificação nova do A8).
+- **Correção:** nenhuma ainda. Estado: **em observação** (QA/L3b: rodar `dupla.mjs` em máquina sem carga; se repetir,
+  gravar as posições do anfitrião e do convidado nos 30 primeiros ticks depois do `roteiro()`).
+- **Teste que impede a volta:** o próprio `dupla.mjs`.
+- Fonte: L4 (`tools/revisao/l4`, rodadas em cópia isolada do repositório).
+
+### R85 · Lição: teste de rede que olhava um campo que a mudança tornou inútil
+- **Sintoma:** "tiro do convidado (J) aparece no anfitrião" (`dupla.mjs`) reprovou com o arsenal.
+- **Causa (confirmada):** o teste aceitava `jogadores[1].recarga > 0` (o relógio do Lança-Estrelas, 0,33 s); com o
+  arsenal esse campo fica 0, e a pedrinha da Bruna bate no cubo de x 8 em ~2 ticks e some antes da amostra de 80 ms.
+- **Correção:** o teste olha a contagem de tiros do anfitrião e a cadência do arsenal (`arsenal.espera`). Estado:
+  **corrigido** (L4). Regra: quem troca um campo do estado procura os testes e2e que leem esse campo (`grep` em
+  `test/e2e`), não só os vitest.
+- **Teste que impede a volta:** `test/e2e/dupla.mjs` (passou nas 4 rodadas depois da correção).
+- Fonte: L4.

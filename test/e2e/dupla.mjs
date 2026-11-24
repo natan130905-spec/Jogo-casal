@@ -142,10 +142,12 @@ await pausa(1200);
 // o instantâneo novo traz vida, bichinhos e estrelinhas
 const extra = await B.evaluate(() => { const e = window.__edm?.estado(); return { cor: e.jogadores.map((j) => j.coracoes), bichos: e.inimigos.length, casal: e.estrelinhasCasal }; });
 checar(extra.cor.every((c) => c >= 1 && c <= 3) && extra.bichos > 0 && extra.casal >= 0, `convidado recebe corações ${extra.cor} e ${extra.bichos} bichinhos`);
-// B atira (tecla J): A deve ver a faísca da Bruna
+// B atira (tecla J): A deve ver o tiro da Bruna (L4: a pedrinha do Estilingue; ela pode bater no cubo logo à frente
+// e sumir antes da amostra, por isso vale também a contagem de tiros e a cadência do arsenal)
+const tiros0 = await A.evaluate(() => window.__edm.contagem().tiro ?? 0);
 await B.keyboard.down('KeyJ');
 let viuFaisca = false;
-for (let k = 0; k < 40 && !viuFaisca; k++) { await pausa(80); viuFaisca = await A.evaluate(() => { const e = window.__edm?.estado(); return e.faiscas.some((f) => f.dono === 1) || e.jogadores[1].recarga > 0; }); }
+for (let k = 0; k < 40 && !viuFaisca; k++) { await pausa(80); viuFaisca = await A.evaluate((t0) => { const e = window.__edm?.estado(); return e.faiscas.some((f) => f.dono === 1) || e.jogadores[1].arsenal.espera > 0 || (window.__edm.contagem().tiro ?? 0) > t0; }, tiros0); }
 await B.keyboard.up('KeyJ');
 checar(viuFaisca, 'tiro do convidado (J) aparece no anfitrião');
 // HUD: corações dos dois
@@ -182,6 +184,11 @@ const delta = (t) => (fimB.cont[t] ?? 0) - (contB0[t] ?? 0);
 checar(delta('tiro') > 0 && delta('acerto') > 0 && delta('derrota') > 0 && fimB.mortos > 0, `convidado vê tiros (${delta('tiro')}), acertos (${delta('acerto')}) e bichinhos estourando (${fimB.mortos})`);
 checar(delta('estrelinha') > 0 && fimB.casal > 0, `convidado vê estrelinhas pegas (★ ${fimB.casal})`);
 checar(fimB.casal === fimA.casal && fimB.mortos === fimA.mortos, `placar igual nos dois (★ ${fimA.casal}/${fimB.casal}, bichinhos ${fimA.mortos}/${fimB.mortos})`);
+// A8 (L4): arsenal, elementos das armas e mochila iguais no anfitrião e no convidado no fim do capítulo
+const arsenal = () => { const e = window.__edm.estado(); return JSON.stringify({ a: e.jogadores.map((j) => [j.arsenal.itens, j.arsenal.atual, j.arsenal.carga, j.arsenal.reserva, j.arsenal.bolsa]),
+  el: [e.alvos.map((v) => v > 0), e.barbantes.map((v) => v >= 0), e.rachados, e.baus], db: e.desbloqueadas, f: e.faiscas.length, po: e.potes.length }); };
+const arsA = await A.evaluate(arsenal), arsB = await B.evaluate(arsenal);
+checar(arsA === arsB && JSON.parse(arsA).db !== 3, `arsenal, sino/barbante/bloco/baú e mochila iguais nos dois (${arsA.slice(0, 120)}…)`);
 checar(amostras > 20 && maxDesvio < 0.75, `posições em sincronia durante o capítulo (${amostras} amostras, maior desvio ${maxDesvio.toFixed(2)} m)`);
 const concA = await A.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false);
 const concB = await B.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false);
