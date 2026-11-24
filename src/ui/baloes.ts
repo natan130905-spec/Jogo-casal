@@ -87,7 +87,7 @@ export class Baloes {
   private mostrando: (Balao | null)[] = [null, null, null];
   private tamanho: [number, number][] = [[0, 0], [0, 0], [0, 0]];
   private obstaculos: Ret[] | null = null;
-  private idade = 0;
+  private medidoEm = 0;
   private opcao = lerOpcao();
   private pisca: { el: HTMLElement; ate: number } | null = null;
   private avisoAte = 0;
@@ -179,7 +179,8 @@ export class Baloes {
     if (this.pisca && agora > this.pisca.ate) { this.pisca.el.classList.remove('dica-pisca'); this.pisca = null; }
     if (this.avisoAte && agora > this.avisoAte) { this.avisoAte = 0; $('#aviso').hidden = true; }
     if (!this.mostrando.some(Boolean)) return;
-    if (!this.obstaculos || ++this.idade > 30) { this.obstaculos = this.medirObstaculos(); this.idade = 0; }
+    // R82: o HUD muda de largura (★ 9 → ★ 30 empurra o ❚❚): remede a cada balão novo e a cada 0,5 s de relógio
+    if (!this.obstaculos || novos.length || agora - this.medidoEm > 500) { this.obstaculos = this.medirObstaculos(); this.medidoEm = agora; }
     this.desenhar(e, cena);
   }
 

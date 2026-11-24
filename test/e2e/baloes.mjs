@@ -6,9 +6,11 @@
 //        comparadas nos mesmos ticks
 //  C14   soma do tempo de balão da passada no navegador (≤ 90 s)
 //  opção "Balões: todos / só história / desligados" na pausa (troca e fica salva)
+//  dupla: anfitrião e convidado mostram as mesmas falas, de quem e com o mesmo texto (sem mensagem nova na rede)
 // Uso: npx vite build && node test/e2e/baloes.mjs   (PORTA, padrão 4741; DIST=pasta usa outro build)
 import { createRequire } from 'node:module';
 import { preview } from 'vite';
+import { PeerServer } from 'peer';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { gravarRoteiros } from './roteiros.mjs';
 const { chromium } = createRequire(import.meta.url)('/opt/node-tools/node_modules/playwright');
@@ -50,7 +52,7 @@ const conferir = (page) => page.evaluate((OBST) => {
   const bal = [...document.querySelectorAll('#baloes .balao')].filter((b) => !b.hidden && b.style.visibility !== 'hidden').map((b) => { const r = b.getBoundingClientRect(); return { texto: b.textContent, l: r.left, t: r.top, r: r.right, b: r.bottom }; });
   const H = innerHeight, W = innerWidth, ruins = [];
   for (const q of bal) {
-    for (const o of obs) if (q.l < o.r && q.r > o.l && q.t < o.b && q.b > o.t) ruins.push(`"${q.texto}" cruza ${o.s}`);
+    for (const o of obs) if (q.l < o.r && q.r > o.l && q.t < o.b && q.b > o.t) ruins.push(`"${q.texto}" [${[q.l, q.t, q.r, q.b].map(Math.round)}] cruza ${o.s} [${[o.l, o.t, o.r, o.b].map(Math.round)}]; o jogo media ${JSON.stringify(window.__edm.baloes().ativos.map((a) => [a.texto, Math.round(a.l), Math.round(a.t)]))}`);
     if (q.b > H * 2 / 3 + 0.5) ruins.push(`"${q.texto}" no terço de baixo (b=${q.b.toFixed(0)} de ${H})`);
     if (q.l < -0.5 || q.r > W + 0.5 || q.t < -0.5) ruins.push(`"${q.texto}" fora da tela`);
   }
@@ -114,13 +116,19 @@ for (const [nome, W, H] of TAMANHOS) {
     await ctx.close();
     return por;
   };
-  const com = await amostra('&baloes=todos'), sem = await amostra('&baloes=desligados');
-  const comuns = Object.keys(com).filter((t) => sem[t]);
+  // a câmera suaviza com o tempo real do quadro: duas rodadas iguais podem diferir de 1 chamada num tick (um objeto na
+  // borda do quadro entra ou sai). Por isso há um controle: duas rodadas SEM balões. O balão não pode mudar mais do que
+  // esse ruído, nem deslocar a média.
+  const com = await amostra('&baloes=todos'), sem = await amostra('&baloes=desligados'), sem2 = await amostra('&baloes=desligados');
+  const comuns = Object.keys(com).filter((t) => sem[t] && sem2[t]);
   const comBalao = comuns.filter((t) => com[t].n > 0);
-  const difs = comBalao.map((t) => com[t].ch - sem[t].ch);
-  const maior = Math.max(0, ...difs.map(Math.abs));
-  checar(comBalao.length >= 5 && maior === 0, `T-P1: chamadas de desenho iguais com e sem balões em ${comBalao.length} ticks com balão na tela (maior diferença ${maior}; chamadas ${Math.min(...comBalao.map((t) => com[t].ch))}–${Math.max(...comBalao.map((t) => com[t].ch))})`);
-  medidas.chamadas = { ticksComBalao: comBalao.length, maiorDiferenca: maior };
+  const difs = comBalao.map((t) => com[t].ch - sem[t].ch), ctrl = comBalao.map((t) => sem2[t].ch - sem[t].ch);
+  const maior = Math.max(0, ...difs.map(Math.abs)), maiorCtrl = Math.max(0, ...ctrl.map(Math.abs));
+  const media = difs.reduce((s, x) => s + x, 0) / Math.max(1, difs.length), mediaCtrl = ctrl.reduce((s, x) => s + x, 0) / Math.max(1, ctrl.length);
+  const difere = difs.filter((x) => x !== 0).length, difereCtrl = ctrl.filter((x) => x !== 0).length;
+  checar(comBalao.length >= 5 && maior <= Math.max(1, maiorCtrl) && Math.abs(media) <= 0.15,
+    `T-P1: ${comBalao.length} ticks com balão na tela; com × sem balões: ${difere} ticks diferem, maior diferença ${maior}, média ${media.toFixed(2)} · controle sem × sem: ${difereCtrl} diferem, maior ${maiorCtrl}, média ${mediaCtrl.toFixed(2)} (chamadas ${Math.min(...comBalao.map((t) => com[t].ch))}–${Math.max(...comBalao.map((t) => com[t].ch))})`);
+  medidas.chamadas = { ticksComBalao: comBalao.length, diferem: difere, maiorDiferenca: maior, media: +media.toFixed(3), controle: { diferem: difereCtrl, maior: maiorCtrl, media: +mediaCtrl.toFixed(3) } };
 }
 
 // opção na pausa
@@ -133,6 +141,43 @@ for (const [nome, W, H] of TAMANHOS) {
   const salvo = await page.evaluate(() => localStorage.getItem('edm-baloes'));
   checar(textos.join(' → ') === 'Balões: todos → Balões: só história → Balões: desligados → Balões: todos' && salvo === 'todos', `opção na pausa: ${textos.join(' → ')} (salvo: ${salvo})`);
   await ctx.close();
+}
+
+// dupla: o convidado decide as mesmas falas com o estado e os eventos que recebe
+{
+  const portaSinal = await new Promise((r) => { const s = PeerServer({ port: 0, path: '/', host: '127.0.0.1' }, (x) => r(x.address().port)); globalThis.__sinal = s; });
+  const base = `http://127.0.0.1:${porta}/?q=baixa&resfixa&sinal=127.0.0.1:${portaSinal}`;
+  const novo = async (W, H) => { const c = await nav.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, isMobile: true, hasTouch: true }); const p = await c.newPage(); const erros = []; p.on('pageerror', (e) => erros.push(String(e))); await p.goto(base); return { c, p, erros }; };
+  const A = await novo(873, 393), B = await novo(844, 390);
+  await A.p.click('#bt-criar');
+  await A.p.waitForFunction(() => /^[A-Z0-9]{5}$/.test(document.querySelector('#sala-codigo').textContent), null, { timeout: 30000 });
+  await B.p.fill('#codigo', await A.p.textContent('#sala-codigo')); await B.p.click('#bt-entrar');
+  await A.p.waitForSelector('#quadrinhos:not([hidden])', { timeout: 30000 });
+  await A.p.click('#bt-pular');
+  await A.p.waitForSelector('#mapa:not([hidden])', { timeout: 15000 });
+  const sel = await A.p.evaluate(() => window.__edmFluxo.tela().sel);
+  if (sel !== 1) await A.p.evaluate(() => document.querySelectorAll('#mapa .ilha')[0].click());
+  await A.p.click('#bt-jogar');
+  for (const X of [A, B]) await X.p.waitForFunction(() => window.__edm?.cap === 1 && window.__edm.estado().tick > 2, null, { timeout: 180000, polling: 100 });
+  await pausa(600);
+  await A.p.evaluate((l) => { window.__edm.acelerar(1); return window.__edm.roteiro(l); }, lista);
+  const t0 = Date.now();
+  let logA = [], logB = [];
+  for (;;) {
+    const s = await A.p.evaluate(() => ({ c: window.__edm.estado().concluida, log: window.__edm.baloes().log })).catch(() => null);
+    const g = await B.p.evaluate(() => window.__edm?.baloes()?.log ?? null).catch(() => null);
+    if (s) logA = s.log; if (g) logB = g;
+    if (!s || s.c || Date.now() - t0 > 600000) break;
+    await pausa(300);
+  }
+  const chave = (b) => `${b.id}|${b.quem}|${b.texto}`;
+  const a = logA.map(chave), b = logB.map(chave);
+  const iguais = a.filter((x) => b.includes(x)).length;
+  const difTick = logA.map((x) => { const y = logB.find((z) => z.id === x.id); return y ? Math.abs(y.desde - x.desde) : null; }).filter((x) => x !== null);
+  checar(a.length >= 15 && iguais === a.length && b.length === a.length, `dupla: ${a.length} falas no anfitrião, ${b.length} no convidado, ${iguais} iguais (id, quem e texto); diferença de tick até ${Math.max(0, ...difTick)}${iguais < a.length ? ' · só no anfitrião: ' + a.filter((x) => !b.includes(x)).join(', ') + ' · só no convidado: ' + b.filter((x) => !a.includes(x)).join(', ') : ''}`);
+  medidas.dupla = { anfitriao: a.length, convidado: b.length, iguais, maiorDiferencaTick: Math.max(0, ...difTick) };
+  checar(A.erros.length + B.erros.length === 0, `dupla: sem erro de página ${[...A.erros, ...B.erros].slice(0, 2).join(' | ')}`);
+  await A.c.close(); await B.c.close(); globalThis.__sinal?.close?.();
 }
 
 writeFileSync(saida + 'medidas.json', JSON.stringify(medidas, null, 1));
