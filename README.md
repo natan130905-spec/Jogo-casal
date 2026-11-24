@@ -49,7 +49,8 @@ com o joystick, sobe com ⬆ ou segurando o pulo e solta com ✋.
 | Poder da arma (barra em volta do ★; acende cheia). Os dois a até 3 s = Golpe do Fio Vermelho | ★ | Q |
 
 HUD da arena: rostos, corações e barra de poder de cada um, vida do Rei com as 3 fases marcadas e o aviso "Usem o
-poder juntos!". Detalhes da luta: `docs/ARENA_FINAL.md`.
+poder juntos!". Um pilar de cristal entre a câmera e você fica pontilhado, para não esconder o personagem. Detalhes
+da luta: `docs/ARENA_FINAL.md`.
 
 ### Capítulos
 | # | Capítulo | O que tem de novo |
@@ -117,4 +118,11 @@ entradas dos bots cooperativos (`test/fases/bot.ts` e `test/fases/planos/`) na s
 jogo com `window.__edm.roteiro(lista)` (a simulação é determinística); `window.__edm.acelerar(k)` encurta o tempo.
 O `dupla.mjs` confere: sala, prólogo, mapa, andar, pular, tiro do convidado, pausa, o capítulo 1 inteiro (tiro em
 bichinho, estrelinhas, mesmo placar e posições nos dois, capítulo concluído, progresso salvo) e a conexão perdida.
-Capturas em `test-out/` e `test-out/capitulos/`. Portas: `PORTA` (preview) e `PORTA_SINAL` (PeerJS).
+Capturas em `test-out/` e `test-out/capitulos/`. Portas: `PORTA` (preview) e `PORTA_SINAL` (PeerJS; `0` = porta livre).
+
+Arena do Coração (3D): o `arena.mjs` segura as teclas por ticks de jogo (não por milissegundos), mede o fps e aceita
+`LIMITE_LUTA` (segundos reais por luta gravada, padrão 900): sem GPU (SwiftShader) a arena roda a poucos quadros por
+segundo e a luta inteira leva minutos. Vitrine da arena: `/test/vitrine/arena.html` no `npm run dev` (bots lutando;
+WASD/J/K/Espaço/Shift/Q assumem, Tab troca, B liga/desliga os bots); capturas por fase, poder e pose:
+`PORTA=4822 Q=baixa|media|alta W=844 H=390 node test/vitrine/capturar_arena.mjs [inicio recorte fase1 fase2 fase3
+poderes vitoria …]` → `test-out/arena/<q>/`. Orçamento, balanceamento e limites: `docs/ARENA_FINAL.md`.

@@ -119,3 +119,59 @@ Medido com `renderer.info` (capturas de `test/vitrine/capturar_arena.mjs`, 1280 
 
 Vitrine: `npm run dev` e abrir `/test/vitrine/arena.html` (bots lutando; WASD/J/K/Espaço/Shift/Q assumem o personagem,
 Tab troca, B liga/desliga os bots). Capturas escolhidas: `docs/arte/capturas_arena/`.
+
+## QA e integração final (2026-11-24)
+**Ligação.** A partida (`src/ui/partidaArena.ts`) carrega o desenho real `src/render/arena` (`CenaArena`); o esboço
+`src/ui/arenaEsboco.ts` fica só como reserva se o render falhar ao carregar. Conferido no e2e: 193 mil triângulos e
+31 chamadas na luta (o esboço tinha 2 mil), com os GLB de Natan, Bruna, Rei, bolotinha e morcego.
+
+**Corrigido no QA**
+- Pilar de cristal entre a câmera e quem joga tapava o personagem: agora fica pontilhado (some 3 de cada 4 pixels,
+  borda suave; `RECORTE` em `toon.ts`, só nos pilares). Captura: `capturas_arena/qa_recorte_pilar_iphone14_media.webp`.
+- Anéis do rugido do Rei (quadros aditivos de 12–14 m virados para a câmera e cortados pelo chão) viravam um
+  retângulo branco de borda reta em volta do Rei na fase 2: agora 7,5–8 m, mais fracos e metade da frequência.
+  Captura: `qa_fase2_escudo_pixel7_baixa.webp`.
+- Testes: `vitest` com tempo limite de 30 s (os testes de alcance e de bots são cálculo determinístico e estouravam os
+  5 s com a máquina carregada); e2e da arena segura as teclas por ticks de jogo, não por ms reais (no SwiftShader a cena
+  roda a 1–3 fps e o passo é limitado a 0,1 s por quadro), mede o fps, espera até 120 s a arena carregar e aceita
+  `LIMITE_LUTA` (padrão 900 s reais por luta gravada).
+
+**Testes (todos aprovados nesta máquina):** `npx tsc -p .`; `npx vitest run` (127/127); `npx vite build`;
+`node test/e2e/arena.mjs treino` e `dupla` (luta inteira, convidado em sincronia, vitória, concluído, lembrança,
+final, créditos, conexão perdida); `node test/e2e/capitulos.mjs treino` e `dupla` (os 7 capítulos, o 7 passando pela
+arena; 2.5D na Média entre 35–46 chamadas e 64–217 mil triângulos, sem regressão); `node test/e2e/dupla.mjs`.
+
+**Orçamento medido** (`renderer.info`, capturas da vitrine em celular na horizontal; e2e no Pixel 7 e iPhone 14):
+
+| Qualidade | Tamanho | Chamadas | Triângulos |
+|---|---|---|---|
+| Baixa | 915 × 412 (Pixel 7) | 19–24 | 83–113 mil |
+| Média | 844 × 390 (iPhone 14) | 24–31 | 134–193 mil |
+| Média (partida real, e2e) | Pixel 7 / iPhone 14 | ≤ 31 | ≤ 193 mil |
+| Alta | 915 × 412 (Pixel 7) | 43–51 | 218–285 mil (sombras reais e brilho; acima de 250 mil só com os 4 morcegos) |
+
+A Média fica dentro do alvo (≤ 80 chamadas, ≤ 250 mil triângulos) em todas as cenas.
+
+**Balanceamento com os bots** (6 sementes cada, `test/arena_bot.ts`):
+
+| Dupla | Vitórias | Tempo | Observação |
+|---|---|---|---|
+| Mediana (60 % de acerto, reage a 70 % dos avisos) | 6/6 | 213–274 s (média 248 s) | alvo 3–5 min; nenhum recomeço de fase |
+| Fraca (40 %, reage a 50 %) | 6/6 | 286–399 s (média 326 s) | 0–2 recomeços de fase |
+| Perfeita (100 %, desvia de tudo) | 6/6 | 218 s | alvo ≥ 2 min; 0 de dano |
+| Desvia de tudo (60 % de acerto) | 6/6 | 260–297 s | 0 de dano: todo ataque é desviável |
+| Treino sozinho (mediano) | 6/6 | 436–492 s (média 461 s) | vence, mais devagar |
+
+Todos os 5 tipos de perigo têm aviso ≥ 0,8 s (teste `arena_balanceamento.test.ts`).
+
+**O que não dá para medir aqui.** O fps real num celular: nesta máquina o navegador roda sem GPU (SwiftShader) e com
+outros processos ocupando os 4 núcleos, e a arena ficou em 1–3 fps (o 2.5D, nas mesmas condições, também cai). A cena
+tem resolução dinâmica, mas o fps de verdade só se mede num aparelho. Também não se mede aqui: sensação dos controles de
+toque, legibilidade em tela pequena com luz do dia, som, e balanceamento com pessoas (só bots).
+
+**Limites e pendências que ficam**
+- O Rei pisca branco por ~0,05 s a cada acerto; numa captura parada às vezes aparece pálido (no jogo é um lampejo).
+- Na fase 3 a câmera se afasta muito quando o parceiro está do outro lado da parede: os personagens ficam pequenos.
+- Golpes pouco legíveis com a câmera exatamente atrás (`herois.ts`, `golpe()`); clarão forte por ~0,3 s no Fio
+  Vermelho perto do Rei (`efeitos.ts`).
+- Textos dos créditos e da cena da fuga não foram revisados pelo responsável.
