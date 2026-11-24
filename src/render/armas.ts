@@ -33,7 +33,8 @@ function geoEstilingue(): THREE.BufferGeometry {
   const elastico = new THREE.TorusGeometry(0.058, 0.009, 4, 12, Math.PI); colocar(elastico, 0, -0.21, 0, [1, 0.5, 1], [0, 0, Math.PI]); p.push(pintar(elastico, XUXINHA));
   for (const s of [-1, 1]) { const laco = new THREE.ConeGeometry(0.022, 0.04, 4); colocar(laco, s * 0.024, -0.06, 0.022, 1, [0, 0, s * Math.PI / 2]); p.push(pintar(laco, XUXINHA)); }
   const pedra = new THREE.IcosahedronGeometry(0.02, 0); colocar(pedra, 0, -0.24, 0); p.push(pintar(pedra, ROSA));
-  return mergeGeometries(p)!;
+  // um pouco maior que a mão: na tela do celular o estilingue de 0,25 m sumia
+  return mergeGeometries(p)!.scale(1.4, 1.4, 1.4);
 }
 
 function geoEspada(): THREE.BufferGeometry {
@@ -46,7 +47,8 @@ function geoEspada(): THREE.BufferGeometry {
   p.push(pintar(lamina, (pp, n, c) => c.setHex(Math.abs(n.z) > 0.5 ? (Math.floor((pp.y + 1) * 30) % 3 === 0 ? PAPELAO_ESCURO : PAPELAO) : PAPELAO_ESCURO)));
   const ponta = new THREE.ConeGeometry(0.043, 0.07, 4); colocar(ponta, 0, -0.515, 0, [1, 1, 0.33], [Math.PI, Math.PI / 4, 0]); p.push(pintar(ponta, PAPELAO));
   const fita = new THREE.BoxGeometry(0.064, 0.03, 0.017); colocar(fita, 0, -0.24, 0); p.push(pintar(fita, 0xc8d8e8));
-  return mergeGeometries(p)!;
+  // a face larga da lâmina virada para a câmera com o braço esticado de perfil (antes aparecia de lado, um palito)
+  return mergeGeometries(p)!.rotateY(Math.PI / 2);
 }
 
 function geoMartelo(): THREE.BufferGeometry {
@@ -227,7 +229,7 @@ export class Armas {
           const forte = p[0] === 'martelada';
           const x = j.x + (forte ? 0 : j.olhando * 0.8), y = j.y + (forte ? 0.1 : 0.7);
           // arco de desenho animado ("vush") e, na martelada, a onda no chão
-          fx.emitir({ x, y, z: 0.6, vida: forte ? 0.35 : 0.18, tam: forte ? 0.8 : 0.5, tamFim: forte ? 3.2 : 1.4, cor: forte ? 0xfff0b0 : 0xffffff, alfa: 0.75, cel: Cel.Anel });
+          fx.emitir({ x, y, z: 0.6, vida: forte ? 0.3 : 0.14, tam: forte ? 0.6 : 0.25, tamFim: forte ? 2.6 : 0.7, cor: forte ? 0xfff0b0 : 0xffffff, alfa: forte ? 0.6 : 0.4, cel: Cel.Anel });
           if (forte) fx.explosao(j.x, j.y + 0.1, 14, 0xffe8a0, 4, 0.3, 0.5, 0.4);
           break;
         }

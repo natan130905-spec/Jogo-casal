@@ -186,11 +186,11 @@ body:not(.depurar) .hud-info { display: none; }
   background: conic-gradient(#ffcf6b calc(var(--carga, 1) * 360deg), #ffffff2e 0);
   -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
   mask: radial-gradient(closest-side, transparent calc(100% - 5px), #000 calc(100% - 4px)); }
-.chip-arma { position: absolute; top: calc(100% + 2px); font: 700 12px/1 system-ui, sans-serif; color: #fff; background: #1a1240c8;
+.chip-arma { position: absolute; bottom: -8px; font: 700 12px/1 system-ui, sans-serif; color: #fff; background: #1a1240c8;
   border-radius: 99px; padding: 3px 7px; white-space: nowrap; pointer-events: none; letter-spacing: 1px; }
 .chip-arma:empty { display: none; }
-.hud-jogador.p1 .chip-arma { left: 0; }
-.hud-jogador.p2 .chip-arma { right: 0; }
+.hud-jogador.p1 .chip-arma { left: calc(clamp(40px, 13vh, 62px) + 8px); }
+.hud-jogador.p2 .chip-arma { right: calc(clamp(40px, 13vh, 62px) + 8px); }
 .hud-jogador:not(.eu) .chip-arma { opacity: .75; }
 #jogo.arena .chip-arma { display: none; }
 /* indicador do parceiro (src/ui/indicador.ts posiciona pelo transform; 44 px de diâmetro) */

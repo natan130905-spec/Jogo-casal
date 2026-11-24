@@ -19,6 +19,7 @@ import { colocar, pintar } from './util';
 import { materialBolha } from './materiais';
 import { inclinacaoCorda } from './elementos';
 import { criarItemNaMao } from './armas';
+import { defItem } from '../core/arsenal';
 
 export type QualPersonagem = 'P1' | 'P2';
 
@@ -473,6 +474,11 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       }
       st.tiro = Math.max(0, st.tiro - dt);
       st.golpe = Math.max(0, st.golpe - dt);
+      // a pose também segue o estado da simulação (vale com quadros lentos e no convidado, que pode perder o evento):
+      // carregando o Estilingue = mirando; golpe em andamento = o braço na fase do golpe pelo relógio `espera`
+      const arm = j.arsenal, defMao = arm ? defItem(arm.itens[arm.atual]) : undefined;
+      if (arm && !j.bolha && defMao?.espaco === 'tiro' && arm.carregando >= 0) st.tiro = Math.max(st.tiro, 0.3);
+      if (arm && !j.bolha && defMao?.espaco === 'corpo' && arm.espera > 0) st.golpe = Math.max(st.golpe, 0.3 * Math.min(1, arm.espera / defMao.intervalo));
       st.troca = Math.max(0, st.troca - dt);
       st.dano = Math.max(0, st.dano - dt);
       st.bolha = j.bolha ? Math.min(1, st.bolha + dt * 4) : Math.max(0, st.bolha - dt * 6);
