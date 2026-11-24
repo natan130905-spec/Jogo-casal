@@ -28,7 +28,7 @@ export const CAP2_FLORESTA: FaseCapitulo = {
     chao(21, 38),                     // 2
     bloco(33, 0, 1.2, 0.8),           // 3  toco
     tabua(38, 44, 0, 0.6),            // 4  galho fino (dá para balançar por baixo)
-    chao(49.6, 62, -3, 7),            // 5  outro lado do abismo, 3 m abaixo
+    chao(50.2, 62, -3, 7),            // 5  outro lado do abismo, 3 m abaixo (6,2 m: com o coyote time 5,6 m passava sozinho)
     bloco(59.5, -3, 2.5, 1.5),        // 6  degrau de raiz
     chao(62, 84, 0, 10),              // 7
     bloco(72, 0, 1.6, 1.2),           // 8  toco do cogumelo

@@ -17,7 +17,7 @@ export const PLANO_CAP4: Etapa[] = [
     [esperar((c) => c.outro.noChao && c.outro.x > 64), ir(57.6), atravessarArgola(0, 64.3, 3), ir(65.5)],
   ] },
   andar(88),
-  ...abismoDoFio(90, 95.6, 0),
+  ...abismoDoFio(90, 96.2, 0),
   andar(103.5, 0.6),
   { nome: 'bolha até o cais', p: [
     [subirEm(1, (c) => topoEsp(c, 1) < -0.3 && topoEsp(c, 1) > -0.8), saltarDe(1, (c) => topoEsp(c, 1) > 4.1, 108.5), ir(110)],

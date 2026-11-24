@@ -5,7 +5,7 @@
 //   0–40    areia, castelinho, caranguejo-bolotinha e gaivota-morcego       lanterna em 28
 //   40–58   bolha-elevador até o píer alto                                   lanterna em 47
 //   58–84   argola sobre a água até a plataforma do outro lado               lanterna em 70
-//   82–103  Fio Vermelho: ponta do píer fino (90), jangada 3 m abaixo (95,6)
+//   82–103  Fio Vermelho: ponta do píer fino (90), jangada 3 m abaixo (96,2)
 //   104–162 bolha até o cais; no mastro, a placa que abre a comporta para o outro   lanternas em 110 e 148
 //   162–220 argola (ou o barquinho, que vai e volta) até a ilha; castelo de areia com o pedaço da estrela
 //                                                                            lanterna em 174
@@ -29,7 +29,7 @@ export const CAP4_OCEANO: FaseCapitulo = {
     chao(46, 58, 4, 5),              // 3  píer alto
     chao(64, 84, 3, 4),              // 4  plataforma do outro lado da argola
     tabua(84, 90, 3, 0.6),           // 5  píer fino (dá para balançar por baixo)
-    chao(95.6, 104, 0, 7),           // 6  jangada (3 m abaixo da ponta)
+    chao(96.2, 104, 0, 7),           // 6  jangada (3 m abaixo da ponta; vão de 6,2 m: com o coyote 5,6 passava sozinho)
     chao(107.5, 131, 4, 5),          // 7  cais
     chao(133.6, 162, 4, 5),          // 8  cais depois do buraco da bolha
     tabua(134, 138, 7.6),            // 9  mastro

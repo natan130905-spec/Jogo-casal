@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { CAPITULOS } from '../../src/core/fases/index';
 import type { Fase, Ponto } from '../../src/core/types';
-import { alcanceDoCapitulo, soEmDupla } from './busca';
+import { alcanceDoCapitulo, buscar, soEmDupla } from './busca';
 
 /** Folga mínima de toda estrelinha (pares estado × gesto da busca que a pegam). Medido em 2026-11-24 depois das
  *  correções: a menor é 19 (cap. 5 #7, no quique da gelatina); antes havia 6 (cap. 5 #9) e 1 (cap. 3 #31). */
@@ -13,6 +13,11 @@ export const FOLGA_MIN = 15;
 /** Estrelinhas que só saem em dupla (superpulo de mãos dadas), aprovadas como segredos de dupla e marcadas no
  *  cenário com `marcas: [{ tipo: 'maos-dadas' }]`. Uma estrelinha que vire "só em dupla" por acidente quebra o teste. */
 export const SO_EM_DUPLA: Record<number, number[]> = { 1: [22, 23, 24], 2: [18, 19, 20] };
+
+/** Até onde um jogador sozinho, saindo do início, pode chegar: a primeira ajuda de cada capítulo (porta com a placa
+ *  longe, fio ou muro de mãos dadas; AUDITORIA_MOVIMENTO.md §2.2). Com o coyote time, os abismos do fio de 5,6 m
+ *  (cap. 2 e 7) passaram a ser vencidos sozinho: a busca achou e os vãos foram para 6,2 m. */
+export const SOLO_ATE: Record<number, number> = { 1: 45, 2: 50, 3: 85, 4: 96, 5: 90, 6: 58, 7: 78 };
 
 /**
  * Faixa vertical vista com os dois juntos em pé no chão `chaoY`: câmera de src/render/cena.ts em 2026-11-24
@@ -58,6 +63,13 @@ export function testarAlcance(caps: number[]) {
         const marcas = (f.marcas ?? []).filter((m) => m.tipo === 'maos-dadas');
         for (const k of dupla) expect(marcas.some((m) => Math.abs(m.x - est[k].x) <= 6), `${nome(k)} sem marca de mãos dadas a até 6 m`).toBe(true);
       }, 240_000);
+
+      it(`sozinho, desde o início, não passa da primeira ajuda (x < ${SOLO_ATE[f.capitulo]})`, () => {
+        const r = buscar(f, 'A', [f.inicio[0]]);
+        expect(r.esgotou).toBe(false);
+        expect(r.portal).toBe(false);
+        expect(r.maxX).toBeLessThan(SOLO_ATE[f.capitulo]);
+      }, 120_000);
 
       it('nenhuma estrelinha fica acima da tela com a dupla no chão logo abaixo dela', () => {
         const fora: string[] = [];

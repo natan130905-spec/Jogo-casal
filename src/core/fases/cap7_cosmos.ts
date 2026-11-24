@@ -30,7 +30,7 @@ export const CAP7_COSMOS: FaseCapitulo = {
     chao(40, 46, 0.9, 2),            // 3  ilha do meio (entre as ilhas móveis)
     chao(50, 64, 3.4, 2),            // 4  ilha alta
     tabua(64, 72, 3.4, 0.6),         // 5  ponte de luz (dá para balançar por baixo)
-    chao(77.6, 92, 0.4, 7),          // 6  outro lado do abismo, 3 m abaixo
+    chao(78.2, 92, 0.4, 7),          // 6  outro lado do abismo, 3 m abaixo (6,2 m: com o coyote 5,6 passava sozinho)
     chao(92, 108, 0.4, 7),           // 7
     chao(110, 124, 4.4, 8),          // 8  ilha alta (mãos dadas + corda)
     chao(136, 160, 4.4, 6),          // 9

@@ -17,7 +17,7 @@ export const PLANO_CAP2: Etapa[] = [
   andar(17),
   saltarJuntos(17.8, 22),
   andar(40),
-  ...abismoDoFio(44, 49.6, -3),
+  ...abismoDoFio(44, 50.2, -3),
   andar(56.5),
   { nome: 'subir as raízes', p: [[ir(63.5)], [ir(62.6)]] },
   andar(82.5),

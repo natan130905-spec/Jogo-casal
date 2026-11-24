@@ -10,7 +10,7 @@ export const PLANO_CAP7: Etapa[] = [
   andar(45.4, 0.6),
   carona(1, 45.4, (c) => c.e.especiais[1].y < 0.7, (c) => c.e.especiais[1].y > 2.85, 51.5, { pular: true }),
   andar(71, 1),
-  ...abismoDoFio(72, 77.6, 0.4),
+  ...abismoDoFio(72, 78.2, 0.4),
   andar(107, 0.6),
   // ilha alta: Bruna dá o impulso, Natan sobe e segura o fio; Bruna desce no vão e sobe pela corda
   { nome: 'ilha alta: mãos dadas e corda', limite: 40, p: [

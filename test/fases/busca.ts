@@ -104,6 +104,8 @@ export interface ResultadoBusca {
   placas: Record<string, boolean>;
   portal: boolean;
   estados: number;
+  /** maior x do centro do corpo em pé (até onde a busca chegou) */
+  maxX: number;
   /** estados por trecho de 10 m (diagnóstico: onde a busca gasta) */
   porTrecho: number[];
   gestos: number;
@@ -123,6 +125,7 @@ export function buscar(fBase: Fase, v: Variante, sementes: Ponto[], o: OpcoesBus
   const fila: Estado[] = [];
   const G = gestos(v === 'B', (f.argolas ?? []).length > 0);
   let simulados = 0;
+  let maxX = 0;
   const porTrecho: number[] = Array.from({ length: Math.ceil(f.largura / 10) }, () => 0);
 
   const base = estadoInicial(f);
@@ -186,11 +189,12 @@ export function buscar(fBase: Fase, v: Variante, sementes: Ponto[], o: OpcoesBus
       vistos.add(k);
       e.eventos = [];
       fila.push(e);
+      if (j.x > maxX) maxX = j.x;
       const tr = Math.floor(j.x / 10);
       porTrecho[tr] = (porTrecho[tr] ?? 0) + 1;
     }
   }
-  return { folga, lanternas: lantern, placas, portal, estados: vistos.size, porTrecho, gestos: simulados, esgotou: vistos.size >= limite };
+  return { folga, lanternas: lantern, placas, portal, estados: vistos.size, maxX, porTrecho, gestos: simulados, esgotou: vistos.size >= limite };
 }
 
 /** Pontos de partida legítimos: o início, cada lanterna (onde a dupla renasce) e os chãos que o grafo de
