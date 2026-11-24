@@ -317,9 +317,15 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
 - **Sintoma:** nenhuma dica, seta ou ícone de contexto no 2.5D (mãos dadas, ancorar o fio, placa e porta, bolha).
 - **Causa (confirmada no código):** `#aviso` só é usado na arena (`partidaArena.ts`); o ✋ tem sempre o mesmo ícone.
 - **Correção:** sistema único de dicas e balões (PLANO C16), com ✋ de contexto e fio de luz entre placa e porta.
-  Estado: **planejado** (L8a e L5).
-- **Teste que impede a volta:** cada mecânica nova de cada capítulo tem uma dica na primeira vez (teste de dados do
-  roteiro); T-R1.
+  Estado: **corrigido em parte** (L8a, `c983e2b`, `e7d4a75`): `src/ui/dicas.ts` + roteiro do cap. 1 dão a dica da
+  primeira vez das 11 mecânicas do capítulo (andar, pular, atirar, lanterna, bolha, placa, mãos dadas, puxar,
+  trenzinho, marca das mãos, placa no alto); 20 s depois, sem usar a mecânica, a mesma dica volta uma vez com o botão
+  piscando; com os balões desligados a dica vai para o `#aviso`. `Dicas.nivel()` (45 s "deixa comigo", 60 s atalho) fica
+  para o companheiro (L6). Faltam o ✋ de contexto e o fio de luz entre placa e porta (L5) e as dicas dos caps. 2–7
+  (L10).
+- **Teste que impede a volta:** `test/roteiro.test.ts` › "dicas da primeira vez": para cada mecânica de
+  `MECANICAS_CAP`, a fala de dica existe e sai num cenário de quem não sabe (simulação de verdade); dica de mecânica já
+  usada não sai; a repetição de 20 s sai uma vez só; T-R1.
 - Fonte: PLAYTEST §4.1.
 
 ### R31 · iPhone: sem tela cheia no Safari; controles encostam na barra de início
@@ -493,10 +499,14 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
 - **Sintoma:** a história só aparece nos quadrinhos; dois a quatro minutos de fase sem uma palavra; a Dona Lume só no
   prólogo; nenhum abraço, beijo ou dança.
 - **Causa (confirmada no código):** todo o texto está em `historia.ts`; as mãos dadas são só mecânica.
-- **Correção:** balões, roteiro, emotes, convites e momentos por capítulo. Estado: **planejado** (L8 na fatia; L10
-  nos outros).
-- **Teste que impede a volta:** T-R2 (≥ 1 momento emocionante, 1 engraçado e 1 segredo por capítulo), T-R3
-  (equilíbrio de voz).
+- **Correção:** balões, roteiro, emotes, convites e momentos por capítulo. Estado: **corrigido em parte** (L8a,
+  `c983e2b`, `e7d4a75`, `3f36747`): balões de fala em DOM no cap. 1 (o casal e a Dona Lume falam; 22–23 balões e
+  ≈ 70 s de balão numa passada dos bots), murmúrio sintetizado, opção na pausa. Faltam emotes, convites, poses,
+  expressões e os momentos do cap. 1 (Seu Algodão, caixinha de música, vislumbre: L8b) e os roteiros dos caps. 2–7
+  (L10).
+- **Teste que impede a volta:** T-R2 (≥ 1 momento emocionante, 1 engraçado e 1 segredo por capítulo; quando o L8b
+  puser os momentos), T-R3 (equilíbrio de voz: Natan 8 × Bruna 10 no cap. 1, 44 %), T-R1, T-R4 e o e2e
+  `test/e2e/baloes.mjs`.
 - Fonte: NARRATIVA_CASAL §0–1.
 
 ### R49 · Detalhes íntimos ficariam legíveis no site público
@@ -824,3 +834,55 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
   oclusão assada (`cenario.ts`) é do L7. Estado: **planejado** (L7).
 - **Teste que impede a volta:** `comparar.mjs` alta × média e alta antes × depois no L7.
 - Fonte: L1.
+
+## Lote L8a (balões e roteiro, 2026-11-24)
+
+### R79 · Lição: outro lote commitou um trecho meu ainda sem os arquivos dele
+- **Sintoma:** o commit `6f17bbd` (L1a, `src/ui/partida.ts`) levou junto as linhas do L8a que importam
+  `./baloes`, arquivo que ainda não estava no git. Entre `6f17bbd` e `e7d4a75` o HEAD não compilava (`tsc`: módulo
+  `./baloes` não encontrado).
+- **Causa (confirmada no `git show 6f17bbd`):** dois lotes mexiam ao mesmo tempo em `partida.ts` no mesmo diretório; o
+  `git add src/ui/partida.ts` pega o arquivo inteiro, com o trecho do outro.
+- **Correção:** o L8a commitou os arquivos novos logo em seguida (`c983e2b`, `e7d4a75`). Estado: **lição**: antes de
+  `git add` num arquivo que outro lote também edita, conferir `git diff <arquivo>` e, se houver trecho alheio, pôr no
+  índice só o seu (`git diff <arquivo> > p; editar p; git apply --cached p`). Quem cria arquivo novo e mexe num arquivo
+  compartilhado commita os dois juntos, o quanto antes.
+- **Teste que impede a volta:** `npx tsc -p .` antes de cada commit (o hook de pré-commit pode rodar).
+- Fonte: L8a.
+
+### R80 · No convidado, o tick mostrado volta uns ticks e recomeçaria o roteiro
+- **Sintoma (risco, achado lendo o código antes de ir ao ar):** o diretor de balões tratava "tick menor que o
+  anterior" como recomeço da fase (o gancho `roteiro` dos testes volta o tick a 0) e zerava tudo: a abertura sairia de
+  novo no meio do capítulo no celular da Bruna.
+- **Causa (confirmada no código):** no convidado, `interpolar` devolve o tick do instantâneo `b`; quando o par de
+  instantâneos troca (sem par que cerque o alvo, o laço usa o primeiro e o último do buffer), o tick mostrado pode
+  voltar alguns ticks.
+- **Correção:** só um recuo de mais de 2 s (120 ticks) recomeça; um recuo menor segura o relógio do diretor no maior
+  tick visto e ainda usa os eventos do quadro. Estado: **corrigido** (`c983e2b`).
+- **Teste que impede a volta:** `test/roteiro.test.ts` › "convidado: o tick mostrado pode voltar uns ticks" e o e2e
+  em dupla (`test/e2e/baloes.mjs`: 22 falas iguais no anfitrião e no convidado, com o mesmo id, quem e texto).
+- Fonte: L8a.
+
+### R81 · Balão descia para baixo da cabeça e tapava a plaquinha do nome
+- **Sintoma:** na captura do e2e (844×390, tick 803), com o balão da Dona Lume logo acima do Natan, o "Obrigado por
+  voltar." do Natan ficou em cima do nome dele, com a ponta virada para cima.
+- **Causa (confirmada pela conta):** `posicionarBalao` escolhia o lugar livre mais perto (|dx| + 1,5·|dy|); descer
+  20 px custava menos que andar 116 px para o lado.
+- **Correção:** descer abaixo da ponta custa 8× por px. Estado: **corrigido** (`3f36747`).
+- **Teste que impede a volta:** `test/baloes.test.ts` › "R81: com outro balão logo acima, desvia para o lado" (falha
+  com o custo antigo).
+- Fonte: L8a, capturas de `test/e2e/baloes.mjs`.
+
+### R82 · Um balão cruzou o ❚❚ numa amostra do e2e (2 de 4 tamanhos, numa rodada)
+- **Sintoma:** numa rodada de `test/e2e/baloes.mjs`, "Juntos, no três?" (fim do cap. 1) cruzou o `#bt-pausa` em uma
+  amostra no 844×390 e outra no 873×393. Nas outras três rodadas completas (4 tamanhos cada, 140–170 amostras por
+  tamanho) nada cruzou.
+- **Causa (hipótese, não confirmada):** os retângulos dos controles e do HUD ficavam guardados e só eram remedidos a
+  cada 30 quadros **com balão** (a 3–8 fps sem GPU, vários segundos). Medido: o ❚❚ anda 6 px quando o placar passa de
+  "★ 9" para "★ 30". Só isso não explica o cruzamento (a folga é 6 px e o ❚❚ fica dentro da `.hud-linha`
+  medida); a captura da amostra não foi guardada. O e2e agora grava os dois retângulos e o que o jogo calculou quando
+  reprova.
+- **Correção:** remedir os obstáculos a cada balão novo e a cada 0,5 s de relógio. Estado: **em observação** (a
+  rodada seguinte passou nos 4 tamanhos; `48d10e6`).
+- **Teste que impede a volta:** `test/e2e/baloes.mjs` (T-U1 jogando, com o diagnóstico na mensagem).
+- Fonte: L8a.
