@@ -21,7 +21,9 @@ aplicativo pelo menu do navegador, "Adicionar à tela inicial").
 4. **Vida:** 3 corações cada. Sem corações você vira **bolha**: flutue até o parceiro e encoste para voltar. Se os
    dois virarem bolha, voltam à última lanterna acesa. Cair num vão não tira coração: volta ao chão seguro.
 5. Ao concluir: estrelinhas do capítulo (até 3 estrelas grandes), a **lembrança** do casal e o próximo capítulo no
-   mapa. Depois do capítulo 7 vem o final. O progresso fica salvo no aparelho de quem criou a sala.
+   mapa. No capítulo 7, ao tocarem o pedaço, o Rei-Pesadelo o arranca e foge para a **Arena do Coração** (luta em 3D,
+   abaixo); vencendo, vêm a lembrança, o final e os créditos. O capítulo 7 só conta depois da arena (se saírem antes,
+   o mapa oferece **Arena do Coração ⚔** no capítulo 7). O progresso fica salvo no aparelho de quem criou a sala.
 
 ### Controles
 | Ação | Celular | Teclado |
@@ -35,6 +37,19 @@ aplicativo pelo menu do navegador, "Adicionar à tela inicial").
 Truques de casal: **de mãos dadas** (✋ perto do outro) um pulo vira impulso para alcançar o que é alto; quem está em
 cima segura ✋ e puxa o parceiro. No **Fio Vermelho**, quem está firme segura ✋ (âncora) e o outro pendura, balança
 com o joystick, sobe com ⬆ ou segurando o pulo e solta com ✋.
+
+### Controles da Arena do Coração (3D, fim do capítulo 7)
+| Ação | Celular | Teclado |
+|---|---|---|
+| Andar (relativo à câmera, que trava no Rei) | joystick à esquerda (a base vai até o polegar) | WASD ou setas |
+| Golpe: Espada da Aurora / Lança de Pétala (toques seguidos = combo de 3) | ⚔ grande à direita | J |
+| Lança-Estrelas (segure: 3 por segundo) | ✨ | K |
+| Pular (a onda de choque passa por baixo) | ⬆ | Espaço |
+| Esquiva (rolamento com invencibilidade curta) | ↻ | Shift |
+| Poder da arma (barra em volta do ★; acende cheia). Os dois a até 3 s = Golpe do Fio Vermelho | ★ | Q |
+
+HUD da arena: rostos, corações e barra de poder de cada um, vida do Rei com as 3 fases marcadas e o aviso "Usem o
+poder juntos!". Detalhes da luta: `docs/ARENA_FINAL.md`.
 
 ### Capítulos
 | # | Capítulo | O que tem de novo |
@@ -95,6 +110,7 @@ npm run build        # gera dist/ (site estático)
 node test/e2e/dupla.mjs   # dois "celulares" (Pixel 7 × iPhone 14) conectando por código (servidor PeerJS local)
 node test/e2e/capitulos.mjs treino baixa,media,alta   # os 7 capítulos de ponta a ponta, medindo o orçamento
 node test/e2e/capitulos.mjs dupla                     # os 7 capítulos em dupla, conferindo a sincronia
+node test/e2e/arena.mjs [treino|dupla]                 # Arena do Coração: controles, HUD, luta inteira, final e créditos
 ```
 Os testes e2e usam o `dist/` (rode `npm run build` antes). Para jogar um capítulo inteiro no navegador, eles gravam as
 entradas dos bots cooperativos (`test/fases/bot.ts` e `test/fases/planos/`) na simulação em Node e as reproduzem no
