@@ -25,7 +25,7 @@ export interface Emissao {
 
 const tmp = new THREE.Color();
 
-class Lote {
+export class Lote {
   readonly malha: THREE.Mesh;
   private pos: Float32Array; private cor: Float32Array; private tr: Float32Array;
   private n = 0;
@@ -56,11 +56,16 @@ class Lote {
         uniform sampler2D uMapa; varying vec2 vUv; varying vec4 vCor;
         void main(){
           vec4 t = texture2D(uMapa, vUv);
-          ${aditivo ? 'gl_FragColor = vec4(vCor.rgb * t.rgb * t.a * vCor.a, 1.0);' : 'gl_FragColor = vec4(vCor.rgb * t.rgb, t.a * vCor.a); if (gl_FragColor.a < 0.01) discard;'}
+          ${aditivo ? 'gl_FragColor = vec4(vCor.rgb * t.rgb * t.a * vCor.a, 1.5 * t.a * vCor.a);' : 'gl_FragColor = vec4(vCor.rgb * t.rgb, t.a * vCor.a); if (gl_FragColor.a < 0.01) discard;'}
           #include <colorspace_fragment>
         }`,
       transparent: true, depthWrite: false, toneMapped: false, fog: false,
-      blending: aditivo ? THREE.AdditiveBlending : THREE.NormalBlending,
+      // aditivo: soma a cor (1·src + 1·dst, igual ao AdditiveBlending com alfa 1) e soma no alfa do alvo SÓ a forma da
+      // partícula (1,5 × alfa da textura). Com alfa 1 no quadrado inteiro, cada faísca marcava um QUADRADO para o
+      // brilho seletivo da alta (pos.ts) e o fundo claro florescia em quadrado (cap. 3, estrelinha no mostrador).
+      blending: aditivo ? THREE.CustomBlending : THREE.NormalBlending,
+      blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+      blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor,
     });
     this.malha = new THREE.Mesh(base, mat);
     this.malha.frustumCulled = false;

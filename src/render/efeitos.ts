@@ -71,10 +71,14 @@ export function vagalumes(n: number, largura: number, rnd: () => number, mapa: T
       void main(){
         vec2 uv = uCel.xy + vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y) * uCel.zw;
         float a = texture2D(uMapa, uv).a * (0.35 + 0.65 * vBrilho);
-        gl_FragColor = vec4(vCor * a * 1.6, 1.0);
+        gl_FragColor = vec4(vCor * a * 1.6, 1.5 * a);
         #include <colorspace_fragment>
       }`,
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+    // cor somada como antes; no alfa do alvo soma só a forma do ponto (com alfa 1 o ponto inteiro, um quadrado, entrava
+    // no brilho seletivo da alta e o fundo claro florescia em quadrado)
+    transparent: true, depthWrite: false, toneMapped: false,
+    blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+    blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor,
   });
   const pts = new THREE.Points(g, mat);
   pts.frustumCulled = false;
