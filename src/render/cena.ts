@@ -144,9 +144,10 @@ export class Cena {
     this.scene.add(new THREE.HemisphereLight(t.luz.ceu, t.luz.chao, t.luz.forca));
     this.sol = new THREE.DirectionalLight(t.luz.sol, t.luz.forcaSol);
     this.sol.castShadow = this.qualidade === 'alta';
+    // sombra da alta (R37): 1024² (era 2048²), só dos dinâmicos (personagens e porteiras; o cenário fixo só recebe e
+    // tem a oclusão assada na cor) e câmera de sombra justa ao que a câmera vê (ajustarSombra, a cada quadro)
     const s = this.sol.shadow;
-    s.mapSize.set(2048, 2048);
-    s.camera.left = -18; s.camera.right = 18; s.camera.top = 12; s.camera.bottom = -8;
+    s.mapSize.set(1024, 1024);
     s.camera.near = 1; s.camera.far = 70; s.bias = -0.0005; s.normalBias = 0.03;
     this.scene.add(this.sol, this.sol.target);
     const contra = new THREE.DirectionalLight(t.luz.contra, t.luz.forcaContra);
@@ -165,7 +166,8 @@ export class Cena {
     this.chao = c.chao;
     const matMundo = materialMundo(q, { ruido: q !== 'baixa' });
     for (const m of c.mundo.malhas(matMundo)) {
-      m.receiveShadow = m.castShadow = q === 'alta';
+      m.receiveShadow = q === 'alta';
+      m.castShadow = false; // R37: redesenhar o cenário inteiro no mapa de sombra custava +60 % de chamadas e 2,2× triângulos
       this.scene.add(m);
     }
     for (const m of c.brilho.malhas(materialBrilho())) this.scene.add(m);
@@ -355,11 +357,45 @@ export class Cena {
     this.quadroCam = this.cam.atualizar(e, this.eu, this.camera.aspect, dt);
     aplicarCamera(this.camera, this.quadroCam);
     this.ceu.position.copy(this.camera.position);
-    this.sol.position.set(this.camera.position.x - 8, 20, 7);
-    this.sol.target.position.set(this.camera.position.x, 0, 0);
+    if (this.sol.castShadow) this.ajustarSombra(this.quadroCam);
+    else {
+      this.sol.position.set(this.camera.position.x - 8, 20, 7);
+      this.sol.target.position.set(this.camera.position.x, 0, 0);
+    }
     this.fx.terminar(dt);
     if (this.pos) this.pos.render(); else this.renderer.render(this.scene, this.camera);
   }
+
+  /**
+   * Câmera de sombra justa (R37): o sol fica na mesma direção de sempre (−8, 20, 7), mirando o centro do que a câmera
+   * vê, e a caixa ortográfica cobre só a faixa visível do plano de jogo (com 2 m de folga e z de −4 a +3), medida no
+   * espaço da luz. Antes era uma caixa fixa de 36 × 20 m centrada em y = 0 (cortava a sombra nos andares altos).
+   */
+  private ajustarSombra(q: Quadro) {
+    const V = q.V, W = V * this.camera.aspect, folga = 2;
+    const y0 = q.yPes - q.pes * V - folga, y1 = q.yPes + (1 - q.pes) * V + folga;
+    const x0 = q.x - W / 2 - folga, x1 = q.x + W / 2 + folga;
+    const cy = (y0 + y1) / 2;
+    this.sol.target.position.set(q.x, cy, 0);
+    this.sol.position.set(q.x - 8, cy + 20, 7);
+    this.sol.target.updateMatrixWorld();
+    this.sol.updateMatrixWorld();
+    const cs = this.sol.shadow.camera;
+    cs.position.copy(this.sol.position);
+    cs.lookAt(this.sol.target.position);
+    cs.updateMatrixWorld();
+    const inv = this.vetorSombra.inv.copy(cs.matrixWorld).invert();
+    let l = Infinity, r = -Infinity, b = Infinity, t = -Infinity, n = Infinity, f = -Infinity;
+    for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [-4, 3]) {
+      const p = this.vetorSombra.p.set(x, y, z).applyMatrix4(inv);
+      l = Math.min(l, p.x); r = Math.max(r, p.x); b = Math.min(b, p.y); t = Math.max(t, p.y);
+      n = Math.min(n, -p.z); f = Math.max(f, -p.z);
+    }
+    cs.left = l; cs.right = r; cs.bottom = b; cs.top = t;
+    cs.near = Math.max(0.5, n - 6); cs.far = f + 2;
+    cs.updateProjectionMatrix();
+  }
+  private vetorSombra = { p: new THREE.Vector3(), inv: new THREE.Matrix4() };
 
   /** Pedaço da estrela: gira e pulsa; apagado enquanto o Rei vive; brilha mais com os dois tocando. */
   private animarPedaco(e: Estado, dt: number) {
