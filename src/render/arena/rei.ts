@@ -113,7 +113,7 @@ export class ReiVisual {
         fx.explosao(r.x, ALT * 0.5, r.z, 18, 0xf0e0ff, 6, 0.3, 0.7, C.faisca, 4);
       } else if (ev.startsWith('chefe-fase')) {
         this.tremor = 1;
-        for (let k = 0; k < 2; k++) fx.emitir({ x: r.x, y: 0.5 + k * 1.5, z: r.z, vida: 0.9 + k * 0.15, tam: 2, tamFim: 12, cor: 0xb070ff, alfa: 0.45, cel: C.anel });
+        for (let k = 0; k < 2; k++) fx.emitir({ x: r.x, y: 0.5 + k * 1.5, z: r.z, vida: 0.9 + k * 0.15, tam: 2, tamFim: 7.5, cor: 0xb070ff, alfa: 0.35, cel: C.anel });
       } else if (ev === 'chefe-golpe:pancada') this.tremor = 0.6;
       else if (ev === 'atordoado') fx.explosao(r.x, ALT, r.z, 12, 0xfff0a0, 3, 0.25, 0.6, C.estrela, 4);
     }
@@ -191,8 +191,9 @@ export class ReiVisual {
         const a = Math.random() * Math.PI * 2, rr = 1.2 + Math.random() * 1.2;
         fx.emitir({ x: r.x + Math.cos(a) * rr, y: 0.2 + Math.random() * 1.2, z: r.z + Math.sin(a) * rr, vx: Math.cos(a) * 0.5, vy: 0.5 + Math.random() * 0.5, vz: Math.sin(a) * 0.5, arrasto: 0.8, vida: 1.6, tam: 1.8, tamFim: 3.2, cor: r.fase === 3 ? 0x8a50c8 : 0xb88af0, alfa: 0.3, cel: C.halo, aditivo: false, rot: Math.random() * 6, vrot: (Math.random() - 0.5) });
       }
-      // rugido: ondas de névoa
-      if (r.transicao > 0 && Math.random() < dt * 6) fx.emitir({ x: r.x, y: 0.4, z: r.z, vida: 0.8, tam: 2, tamFim: 14, cor: 0xb070ff, alfa: 0.6, cel: C.anel });
+      // rugido: ondas de névoa. Anéis são quadros virados para a câmera e cortados pelo chão: maiores que ~8 m e
+      // muitos ao mesmo tempo (mistura aditiva) viravam um retângulo branco de borda reta em volta do Rei.
+      if (r.transicao > 0 && Math.random() < dt * 3) fx.emitir({ x: r.x, y: 0.4, z: r.z, vida: 0.8, tam: 2, tamFim: 8, cor: 0xb070ff, alfa: 0.35, cel: C.anel });
       // investida: rastro de névoa
       if (r.ataque === 'investida' && r.etapa === 'execucao') {
         for (let q = 0; q < 3; q++) fx.emitir({ x: r.x + (Math.random() - 0.5) * 2, y: 0.4 + Math.random() * 2.5, z: r.z + (Math.random() - 0.5) * 2, vy: 0.3, vida: 0.8, tam: 2, tamFim: 3.2, cor: 0xb08ae8, alfa: 0.35, cel: C.halo, aditivo: false, rot: Math.random() * 6 });
