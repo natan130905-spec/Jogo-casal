@@ -103,4 +103,17 @@ describe('predição do convidado', () => {
     p.aplicar(m, DT);
     expect(m.jogadores[1].x).toBe(7);
   });
+
+  it('R86: o anfitrião recomeça a fase (tick volta) e a predição aceita os instantâneos novos', () => {
+    const p = new Preditor(fase, 1, () => {});
+    const velho = estadoInicial(fase); velho.tick = 900; velho.jogadores[1].x = 20;
+    p.receber(velho, 5);
+    p.quadro(DT, () => N);
+    const novo = estadoInicial(fase); novo.tick = 3;
+    p.receber(novo, 6);
+    p.quadro(DT, () => N);
+    const m = structuredClone(novo);
+    p.aplicar(m, 1); // dt grande: sem transição sobrando
+    expect(Math.abs(m.jogadores[1].x - novo.jogadores[1].x)).toBeLessThan(0.5);
+  });
 });

@@ -929,9 +929,18 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
 - **Causa (hipótese, não confirmada):** a amostra pega o convidado ainda na transição do recomeço (o Natan aparece em
   x 3,00, a posição inicial da Bruna); a predição/suavização do convidado (L3b) atravessa o salto do recomeço. Não
   achei relação com o arsenal: o arsenal, os elementos e a mochila batem nos dois no fim (verificação nova do A8).
-- **Correção:** nenhuma ainda. Estado: **em observação** (QA/L3b: rodar `dupla.mjs` em máquina sem carga; se repetir,
-  gravar as posições do anfitrião e do convidado nos 30 primeiros ticks depois do `roteiro()`).
-- **Teste que impede a volta:** o próprio `dupla.mjs`.
+- **Causa provável (lida no código pelo QA da fatia 1):** o `roteiro()` recomeça a fase no anfitrião sem remontar a
+  partida, então o tick volta a 0. No convidado, (a) o `buffer` de instantâneos ainda tinha os da fase velha e
+  `interpolar(a, b, k)` misturava a posição velha com a nova (só não mistura acima de 3 m), com o tick da nova; e
+  (b) o `Preditor` ignorava todo instantâneo com tick ≤ o último visto, ou seja, a fase nova inteira até passar o tick
+  antigo. A mistura de (a) dá até metade da diferença (≤ 1,5 m), compatível com 0,85–0,93 m. Não reproduzi de novo:
+  numa máquina sem carga (carga ≈ 1) o build de antes reprovou 1 de 3 rodadas (0,85 m) e passou 2 (0,07 m).
+- **Correção:** o convidado esvazia o `buffer` quando o tick de um instantâneo é menor que o do último
+  (`partida.ts`), e o `Preditor` esquece o último tick quando o novo é mais de 60 ticks mais velho, ou quando chega
+  instantâneo sem `sq` (`predicao.ts`). Estado: **corrigido** (QA da fatia 1); o recomeço só acontece no gancho de
+  teste hoje, mas o mesmo valeria para qualquer recomeço futuro sem remontar.
+- **Teste que impede a volta:** `test/predicao.test.ts` "R86: o anfitrião recomeça a fase" (reprova no código antigo);
+  o `dupla.mjs` agora diz em que amostra foi o maior desvio. Depois da correção: 2 de 2 rodadas aprovadas (0,07 e 0,09 m).
 - Fonte: L4 (`tools/revisao/l4`, rodadas em cópia isolada do repositório).
 
 ### R87 · Lição: teste de rede que olhava um campo que a mudança tornou inútil

@@ -212,6 +212,9 @@ export class Partida {
     if (m.t === 'in') this.remota.receber(m);
     else if (m.t === 'st') {
       const s = restaurar(this.fase, m.s);
+      // o anfitrião recomeçou a fase (o tick voltou): não interpola entre a fase velha e a nova (R86)
+      const ult = this.buffer[this.buffer.length - 1];
+      if (ult && s.tick < ult.s.tick) this.buffer = [];
       this.buffer.push({ t: performance.now(), s });
       this.eventosPendentes.push(...s.eventos);
       this.preditor?.receber(s, m.s.sq);

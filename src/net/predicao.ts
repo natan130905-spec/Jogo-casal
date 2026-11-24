@@ -107,7 +107,9 @@ export class Preditor {
 
   /** Instantâneo novo do anfitrião (já restaurado). Sem `sq` (anfitrião antigo ou jogando roteiro) não há predição. */
   receber(e: Estado, sq: number | undefined) {
-    if (sq === undefined) { this.base = null; this.pred = null; this.pendentes = []; return; }
+    if (sq === undefined) { this.base = null; this.pred = null; this.pendentes = []; this.ultimoK = -1; return; }
+    // tick bem mais velho que o último: o anfitrião recomeçou a fase (R86); a fila é ordenada, então não é atraso
+    if (e.tick + 60 < this.ultimoK) { this.ultimoK = -1; this.pred = null; }
     if (e.tick <= this.ultimoK) return;
     this.ultimoK = e.tick;
     this.base = { e, sq, k: e.tick };

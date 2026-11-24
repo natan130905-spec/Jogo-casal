@@ -169,12 +169,12 @@ console.log('HUD A:', info);
 // capítulo 1 inteiro: o anfitrião reproduz as entradas dos bots (Natan e Bruna) e o convidado acompanha
 checar(await A.evaluate((l) => { window.__edm.acelerar(3); return window.__edm.roteiro(l); }, roteiro1.lista), 'anfitrião começa o capítulo 1 com as entradas gravadas');
 const contB0 = await B.evaluate(() => window.__edm.contagem());
-let maxDesvio = 0, amostras = 0;
+let maxDesvio = 0, amostras = 0, ondeMax = -1;
 for (let k = 0; k < 900; k++) {
   const h = await A.evaluate(() => window.__edm?.estado().concluida).catch(() => null);
   if (h !== false) break;
   const d = await desvioDoConvidado(A, B);
-  if (d !== null) { maxDesvio = Math.max(maxDesvio, d); amostras++; }
+  if (d !== null) { if (d > maxDesvio) { maxDesvio = d; ondeMax = amostras; } amostras++; }
   if (k === 60) { await A.screenshot({ path: saida + 'A_cap1_meio.png' }); await B.screenshot({ path: saida + 'B_cap1_meio.png' }); }
   await pausa(100);
 }
@@ -189,7 +189,7 @@ const arsenal = () => { const e = window.__edm.estado(); return JSON.stringify({
   el: [e.alvos.map((v) => v > 0), e.barbantes.map((v) => v >= 0), e.rachados, e.baus], db: e.desbloqueadas, f: e.faiscas.length, po: e.potes.length }); };
 const arsA = await A.evaluate(arsenal), arsB = await B.evaluate(arsenal);
 checar(arsA === arsB && JSON.parse(arsA).db !== 3, `arsenal, sino/barbante/bloco/baú e mochila iguais nos dois (${arsA.slice(0, 120)}…)`);
-checar(amostras > 20 && maxDesvio < 0.75, `posições em sincronia durante o capítulo (${amostras} amostras, maior desvio ${maxDesvio.toFixed(2)} m)`);
+checar(amostras > 20 && maxDesvio < 0.75, `posições em sincronia durante o capítulo (${amostras} amostras, maior desvio ${maxDesvio.toFixed(2)} m na amostra ${ondeMax})`);
 const concA = await A.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false);
 const concB = await B.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false);
 checar(concA && concB, 'capítulo 1 concluído aparece nos dois');
