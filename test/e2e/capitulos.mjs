@@ -1,5 +1,6 @@
 // E2E dos 7 capítulos de ponta a ponta, no jogo de verdade (build de produção), pelo fluxo normal das telas:
-// mapa → fase → capítulo concluído → lembrança → mapa → próximo capítulo … → final.
+// mapa → fase → capítulo concluído → lembrança → mapa → próximo capítulo … → capítulo 7 → fuga do Rei → Arena do
+// Coração (luta 3D gravada do bot de test/arena_bot.ts) → concluído → lembrança → final → créditos.
 // As entradas são as dos bots cooperativos (test/fases), gravadas na simulação em Node e reproduzidas no navegador
 // por window.__edm.roteiro (a simulação é determinística). Mede chamadas de desenho e triângulos por capítulo.
 // Uso:
@@ -13,6 +14,7 @@ import { PeerServer } from 'peer';
 import { preview } from 'vite';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { gravarRoteiros } from './roteiros.mjs';
+import { gravarRoteiroArena } from './roteiro_arena.mjs';
 
 const modo = process.argv[2] === 'dupla' ? 'dupla' : 'treino';
 const qualidades = modo === 'dupla' ? ['media'] : (process.argv[3] ?? 'media').split(',');
@@ -26,6 +28,7 @@ let ok = true; const checar = (c, msg) => { console.log(`${c ? 'OK ' : 'FALHOU'}
 
 console.log(`gravando as entradas dos bots (capítulos ${caps.join(', ')})…`);
 const roteiros = await gravarRoteiros(caps);
+const lutaArena = caps.includes(7) ? await gravarRoteiroArena({ treino: modo === 'treino' }) : null;
 for (const n of caps) console.log(`  cap ${n}: ${roteiros[n].segundos.toFixed(1)} s, ${roteiros[n].estrelinhas} estrelinhas, ${roteiros[n].derrotados} bichinhos`);
 
 let sinal = null, portaSinal = 0;
@@ -91,6 +94,8 @@ async function jogarCapitulo(n, q, A, B) {
     if (Date.now() - t0 > 240000) break;
     await pausa(120);
   }
+  // capítulo 7: o Rei foge com o pedaço → Arena do Coração (3D) → só então o capítulo conta
+  if (n === 7) await jogarArena(q, A, B);
   // capítulo concluído aparece nos dois
   const viu = await A.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false);
   const viuB = B ? await B.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false) : true;
@@ -105,7 +110,29 @@ async function jogarCapitulo(n, q, A, B) {
   return m;
 }
 
-/** Concluído → lembrança → mapa (ou final → mapa). */
+/** Cena da fuga → arena nos dois → luta gravada até a vitória. */
+async function jogarArena(q, A, B) {
+  const fuga = await A.waitForFunction(() => window.__edmFluxo.tela().cena === 'fuga', null, { timeout: 30000 }).then(() => true).catch(() => false);
+  checar(fuga && !(await A.evaluate(() => window.__edmFluxo.progresso().capitulos[7])), 'cap 7: o Rei foge com o pedaço (o capítulo ainda não conta)');
+  await A.click('#bt-pular');
+  await A.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 30000 });
+  if (B) await B.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 30000 });
+  await A.evaluate(([l, k]) => { window.__edm.acelerar(k); return window.__edm.roteiro(l); }, [lutaArena.lista, ACEL * 2]);
+  const m = { ch: 0, tri: 0 };
+  const t0 = Date.now();
+  for (;;) {
+    const s = await A.evaluate(() => window.__edm?.arena && { v: window.__edm.estado().vitoria, i: window.__edm.info() }).catch(() => null);
+    if (!s) break;
+    m.ch = Math.max(m.ch, s.i.chamadas); m.tri = Math.max(m.tri, s.i.triangulos);
+    if (s.v || Date.now() - t0 > 300000) break;
+    await pausa(200);
+  }
+  await A.screenshot({ path: `${saida}arena_${q}_${modo}_A.png` });
+  checar(Date.now() - t0 < 300000, `cap 7 [${q}]: Arena do Coração vencida em ${((Date.now() - t0) / 1000).toFixed(0)} s reais (${m.ch} chamadas, ${(m.tri / 1000).toFixed(0)} mil triângulos)`);
+  medidas[`arena_${q}`] = m;
+}
+
+/** Concluído → lembrança → mapa (ou final → créditos → mapa). */
 async function voltarAoMapa(n, A, B) {
   await A.click('#bt-conc-continuar');
   await A.waitForSelector('#quadrinhos:not([hidden])', { timeout: 10000 });
@@ -116,6 +143,9 @@ async function voltarAoMapa(n, A, B) {
     await A.screenshot({ path: `${saida}final_${modo}_A.png` });
     if (B) checar(await B.evaluate(() => window.__edmFluxo.tela().cena === 'final'), 'convidado também vê o final');
     await A.click('#bt-pular');
+    await A.waitForSelector('#creditos:not([hidden])', { timeout: 10000 });
+    if (B) await B.waitForSelector('#creditos:not([hidden])', { timeout: 10000 });
+    await A.click('#creditos');
   }
   await A.waitForSelector('#mapa:not([hidden])', { timeout: 10000 });
   if (B) await B.waitForSelector('#mapa:not([hidden])', { timeout: 10000 });
