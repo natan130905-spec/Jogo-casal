@@ -175,6 +175,24 @@ body.jogando #ceu { display: none; }
 #bt-tiro { left: 0; bottom: 4%; width: 38%; font-size: min(8vh, 34px); background: #ffcf6b33 !important; border-color: #ffe9a0aa !important; }
 #bt-mao { right: 6%; top: 0; width: 36%; font-size: min(7vh, 30px); }
 #botoes button.ativo { background: #ffcf6b88 !important; transform: scale(.94); }
+/* indicador do parceiro (src/ui/indicador.ts posiciona pelo transform; 44 px de diâmetro) */
+#indicador { position: absolute; left: 0; top: 0; width: 44px; height: 44px; pointer-events: none; z-index: 2; will-change: transform; }
+#indicador[hidden] { display: none; }
+#indicador img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #c9a0ff;
+  box-sizing: border-box; background: #1a1240; box-shadow: 0 2px 6px #0009; }
+#indicador.p1 img { border-color: #ffb36b; }
+#indicador .seta { position: absolute; inset: 0; }
+#indicador .seta::after { content: ''; position: absolute; left: 100%; top: 50%; margin: -7px 0 0 -2px; border: 7px solid transparent; border-left: 9px solid #fff2cf;
+  filter: drop-shadow(0 1px 1px #0009); }
+#indicador .dist { position: absolute; left: 50%; bottom: 1px; transform: translateX(-50%); font: 700 11px/1 system-ui, sans-serif; color: #fff;
+  background: #1a1240d0; border-radius: 99px; padding: 2px 5px; white-space: nowrap; }
+#indicador .icone { display: none; position: absolute; right: -6px; top: -6px; width: 20px; height: 20px; border-radius: 50%; background: #ffcf6b;
+  font-size: 12px; line-height: 20px; text-align: center; box-shadow: 0 1px 3px #0009; }
+#indicador.espera .icone { display: block; }
+#indicador.ajuda img { border-color: #ff4d5e; animation: socorro .7s ease-in-out infinite alternate; }
+#indicador.ajuda .seta::after { border-left-color: #ff4d5e; }
+@keyframes socorro { from { box-shadow: 0 0 0 0 #ff4d5e00, 0 2px 6px #0009; } to { box-shadow: 0 0 0 6px #ff4d5e99, 0 0 14px #ff4d5e; } }
+#jogo.arena #indicador { display: none; }
 #aviso { position: absolute; top: 22%; left: 50%; transform: translateX(-50%); background: #000a; padding: 10px 18px; border-radius: 14px; font-size: 18px; }
 .sobreposta { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: #0d0822b8; backdrop-filter: blur(3px); }
 .cartao { display: flex; flex-direction: column; align-items: stretch; gap: 8px; text-align: center; width: min(380px, 90vw);

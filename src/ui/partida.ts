@@ -7,6 +7,7 @@ import { Controles } from '../input/controles';
 import type { Conexao, Mensagem } from '../net/rede';
 import { Cena, type Qualidade } from '../render/cena';
 import { faseDoCap } from './historia';
+import { IndicadorParceiro } from './indicador';
 import { som } from './som';
 import { $, Hud, mostrarTela } from './telas';
 
@@ -49,7 +50,8 @@ export class Partida {
   private contagem: Record<string, number> = {};
   /** gancho de teste (anfitrião/treino): posições [x0, y0, x1, y1] dos últimos 512 ticks, para conferir a sincronia */
   private historico = new Float32Array(512 * 4);
-  private ajustar = () => this.cena.redimensionar(innerWidth, innerHeight);
+  private indicador: IndicadorParceiro;
+  private ajustar = () => { this.cena.redimensionar(innerWidth, innerHeight); this.indicador?.recalcular(); };
 
   constructor(private o: OpcoesPartida) {
     this.cap = o.cap;
@@ -60,6 +62,7 @@ export class Partida {
     const canvas = velho.cloneNode() as HTMLCanvasElement;
     velho.replaceWith(canvas);
     this.cena = new Cena(canvas, this.fase, o.qualidade);
+    this.indicador = new IndicadorParceiro($('#indicador'), this.fase);
     this.ajustar();
     addEventListener('resize', this.ajustar);
     this.controles = new Controles($('#controles'));
@@ -68,7 +71,10 @@ export class Partida {
     this.euControlo = o.modo === 'convidado' ? 1 : 0;
     const bTrocar = $('#bt-trocar');
     bTrocar.hidden = o.modo !== 'treino';
-    bTrocar.onclick = () => { this.euControlo = 1 - this.euControlo; o.hud.eu(this.euControlo); };
+    // cada celular segue o próprio personagem; no treino, o controlado (⇄ troca a câmera junto)
+    const seguir = () => { this.cena.seguir(this.euControlo); this.indicador.configurar(this.euControlo); };
+    seguir();
+    bTrocar.onclick = () => { this.euControlo = 1 - this.euControlo; o.hud.eu(this.euControlo); seguir(); };
     o.hud.configurar(o.cap, this.euControlo);
     som.tocarMusica(o.cap);
     // gancho de teste e depuração. roteiro/acelerar só valem no anfitrião e no treino (o convidado não simula):
@@ -76,6 +82,8 @@ export class Partida {
     // por passo de tempo, para o teste não demorar o tempo real da fase.
     (window as unknown as { __edm: unknown }).__edm = {
       estado: () => this.ultimo, modo: o.modo, cap: o.cap, info: () => this.cena.info(),
+      /** câmera deste aparelho: quem segue, fração da tela de cada personagem (projetada), enquadramento e indicador */
+      camera: () => ({ ...this.cena.medirCamera(this.ultimo), indicador: { ...this.indicador.ultimo } }),
       roteiro: (lista: [Input, Input][]) => {
         if (o.modo === 'convidado') return false;
         this.estado = estadoInicial(this.fase); this.roteiro = lista; this.acumulado = 0; this.concluiuEm = 0; this.avisou = false;
@@ -113,6 +121,7 @@ export class Partida {
   destruir() {
     this.vivo = false;
     removeEventListener('resize', this.ajustar);
+    this.indicador.esconder();
     this.controles.destruir();
     this.cena.renderer.dispose();
     this.cena.renderer.forceContextLoss();
@@ -166,6 +175,7 @@ export class Partida {
     }
 
     this.cena.desenhar(mostrar, this.pausada ? 0 : dt);
+    this.indicador.atualizar(mostrar, eventos, this.cena, this.pausada ? 0 : dt);
     this.ultimo = mostrar;
     o.hud.atualizar(mostrar, eventos);
     for (const ev of eventos) { const tipo = ev.split(':')[0]; this.contagem[tipo] = (this.contagem[tipo] ?? 0) + 1; }
