@@ -285,8 +285,14 @@ if (partes.includes('dupla')) {
   await B.waitForSelector('#pausa', { state: 'hidden', timeout: 5000 }).catch(() => {});
   checar(await B.isHidden('#pausa'), 'dupla: continuar tira a pausa nos dois');
   // as duas barras cheias: aviso "Usem o poder juntos!" e ★ aceso nos dois aparelhos
-  await A.evaluate(() => window.__edm.encherPoder()); await pausa(600);
-  const juntos = await Promise.all([A, B].map((p) => p.evaluate(() => !document.querySelector('#hud-juntos').hidden && document.querySelector('#controles-arena [data-b="poder"]').classList.contains('cheio'))));
+  await A.evaluate(() => window.__edm.encherPoder());
+  // espera o instantâneo chegar e ser desenhado no convidado (a 2–4 fps sem GPU, 600 ms às vezes não bastam)
+  const verJuntos = () => Promise.all([A, B].map((p) => p.evaluate(() => ({ aviso: !document.querySelector('#hud-juntos').hidden, estrela: document.querySelector('#controles-arena [data-b="poder"]').classList.contains('cheio'),
+    poder: window.__edm.estado().jogadores.map((j) => j.poder) }))));
+  let vj = [];
+  for (let k = 0; k < 20; k++) { await pausa(250); vj = await verJuntos(); if (vj.every((v) => v.aviso && v.estrela)) break; }
+  if (!vj.every((v) => v.aviso && v.estrela)) console.log('  (juntos)', JSON.stringify(vj));
+  const juntos = vj.map((v) => v.aviso && v.estrela);
   checar(juntos.every(Boolean), `dupla: barras cheias mostram "Usem o poder juntos!" e acendem o ★ (${juntos})`);
   await A.screenshot({ path: `${saida}dupla_juntos_A.png` }); await B.screenshot({ path: `${saida}dupla_juntos_B.png` });
   await jogarLuta(luta.dupla, A, B, ACEL, 'dupla');
