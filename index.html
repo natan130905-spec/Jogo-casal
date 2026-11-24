@@ -73,6 +73,7 @@
     <div class="mapa-area"><div class="mapa-caixa" id="mapa-caixa"></div></div>
     <footer class="mapa-info">
       <div class="mapa-texto"><strong id="mapa-nome"></strong><span id="mapa-desc"></span></div>
+      <button id="bt-arena" class="grande arena" hidden>Arena do Coração ⚔</button>
       <button id="bt-jogar" class="grande">Jogar ▶</button>
       <span id="mapa-espera" class="mapa-espera" hidden>Esperando quem criou a sala escolher…</span>
     </footer>
@@ -84,6 +85,7 @@
       <div class="hud-jogador p1" id="hud-p1">
         <div class="rosto"><img src="./arte/14_rosto_natan.webp" alt="Natan" /></div>
         <div class="coracoes" id="cor-0"></div>
+        <div class="poder-barra" id="pod-0"><i></i></div>
         <span class="voce">você</span>
       </div>
       <div class="hud-meio">
@@ -98,7 +100,27 @@
       <div class="hud-jogador p2" id="hud-p2">
         <span class="voce">você</span>
         <div class="coracoes" id="cor-1"></div>
+        <div class="poder-barra" id="pod-1"><i></i></div>
         <div class="rosto"><img src="./arte/15_rosto_bruna.webp" alt="Bruna" /></div>
+      </div>
+    </div>
+    <!-- Arena do Coração (fim do capítulo 7, 3D): barra do Rei com as 3 fases e o aviso do poder juntos -->
+    <div id="hud-rei" aria-label="Vida do Rei-Pesadelo">
+      <div class="rei-nome"><span>Rei-Pesadelo</span> · <span id="rei-fase">Coroa Brava</span></div>
+      <div class="rei-barra"><i id="rei-vida"></i><b id="rei-escudo"></b><span class="marca" style="left:33.333%"></span><span class="marca" style="left:66.667%"></span></div>
+    </div>
+    <div id="hud-juntos" hidden>Usem o poder juntos! ★</div>
+    <div id="controles-arena">
+      <div class="joy"><div class="base"><div class="bola"></div></div></div>
+      <div class="acoes">
+        <button data-b="golpe" class="b-golpe" aria-label="Golpe">⚔</button>
+        <button data-b="tiro" class="b-tiro" aria-label="Tiro">✨</button>
+        <button data-b="pulo" class="b-pulo" aria-label="Pular">⬆</button>
+        <button data-b="esquiva" class="b-esquiva" aria-label="Esquiva">↻</button>
+        <button data-b="poder" class="b-poder" aria-label="Poder">
+          <svg viewBox="0 0 36 36" aria-hidden="true"><circle class="anel" cx="18" cy="18" r="15.9" pathLength="100"/><circle class="anel-cheio" cx="18" cy="18" r="15.9" pathLength="100"/></svg>
+          <span>★</span>
+        </button>
       </div>
     </div>
     <div id="controles">
@@ -117,7 +139,7 @@
         <button id="bt-continuar" class="grande">Continuar</button>
         <button id="bt-pausa-mapa">Mapa da jornada</button>
         <div class="linha"><button id="bt-som" class="leve" style="flex:1">Som: ligado</button><button id="bt-pausa-sair" class="leve" style="flex:1">Sair</button></div>
-        <p class="dica-teclas">PC: setas/WASD andar · Espaço pular · J atirar · E mão · Esc pausa</p>
+        <p class="dica-teclas" id="dica-teclas">PC: setas/WASD andar · Espaço pular · J atirar · E mão · Esc pausa</p>
       </div>
     </div>
   </section>
@@ -132,6 +154,22 @@
       <button id="bt-conc-continuar" class="grande">Continuar</button>
       <span id="conc-espera" class="mapa-espera" hidden>Esperando quem criou a sala…</span>
     </div>
+  </section>
+
+  <section id="creditos" class="tela" hidden>
+    <div class="rolo" id="creditos-rolo">
+      <div class="logo-estrela" id="creditos-estrela"></div>
+      <h1>Entre <span>Dois</span> Mundos</h1>
+      <p class="sub">Uma jornada para dois</p>
+      <dl>
+        <dt>Estrelando</dt><dd>Natan e Bruna</dd>
+        <dt>Com</dt><dd>Dona Lume, a vovó-coruja dos sonhos</dd><dd>os bichinhos-pesadelo (agora lembranças de novo)</dd><dd>e o Rei-Pesadelo, que virou vaga-lume</dd>
+        <dt>Os sete pedaços da estrela</dt><dd id="creditos-caps"></dd>
+        <dt>Feito com</dt><dd>Three.js · TypeScript · Vite · PeerJS</dd>
+      </dl>
+      <p class="fim">Algumas coisas a gente não precisa lembrar sozinho. ❤</p>
+    </div>
+    <span class="qd-dica" id="creditos-dica">Toque para voltar ao mapa</span>
   </section>
 
   <div id="caiu" class="sobreposta" hidden>

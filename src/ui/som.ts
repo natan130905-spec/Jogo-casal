@@ -53,12 +53,13 @@ class Som {
     return p;
   }
 
-  /** Toca os efeitos dos eventos do quadro (no máximo um de cada tipo a cada 80 ms). */
-  eventos(evs: readonly string[]) {
+  /** Toca os efeitos dos eventos do quadro (no máximo um de cada tipo a cada 80 ms). `tabela`: evento → arquivo
+   *  (a arena tem a sua; o padrão é a do 2.5D). */
+  eventos(evs: readonly string[], tabela: Record<string, string> = SFX) {
     if (!this.ligado || !this.ctx || this.ctx.state !== 'running' || !evs.length) return;
     const agora = performance.now();
     for (const ev of evs) {
-      const nome = SFX[ev.split(':')[0]];
+      const nome = tabela[ev.split(':')[0]];
       if (!nome || agora - (this.ultimo.get(nome) ?? 0) < 80) continue;
       this.ultimo.set(nome, agora);
       const ctx = this.ctx;

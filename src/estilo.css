@@ -190,9 +190,74 @@ body.jogando #ceu { display: none; }
 .conc-estrelinhas small { display: block; font-size: 14px; color: var(--creme); opacity: .8; letter-spacing: 0; }
 .conc-frase { margin: 2px 0 6px; font-family: Georgia, serif; font-style: italic; font-size: clamp(14px, 4.4vh, 19px); color: #ffe7f0; }
 
+/* ---------- Arena do Coração (3D, fim do capítulo 7) ---------- */
+#jogo:not(.arena) :is(#controles-arena, #hud-rei, #hud-juntos, .poder-barra) { display: none; }
+#jogo.arena :is(#controles, #hud-estrelinhas) { display: none; }
+/* na arena o nome do capítulo dá lugar à barra do Rei; o fps/ping fica embaixo dela */
+#jogo.arena .hud-cap { display: none; }
+#jogo.arena .hud-info { margin-top: clamp(30px, 9vh, 38px); }
+.poder-barra { position: absolute; bottom: 3px; width: clamp(60px, 20vh, 86px); height: 7px; border-radius: 99px; background: #1a1240b0;
+  border: 1px solid #ffffff55; overflow: hidden; }
+.hud-jogador.p1 .poder-barra { left: calc(clamp(40px, 13vh, 62px) + 8px); }
+.hud-jogador.p2 .poder-barra { right: calc(clamp(40px, 13vh, 62px) + 8px); }
+.poder-barra i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ffb36b, #ffe9a0); transition: width .15s; }
+.hud-jogador.p2 .poder-barra i { margin-left: auto; background: linear-gradient(270deg, #c9a0ff, #ffe9f6); }
+.poder-barra.cheia { box-shadow: 0 0 8px #ffe9a0, 0 0 2px #fff; animation: cintila .5s ease-in-out infinite alternate; }
+#hud-rei { position: absolute; top: calc(max(6px, env(safe-area-inset-top)) + clamp(34px, 10vh, 44px)); left: 50%; transform: translateX(-50%);
+  width: min(44vw, 440px); pointer-events: none; text-align: center; text-shadow: 0 1px 3px #000; }
+.rei-nome { font-size: clamp(11px, 3.4vh, 14px); font-weight: 700; color: #ffd9f0; }
+.rei-barra { position: relative; height: clamp(9px, 2.8vh, 13px); margin-top: 2px; border-radius: 99px; background: #1a1240c8; border: 2px solid #ffffff88; overflow: hidden; }
+.rei-barra i { position: absolute; inset: 0 auto 0 0; width: 100%; background: linear-gradient(90deg, #ff4d6d, #ff8fd0 55%, #ffcf6b); transition: width .25s; }
+.rei-barra b { position: absolute; inset: 0; background: repeating-linear-gradient(115deg, #cfe6ff66 0 8px, #9fb8ff33 8px 16px); display: none; }
+#hud-rei.escudo .rei-barra b { display: block; }
+#hud-rei.vulneravel .rei-barra { box-shadow: 0 0 10px #ffe9a0; border-color: #ffe9a0; }
+#hud-rei.rugido .rei-barra { animation: treme .35s infinite; }
+.rei-barra .marca { position: absolute; top: -2px; bottom: -2px; width: 2px; background: #fff; box-shadow: 0 0 3px #000; }
+#hud-juntos { position: absolute; top: 30%; left: 50%; transform: translateX(-50%); padding: 8px 18px; border-radius: 99px; font-weight: 800;
+  font-size: clamp(16px, 5vh, 22px); color: #3a2310; background: linear-gradient(90deg, #ffb36b, #ffe9a0, #c9a0ff); box-shadow: 0 0 18px #ffe9a0;
+  pointer-events: none; animation: pulsar 1s ease-in-out infinite; }
+#hud-juntos[hidden] { display: none; }
+#controles-arena { position: absolute; inset: 0; pointer-events: none; }
+/* joystick: a área de toque é a metade esquerda de baixo; a base aparece no canto e vai até o polegar */
+#controles-arena .joy { position: absolute; left: 0; bottom: 0; width: 42vw; height: 62vh; pointer-events: auto; touch-action: none; }
+#controles-arena .base { position: absolute; left: max(5vw, env(safe-area-inset-left)); bottom: 7vh; width: min(36vh, 170px); aspect-ratio: 1; border-radius: 50%;
+  background: #1a124048; border: 2px solid #ffffff77; display: grid; place-items: center; }
+#controles-arena .joy.ativo .base { background: #1a124070; }
+#controles-arena .bola { width: 42%; aspect-ratio: 1; border-radius: 50%; background: #ffffffcc; box-shadow: 0 2px 6px #0006; transition: transform 0.04s; }
+/* ⚔ grande sob o polegar; ✨ à esquerda; ⬆ em cima; ↻ na diagonal; ★ mais acima à esquerda (com a barra em volta) */
+#controles-arena .acoes { position: absolute; right: max(2.5vw, env(safe-area-inset-right)); bottom: 4vh; width: min(66vh, 320px); aspect-ratio: 1; pointer-events: none; }
+#controles-arena .acoes button { position: absolute; aspect-ratio: 1; border-radius: 50%; padding: 0; color: #fff; pointer-events: auto; touch-action: none;
+  background: #1a12405a; border: 2px solid #ffffff88; box-shadow: none; text-shadow: 0 1px 3px #0009; display: grid; place-items: center; line-height: 1; }
+#controles-arena .acoes button.ativo { background: #ffcf6b88; transform: scale(.93); }
+.b-golpe { right: 0; bottom: 0; width: 40%; font-size: min(10vh, 46px); background: #ff8f6b40 !important; border-color: #ffd0a0 !important; }
+.b-golpe.ativo { background: #ffcf6b99 !important; }
+.b-tiro { right: 44%; bottom: 2%; width: 28%; font-size: min(7vh, 30px); background: #ffcf6b33 !important; border-color: #ffe9a0aa !important; }
+.b-pulo { right: 4%; bottom: 44%; width: 28%; font-size: min(7vh, 30px); }
+.b-esquiva { right: 36%; bottom: 34%; width: 27%; font-size: min(7vh, 30px); }
+.b-poder { right: 66%; bottom: 36%; width: 27%; font-size: min(7vh, 30px); color: #ffffff88 !important; }
+.b-poder svg { position: absolute; inset: -6%; width: 112%; height: 112%; transform: rotate(-90deg); pointer-events: none; }
+.b-poder .anel, .b-poder .anel-cheio { fill: none; stroke-width: 3.2; }
+.b-poder .anel { stroke: #ffffff30; }
+.b-poder .anel-cheio { stroke: #ffe08a; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset .15s; }
+.b-poder.cheio { color: #fff6c8 !important; background: #ffcf6b66 !important; border-color: #fff6c8 !important;
+  box-shadow: 0 0 16px #ffe08a, 0 0 4px #fff !important; animation: pulsar .9s ease-in-out infinite; }
+#mapa-info .arena, button.arena { background: linear-gradient(#ff9fc8, #ff6b9a); color: #3a1028; box-shadow: 0 4px 0 #a8355f; }
+
+/* ---------- créditos ---------- */
+#creditos { background: radial-gradient(ellipse at 50% 120%, #c06aa8aa, #2b1f5ce6 55%, #150e30); overflow: hidden; justify-content: flex-start; }
+#creditos .rolo { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; width: min(560px, 90vw);
+  padding-top: 100vh; animation: rolar 34s linear forwards; }
+#creditos .rolo .logo-estrela { margin-bottom: 6px; }
+#creditos dl { margin: 18px 0; display: flex; flex-direction: column; gap: 4px; }
+#creditos dt { margin-top: 18px; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--ouro); }
+#creditos dd { margin: 0; font-size: clamp(16px, 5vh, 22px); }
+#creditos .fim { font-family: Georgia, serif; font-style: italic; font-size: clamp(17px, 5.4vh, 24px); color: #ffe7f0; margin: 30vh 0 40vh; }
+#creditos-dica { position: absolute; bottom: max(8px, env(safe-area-inset-bottom)); right: 16px; font-size: 13px; opacity: .75; }
+@keyframes rolar { to { transform: translateY(calc(-100% + 60vh)); } }
+
 #girar { display: none; }
 @media (orientation: portrait) and (max-width: 900px) {
   #girar { display: grid; place-items: center; position: fixed; inset: 0; background: var(--roxo); font-size: 22px; text-align: center; padding: 24px; z-index: 50; }
 }
-@media (hover: hover) and (pointer: fine) { #controles { display: none; } }
+@media (hover: hover) and (pointer: fine) { #controles, #controles-arena { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01s !important; animation-iteration-count: 1 !important; } }
