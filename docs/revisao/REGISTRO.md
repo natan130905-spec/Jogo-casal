@@ -912,3 +912,16 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
   `test/e2e`), não só os vitest.
 - **Teste que impede a volta:** `test/e2e/dupla.mjs` (passou nas 4 rodadas depois da correção).
 - Fonte: L4.
+
+### R88 · Lição: o L4 apagou o rascunho não commitado do REGISTRO do L2b
+- **Sintoma:** depois do commit `3e271a7`, `docs/revisao/REGISTRO.md` na árvore de trabalho ficou vazio. O
+  rascunho do L2b (status do R22, R83 "O treino mudava o progresso da campanha na memória" e o R84 dele, "O convidado
+  não falava nada ao entrar…") ainda não estava commitado e se perdeu. Voltei o arquivo ao HEAD.
+- **Causa (confirmada):** um script Python do L4 fez `open(p, 'w').write(fix(open(p).read()))`. O `open(p, 'w')` é
+  avaliado antes e trunca o arquivo, então a leitura volta vazia.
+- **Correção:** ler numa variável antes de abrir para escrita. Para arquivo que outro lote está editando sem commit,
+  mexer só no índice (`git hash-object -w` + `git update-index --cacheinfo`, a partir do HEAD), como o L4 já fazia
+  para `index.html`, `telas.ts` e o próprio REGISTRO, e não reescrever a árvore de trabalho. Estado: **o L2b precisa
+  reescrever o R83, o R84 e a atualização do R22** (os títulos estão acima; o texto não foi recuperado).
+- **Teste que impede a volta:** nenhum automático (é processo). Fica a regra.
+- Fonte: L4.
