@@ -29,6 +29,14 @@ Aventura cooperativa para dois jogadores, no navegador, pensada para celular na 
 - Orçamento (Redmi Note 11, média): ≤ 80 chamadas e ≤ 250 mil triângulos. Medido em 2026-11-23 percorrendo a fase
   (Pixel 7 em paisagem): baixa ≤ 23 chamadas / 65 mil tri; média ≤ 26 / 144 mil; alta ≤ 45 / 320 mil.
 - Comparação conceito × jogo: `test-out/final_comparacao.png`. Página de poses: `test/retrato/` (só no `npm run dev`).
+- Elementos de jogo (2026-11-24): bichinhos-pesadelo (`bichinhos.ts`: bolotinha, morcego-sono, cogumelo-bravo,
+  espinhudo e Rei-Pesadelo, com piscada, cara de dor e estouro em brilho), estrelinhas, lanternas, argolas,
+  plataformas especiais e o Fio Vermelho em catenária (`elementos.ts`), partículas instanciadas em 2 chamadas
+  (`particulas.ts`), temas dos 7 capítulos (`tema.ts` + adereços em `aderecos.ts`; `fase.tema` ou o capítulo escolhe;
+  `?tema=` força para conferir). Medido na vitrine (Pixel 7 paisagem, oficina de mecânicas e capítulo 1): média
+  ≤ 45 chamadas / 158 mil tri; baixa ≤ 33 / 65 mil; alta ≤ 59 / 355 mil (Rei na tela).
+- Vitrine dos elementos (só no `npm run dev`): `test/vitrine/?fase=<id>&tema=<chave>`; capturas automáticas:
+  `PORTA=4821 node test/vitrine/capturar.mjs [cena…]` → `test-out/vitrine/`.
 
 ## Desenvolvimento
 ```
