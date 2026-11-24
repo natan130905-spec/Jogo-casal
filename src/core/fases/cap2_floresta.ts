@@ -70,6 +70,8 @@ export const CAP2_FLORESTA: FaseCapitulo = {
     ...arco(155.6, 159.4, 0.8, 1.4, 3),    // vão antes das raízes
     ...fileira(173.6, 176.8, 3, 3),        // em cima das raízes
   ],
+  // ponto de dupla: daqui, de mãos dadas, o superpulo alcança o galho alto (estrelinhas 18–20)
+  marcas: [{ tipo: 'maos-dadas', x: 97.5, y: 0 }],
   lanternas: [{ x: 26, y: 0 }, { x: 64, y: 0 }, { x: 95, y: 0 }, { x: 134, y: 0 }, { x: 162, y: 0 }],
   fio: [
     { x0: 36, x1: 63, comprimento: 5 },

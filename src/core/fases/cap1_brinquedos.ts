@@ -80,6 +80,8 @@ export const CAP1_BRINQUEDOS: FaseCapitulo = {
     ...fileira(141.7, 144.3, 3.8, 2),    // prateleira da placa
     ...arco(164.5, 168.5, 1.2, 1.6, 4),  // subindo para o pódio
   ],
+  // ponto de dupla: daqui, de mãos dadas, o superpulo alcança a prateleira secreta (estrelinhas 22–24)
+  marcas: [{ tipo: 'maos-dadas', x: 116.8, y: 1.5 }],
   lanternas: [{ x: 31, y: 0 }, { x: 60, y: 0 }, { x: 96, y: 0 }, { x: 127, y: 0 }, { x: 156, y: 0 }],
   especiais: [
     // trenzinho de brinquedo: vai e volta sobre o vão de 64 a 72

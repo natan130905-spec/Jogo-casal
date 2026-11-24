@@ -63,7 +63,8 @@ export const CAP7_COSMOS: FaseCapitulo = {
     ...fileira(79, 83, 1, 3),              // depois do abismo
     ...fileira(111, 115, 5, 3),            // ilha alta
     ...fileira(126, 134, 5.2, 4),          // ilha móvel
-    ...arco(160.5, 170, 3.6, 1.2, 5),      // a descida
+    // a descida: a última (era 170; 3,6, 2,1 m acima do degrau, só saía num pulo correndo exato) baixou para 2,9
+    ...arco(160.5, 170, 3.6, 1.2, 5).slice(0, 4), { x: 169.5, y: 2.9 },
     ...fileira(183, 186, 0.6, 3),          // arena
   ],
   lanternas: [{ x: 24, y: 0.5 }, { x: 54, y: 3.4 }, { x: 86, y: 0.4 }, { x: 116, y: 4.4 }, { x: 150, y: 4.4 }, { x: 182, y: 0 }],

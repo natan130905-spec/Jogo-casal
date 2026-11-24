@@ -81,7 +81,9 @@ export const CAP3_RELOGIO: FaseCapitulo = {
     ...arco(111.5, 116.5, 2.4, 1.6, 3),    // relógio de dois ponteiros
     ...fileira(123, 126.6, 2, 2),          // plataformas que caem
     ...fileira(160.4, 161.6, 4.8, 2),      // no telhado do portão
-    ...arco(193.5, 198.5, 4.5, 3, 4),      // relógio grande
+    // relógio grande: o arco ia até 7,2 m, 2,5 m acima da tela com a dupla no chão; agora até 4,3 m (à vista do chão)
+    // e as duas do meio ainda pedem subir no ponteiro
+    ...arco(193.5, 198.5, 3.4, 1, 4),
   ],
   lanternas: [{ x: 30, y: 0 }, { x: 56, y: 4 }, { x: 97.5, y: 0 }, { x: 131, y: 0 }, { x: 168, y: 0 }],
   especiais: [

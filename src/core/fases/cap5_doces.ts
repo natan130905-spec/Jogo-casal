@@ -66,16 +66,21 @@ export const CAP5_DOCES: FaseCapitulo = {
   estrelinhas: [
     ...arco(7.4, 10, 1.4, 1.2, 3),         // por cima do cupcake
     ...arco(21.6, 25.4, 0.8, 1.4, 3),      // primeiro vão
-    ...arco(44.4, 47.6, 1.2, 3, 4),        // o quique da gelatina
+    // o quique da gelatina: posições tiradas da trajetória REAL do quique segurado (busca sobre a simulação,
+    // test/fases/busca.ts), não de uma fórmula. A última (era 47,6; 1,2, só saía com quique fraco encostado no
+    // balcão) foi para a quina do balcão, onde o quique segurado passa.
+    { x: 44.4, y: 1.2 }, { x: 45.47, y: 3.87 }, { x: 46.53, y: 3.87 }, { x: 47.5, y: 3.5 },
     ...fileira(54, 58, 3.1, 3),
-    ...fileira(78, 78, 5.5, 1), ...fileira(78.6, 78.6, 7.5, 1), // subindo pela gelatina da torre
+    ...fileira(78, 78, 5.5, 1), ...fileira(78.6, 78.6, 7, 1), // subindo pela gelatina da torre (7,0: era 7,5, acima da tela)
     ...fileira(80.8, 83.2, 8.1, 2),        // torre de bolo
     ...fileira(93, 96, 3.1, 2),
     ...arco(105, 114, 3.1, 1.2, 5),        // biscoitos que quebram
     ...fileira(150.5, 153.5, 6.5, 3),      // em cima do muro de chocolate
     ...fileira(161.5, 164.5, 9.6, 4),      // segredo: nuvem de algodão-doce
-    ...arco(176, 180.6, 3, 2.5, 4),        // primeira gelatina do poço
-    ...arco(184.5, 189.4, 5.2, 3, 4),       // segunda gelatina
+    // gelatinas do poço: na trajetória REAL do quique segurado até a bala e até o bolo (o arco por fórmula passava
+    // 1–3 m longe do corpo; ver docs/revisao/AUDITORIA_MOVIMENTO.md §2.3)
+    { x: 177.5, y: 3 }, { x: 178.5, y: 4.6 }, { x: 179.5, y: 5.6 }, { x: 180.5, y: 5.6 }, // primeira gelatina
+    { x: 184.5, y: 5.2 }, { x: 186.6, y: 6 }, { x: 188.4, y: 7.1 }, { x: 189.6, y: 7.2 }, // segunda gelatina
   ],
   lanternas: [{ x: 28, y: 0 }, { x: 52, y: 2.5 }, { x: 94, y: 2.5 }, { x: 130, y: 2.5 }, { x: 162, y: 2.5 }],
   especiais: [

@@ -86,7 +86,15 @@ export interface Fase {
   fio?: ZonaFio[];
   /** argolas/ganchos de pêndulo no teto (ponto = a argola) */
   argolas?: Ponto[];
+  /** marcas no cenário, só visuais (o render desenha; a simulação ignora) */
+  marcas?: Marca[];
 }
+
+/**
+ * Marca visual no cenário. 'maos-dadas': ponto de dupla. Daqui, de mãos dadas (superpulo), alcança-se um segredo
+ * que um jogador sozinho não alcança; o render desenha o ícone de duas mãos no chão em (x, y = topo do chão).
+ */
+export interface Marca { tipo: 'maos-dadas'; x: number; y: number }
 
 export interface EstadoJogador {
   x: number; y: number; vx: number; vy: number;
