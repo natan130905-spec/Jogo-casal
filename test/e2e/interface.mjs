@@ -225,14 +225,17 @@ if (so !== 'treino') {
   await B.page.evaluate(() => { window.__sendOrig = RTCDataChannel.prototype.send; RTCDataChannel.prototype.send = function () {}; });
   await A.page.waitForFunction(() => window.__vigia.pausouMs >= 0 && window.__vigia.parouTick >= 0, null, { timeout: 60000, polling: 50 }).catch(() => {});
   const v = await A.page.evaluate(() => window.__vigia);
-  // a Bruna leva alguns ticks para frear de 5,2 m/s; o prazo de 0,3 s (18 ticks) conta da última entrada até vx = 0
-  const parouEm = v.parouTick - v.tick0;
+  const fim = await A.page.evaluate(() => window.__edm.sumico());
+  // conta da ÚLTIMA mensagem que chegou do convidado (a que já estava a caminho quando ele "congelou" ainda vale):
+  // até 6 entradas na fila + 6 ticks repetindo a última + 6 ticks freando de 5,2 m/s = 18 ticks (0,3 s)
+  const parouEm = v.parouTick - Math.max(v.tick0, fim.ultimaTick);
+  v.pausouMs -= Math.max(0, fim.ultimaEm - v.t0);
   medidas.convidadoCongelado = { ticksAteParar: parouEm, msAteParar: Math.round(parouEm * 1000 / 60), msAtePausar: Math.round(v.pausouMs), aviso: v.aviso };
   checar(parouEm >= 0 && parouEm <= 18, `R26: convidado congelado → vxBruna = 0 em ${parouEm} ticks (${Math.round(parouEm * 1000 / 60)} ms de jogo; limite 18 = 0,3 s)`);
   // no celular (mensagens a cada 16–33 ms) o prazo é 1,5 s; numa máquina sem GPU que manda devagar ele cresce (8 ×
   // o intervalo típico), para não pausar à toa: o limite aqui é esse prazo + 500 ms de quadro
   medidas.convidadoCongelado.prazoMs = Math.round(prazo.prazo); medidas.convidadoCongelado.intervaloMs = Math.round(prazo.intervalo);
-  checar(v.pausouMs >= 0 && v.pausouMs <= Math.max(2000, prazo.prazo + 500), `R26: o anfitrião pausa com aviso em ${Math.round(v.pausouMs)} ms ("${v.aviso}"; prazo ${Math.round(prazo.prazo)} ms com mensagens a cada ${Math.round(prazo.intervalo)} ms; no celular 1,5 s)`);
+  checar(v.pausouMs >= 0 && v.pausouMs <= Math.max(2000, prazo.prazo + 500), `R26: o anfitrião pausa com aviso ${Math.round(v.pausouMs)} ms depois da última mensagem do convidado ("${v.aviso}"; prazo ${Math.round(prazo.prazo)} ms com mensagens a cada ${Math.round(prazo.intervalo)} ms; no celular 1,5 s)`);
   await A.page.screenshot({ path: saida + 'anfitriao_convidado_sumiu.png' });
   await B.page.evaluate(() => { RTCDataChannel.prototype.send = window.__sendOrig; });
   await B.toque.soltar(1);

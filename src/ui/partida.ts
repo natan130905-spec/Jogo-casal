@@ -74,6 +74,8 @@ export class Partida {
   private ultimaDoOutro = 0;
   /** dupla: intervalo típico (média móvel, ms) entre as mensagens de jogo do outro aparelho */
   private intervaloDoOutro = 50;
+  /** gancho de teste: tick do anfitrião quando chegou a última mensagem do outro */
+  private tickUltimaDoOutro = 0;
   /** anfitrião: ticks seguidos sem entrada nova do convidado */
   private semEntrada = 0;
   private sumido = false;
@@ -139,7 +141,7 @@ export class Partida {
       },
       contagem: () => ({ ...this.contagem }),
       /** dupla: intervalo típico (ms) entre as mensagens do outro aparelho e o prazo para "saiu do jogo" (R26) */
-      sumico: () => ({ intervalo: this.intervaloDoOutro, prazo: Math.max(SUMIDO_MS, 8 * this.intervaloDoOutro) }),
+      sumico: () => ({ intervalo: this.intervaloDoOutro, prazo: Math.max(SUMIDO_MS, 8 * this.intervaloDoOutro), ultimaEm: this.ultimaDoOutro, ultimaTick: this.tickUltimaDoOutro }),
       /** ?diag=1: custo do painel por quadro (ms) e o relatório que o botão "Copiar" manda */
       diag: () => (this.diag ? { ...this.diag.custo(), gpu: this.diag.gpu, relatorio: this.diag.relatorio() } : null),
       /** programas de shader vivos (nome e começo da chave): para achar compilação no meio do jogo (R38) */
@@ -177,6 +179,7 @@ export class Partida {
     const t = performance.now();
     if (this.ultimaDoOutro && !this.pausada) this.intervaloDoOutro += (Math.min(5000, t - this.ultimaDoOutro) - this.intervaloDoOutro) * 0.1;
     this.ultimaDoOutro = t;
+    this.tickUltimaDoOutro = this.estado.tick;
     if (this.sumido) { this.sumido = false; this.o.aoSumir?.(false); }
   }
 
