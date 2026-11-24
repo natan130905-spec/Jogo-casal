@@ -893,8 +893,18 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
   reprova.
 - **Correção:** remedir os obstáculos a cada balão novo e a cada 0,5 s de relógio. Estado: **em observação** (a
   rodada seguinte passou nos 4 tamanhos; `48d10e6`).
-- **Teste que impede a volta:** `test/e2e/baloes.mjs` (T-U1 jogando, com o diagnóstico na mensagem).
-- Fonte: L8a.
+- **Causa confirmada (QA da fatia 1):** o QA reproduziu em 3 de 4 tamanhos, sempre "Juntos, no três?", e o
+  diagnóstico do e2e mostrou que **o DOM não estava onde o jogo calculou** (ex.: jogo l = 511, tela l = 445). A
+  animação de entrada (`baloes.css`, `scale: .85 → 1`) usa a propriedade `scale`, que o navegador aplica **antes** do
+  `transform`; com o lugar em `transform: translate(...)`, o deslocamento também encolhe a 85 %, e por 0,18 s o
+  balão aparece mais perto do canto de cima à esquerda, por cima do ❚❚. Conta: 70,5 + 0,85 × (511 − 70,5) = 445 (w =
+  141); no 915×412, 547 → 476; idem medido numa página isolada no Chromium ([445, 25, 565, 52] com `transform`;
+  [522, 29, 641, 56] com `translate`, dentro do retângulo calculado).
+- **Correção nova:** o lugar vai na propriedade `translate` (`baloes.ts`), que vem antes do `scale`; o balão cresce
+  no próprio lugar. Estado: **corrigido** (QA da fatia 1).
+- **Teste que impede a volta:** `test/e2e/baloes.mjs` (T-U1 jogando, com o diagnóstico na mensagem) e
+  `test/baloes.test.ts` "R82" (estático: lugar em `translate`, a entrada não anima `translate`).
+- Fonte: L8a; causa e correção, QA da fatia 1.
 
 ### R83 · O treino mudava o progresso da campanha na memória
 - **Sintoma (risco, achado lendo o código antes do salvo v2):** concluir um capítulo no "Treinar sozinho" registrava o

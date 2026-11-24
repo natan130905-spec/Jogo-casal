@@ -207,7 +207,9 @@ export class Baloes {
       const el = this.els[q];
       if (!lugar) { el.style.visibility = 'hidden'; this.ultimo[q] = null; continue; }
       el.style.visibility = '';
-      el.style.transform = `translate(${lugar.x.toFixed(1)}px, ${lugar.y.toFixed(1)}px)`;
+      // propriedade `translate`, não `transform`: o `scale` da entrada (baloes.css) vem antes do `transform` e encolheria
+      // o deslocamento junto, e o balão entraria 15 % mais perto do canto de cima à esquerda, por cima do ❚❚ (R82)
+      el.style.translate = `${lugar.x.toFixed(1)}px ${lugar.y.toFixed(1)}px`;
       const rect = { l: lugar.x, t: lugar.y, r: lugar.x + w, b: lugar.y + h };
       obs.push(rect);
       // a ponta aponta para o personagem: embaixo quando ele está logo abaixo; senão gira na direção dele

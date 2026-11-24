@@ -87,3 +87,14 @@ describe('T-P1 (parte estática): balões e dicas não tocam o WebGL', () => {
     }
   });
 });
+
+describe('R82: o balão fica onde o jogo mediu, também durante a animação de entrada', () => {
+  it('o lugar vai na propriedade `translate` (o `scale` da entrada vem antes do `transform` e encolheria o deslocamento)', () => {
+    const fontes = import.meta.glob(['../src/ui/baloes.ts', '../src/ui/baloes.css'], { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+    const ts = fontes['../src/ui/baloes.ts'], css = fontes['../src/ui/baloes.css'];
+    expect(ts).toMatch(/el\.style\.translate\s*=/);
+    expect(ts).not.toMatch(/\bel\.style\.transform\s*=/);
+    // se a entrada voltar a animar `transform`, o lugar (em `translate`) continua certo; animar `translate` quebraria
+    expect(css).not.toMatch(/@keyframes balao-entra[^}]*\btranslate\b/);
+  });
+});
