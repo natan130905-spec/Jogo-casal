@@ -16,7 +16,7 @@ import {
   salvarProgresso, TOTAL_CAPITULOS, type Progresso,
 } from './ui/progresso';
 import { som } from './ui/som';
-import { $, Hud, Mapa, mostrarCaiu, mostrarConcluido, mostrarCreditos, mostrarPausa, mostrarTela, Quadrinhos, tocavel } from './ui/telas';
+import { $, Hud, Mapa, mostrarCaiu, mostrarConcluido, mostrarCreditos, mostrarPausa, mostrarTela, Quadrinhos, comConfirmacao, tocavel } from './ui/telas';
 
 const VERSAO = '0.3.0';
 const params = new URLSearchParams(location.search);
@@ -351,7 +351,11 @@ $('#bt-treino').onclick = async () => {
   iniciarSessao();
 };
 $('#bt-voltar').onclick = () => sair();
-$('#bt-mapa-sair').onclick = () => sair();
+// saídas destrutivas: só com o segundo toque (R28). Sair da sala derruba a sala dos dois; o mapa abandona a fase.
+const avisoSair = () => (modo === 'anfitriao' ? 'Toque de novo: sair (a Bruna também sai)' : modo === 'convidado' ? 'Toque de novo: sair da sala' : 'Toque de novo: sair');
+comConfirmacao($('#bt-mapa-sair'), avisoSair, () => sair());
+comConfirmacao($('#bt-pausa-mapa'), 'Toque de novo: voltar ao mapa (a fase recomeça)', () => acao('mapa'));
+comConfirmacao($('#bt-pausa-sair'), avisoSair, () => sair());
 $('#bt-historia').onclick = () => { if (controla()) ir({ t: 'cena', cena: 'prologo', quadro: 0, cap: 1 }); };
 mapa.aoSelecionar = (n) => { if (controla()) ir({ t: 'mapa', sel: n }); };
 mapa.aoJogar = (n) => { if (controla() && (modo === 'treino' || liberado(progresso, n))) ir({ t: 'fase', cap: n }); };
@@ -360,8 +364,6 @@ $('#creditos').addEventListener('click', () => acao('avancar'));
 $('#bt-conc-continuar').onclick = () => acao('avancar');
 $('#bt-pausa').onclick = () => acao('pausa');
 $('#bt-continuar').onclick = () => acao('continuar');
-$('#bt-pausa-mapa').onclick = () => acao('mapa');
-$('#bt-pausa-sair').onclick = () => sair();
 const rotuloSom = () => { $('#bt-som').textContent = `Som: ${som.ligado ? 'ligado' : 'desligado'}`; };
 rotuloSom();
 $('#bt-som').onclick = () => { som.alternar(); rotuloSom(); };

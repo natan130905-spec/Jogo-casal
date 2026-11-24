@@ -264,7 +264,7 @@ export function tocavel(el: HTMLElement, o: { aoBaixar?: boolean } = {}) {
  * Saída destrutiva com segundo toque: o 1º toque troca o texto do botão pelo aviso (`pergunta`) e o deixa em destaque
  * por 3 s; só um 2º toque nesse tempo executa `fazer`. Devolve uma função que cancela o pedido (ao fechar a tela).
  */
-export function comConfirmacao(el: HTMLElement, pergunta: string, fazer: () => void) {
+export function comConfirmacao(el: HTMLElement, pergunta: string | (() => string), fazer: () => void) {
   let original = '', timer: ReturnType<typeof setTimeout> | null = null;
   const cancelar = () => {
     if (timer === null) return;
@@ -274,7 +274,7 @@ export function comConfirmacao(el: HTMLElement, pergunta: string, fazer: () => v
   el.addEventListener('click', () => {
     if (timer !== null) { cancelar(); fazer(); return; }
     original = el.textContent ?? '';
-    el.textContent = pergunta; el.classList.add('confirmar');
+    el.textContent = typeof pergunta === 'function' ? pergunta() : pergunta; el.classList.add('confirmar');
     timer = setTimeout(cancelar, 3000);
   });
   return cancelar;
