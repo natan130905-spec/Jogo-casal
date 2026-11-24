@@ -1,0 +1,12 @@
+{
+ "convidadoPodePular": true,
+ "convidadoCongelado3s": {
+  "bxAntes": 0.3,
+  "bxDepois": 0.3,
+  "vxBruna": -5.2,
+  "anfitriaoPausou": false,
+  "avisoConexao": false,
+  "quedas": 0
+ },
+ "pausaTextoAnfitriao": "Pausado por Bruna (quem entrou na sala)."
+}

@@ -1,0 +1,52 @@
+{
+ "4g": {
+  "ttfbMs": 11,
+  "fcpMs": 256,
+  "dclMs": 567,
+  "loadMs": 569,
+  "menuProntoMs": 618,
+  "bytesAteMenuKB": 316,
+  "treinoAteMapaMs": 367,
+  "jogarAtePrimeiroQuadroMs": 6366,
+  "montarFaseMs": 1209,
+  "compilarShadersMs": 455,
+  "programas": 16,
+  "tarefasLongas": [
+   54,
+   1130,
+   2777,
+   912,
+   598,
+   445,
+   379
+  ],
+  "porPasta": {
+   "pagina": {
+    "n": 1,
+    "KB": 3
+   },
+   "assets": {
+    "n": 2,
+    "KB": 268
+   },
+   "arte": {
+    "n": 9,
+    "KB": 46
+   },
+   "som": {
+    "n": 2,
+    "KB": 2112
+   }
+  },
+  "maiores": [
+   "som/musica_menu.mp3 1056 KB",
+   "som/musica_cap1_brinquedos.mp3 1056 KB",
+   "assets/index-Bv4aBBZw.js 262 KB",
+   "arte/14_rosto_natan.webp 25 KB",
+   "arte/15_rosto_bruna.webp 21 KB",
+   "assets/index-CcGXK5fw.css 6 KB",
+   "?resfixa 3 KB",
+   "arte/06_cap1_brinquedos.webp 0 KB"
+  ]
+ }
+}

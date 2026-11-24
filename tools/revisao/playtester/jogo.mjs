@@ -88,8 +88,9 @@ for (const nomeAp of aps) {
     r.pousoAcima = { vx: +(await est(page)).j[0].vx.toFixed(2) };
     await toque.soltar(1); await ticks(page, 6);
     // 3) diagonal para cima-direita a 45° (quem quer "andar e subir"): x efetivo
-    await toque.baixar(1, J.x, J.y); await toque.mover(1, J.x + 45, J.y - 45); await ticks(page, 12);
-    r.diagonal45 = { vx: +(await est(page)).j[0].vx.toFixed(2) };
+    { const x0 = (await est(page)).j[0].x; const sd = x0 < 5 ? 1 : -1;
+      await toque.baixar(1, J.x, J.y); await toque.mover(1, J.x + sd * 45, J.y - 45); await ticks(page, 12);
+      const e = await est(page); r.diagonal45 = { vx: +Math.abs(e.j[0].vx).toFixed(2), x0: +x0.toFixed(2), x1: +e.j[0].x.toFixed(2) }; }
     await toque.soltar(1); await ticks(page, 6);
     // 4) multitoque: joystick para a direita segurado + pulo
     await toque.baixar(1, J.x, J.y); await toque.mover(1, J.x + 60, J.y); await ticks(page, 6);
@@ -128,8 +129,8 @@ for (const nomeAp of aps) {
       const s = await est(page);
       const alvo = s.j[1].x - 0.9;
       await toque.baixar(1, J.x, J.y); await toque.mover(1, J.x + Math.sign(alvo - s.j[0].x) * 40, J.y);
-      for (let k = 0; k < 60; k++) { const e = await est(page); if (Math.abs(e.j[0].x - alvo) < 0.4) break; await ticks(page, 2); }
-      await toque.soltar(1);
+      for (let k = 0; k < 200; k++) { const e = await est(page); const d = alvo - e.j[0].x; if (Math.abs(d) < 0.4) break; await toque.mover(1, J.x + Math.sign(d) * 30, J.y); await ticks(page, 1); }
+      await toque.soltar(1); await ticks(page, 10);
       const a = await contagem(page);
       await toque.baixar(4, M.x, M.y); await ticks(page, 20);
       const e = await est(page);
@@ -142,11 +143,25 @@ for (const nomeAp of aps) {
     {
       await toque.baixar(1, J.x, J.y); await toque.mover(1, J.x + 60, J.y); await ticks(page, 6);
       const bp = await page.locator('#bt-pausa').boundingBox();
-      await toque.baixar(5, bp.x + bp.width / 2, bp.y + bp.height / 2); await toque.soltar(5);
-      await page.waitForSelector('#pausa:not([hidden])');
+      await toque.baixar(5, bp.x + bp.width / 2, bp.y + bp.height / 2); await page.waitForTimeout(80); await toque.soltar(5);
+      // ❚❚ usa onclick: com outro dedo no joystick o navegador não gera "click" (toque com dois dedos)
+      r.pausaComDedoNoJoystick = await page.waitForSelector('#pausa:not([hidden])', { timeout: 4000 }).then(() => true).catch(() => false);
+      console.log('pausaComDedoNoJoystick', r.pausaComDedoNoJoystick, JSON.stringify(r));
+      if (!r.pausaComDedoNoJoystick) { // só com um dedo
+        await toque.soltar(1);
+        await toque.baixar(5, bp.x + bp.width / 2, bp.y + bp.height / 2); await page.waitForTimeout(80); await toque.soltar(5);
+        await page.waitForSelector('#pausa:not([hidden])');
+        await toque.baixar(1, J.x, J.y); await toque.mover(1, J.x + 60, J.y); // dedo volta ao joystick durante a pausa
+      }
       const bc = await page.locator('#bt-continuar').boundingBox();
-      await toque.baixar(5, bc.x + bc.width / 2, bc.y + bc.height / 2); await toque.soltar(5);
-      await page.waitForSelector('#pausa', { state: 'hidden' });
+      await toque.baixar(5, bc.x + bc.width / 2, bc.y + bc.height / 2); await page.waitForTimeout(80); await toque.soltar(5);
+      r.continuarComDedoNoJoystick = await page.waitForSelector('#pausa', { state: 'hidden', timeout: 4000 }).then(() => true).catch(() => false);
+      if (!r.continuarComDedoNoJoystick) {
+        await toque.soltar(1);
+        await toque.baixar(5, bc.x + bc.width / 2, bc.y + bc.height / 2); await page.waitForTimeout(80); await toque.soltar(5);
+        await page.waitForSelector('#pausa', { state: 'hidden' });
+        await toque.baixar(1, J.x, J.y); await toque.mover(1, J.x + 60, J.y);
+      }
       await ticks(page, 10);
       r.depoisDaPausaComDedoNoJoystick = { vx: +(await est(page)).j[0].vx.toFixed(2) };
       await toque.mover(1, J.x + 62, J.y); await ticks(page, 6);

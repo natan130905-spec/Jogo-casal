@@ -1,0 +1,798 @@
+{
+ "iphone": {
+  "aparelho": "iPhone 14 (PWA)",
+  "rects": {
+   "#joystick": {
+    "x": 47,
+    "y": 226.21875,
+    "w": 140.390625,
+    "h": 140.390625
+   },
+   "#bt-pulo": {
+    "x": 703.71875,
+    "y": 277.21875,
+    "w": 93.28125,
+    "h": 93.28125
+   },
+   "#bt-tiro": {
+    "x": 594.203125,
+    "y": 286.078125,
+    "w": 77.0625,
+    "h": 77.0625
+   },
+   "#bt-mao": {
+    "x": 711.84375,
+    "y": 186.140625,
+    "w": 73,
+    "h": 73
+   },
+   "#bt-pausa": {
+    "x": 406.921875,
+    "y": 6,
+    "w": 49.140625,
+    "h": 29
+   },
+   "#bt-trocar": {
+    "x": 462.0625,
+    "y": 6,
+    "w": 36.578125,
+    "h": 29
+   },
+   "#hud-p1": {
+    "x": 47,
+    "y": 6,
+    "w": 132.453125,
+    "h": 50.6875
+   },
+   "#hud-p2": {
+    "x": 664.546875,
+    "y": 6,
+    "w": 132.453125,
+    "h": 50.6875
+   },
+   ".hud-meio": {
+    "x": 287.9375,
+    "y": 6,
+    "w": 268.125,
+    "h": 64
+   }
+  },
+  "curva": [
+   {
+    "dxPx": 5,
+    "fracRaio": 0.07,
+    "vx": 0
+   },
+   {
+    "dxPx": 10,
+    "fracRaio": 0.14,
+    "vx": 0
+   },
+   {
+    "dxPx": 15,
+    "fracRaio": 0.21,
+    "vx": 0.55
+   },
+   {
+    "dxPx": 20,
+    "fracRaio": 0.28,
+    "vx": 1.17
+   },
+   {
+    "dxPx": 25,
+    "fracRaio": 0.36,
+    "vx": 1.79
+   },
+   {
+    "dxPx": 30,
+    "fracRaio": 0.43,
+    "vx": 2.4
+   },
+   {
+    "dxPx": 40,
+    "fracRaio": 0.57,
+    "vx": 3.64
+   },
+   {
+    "dxPx": 50,
+    "fracRaio": 0.71,
+    "vx": 4.87
+   },
+   {
+    "dxPx": 60,
+    "fracRaio": 0.85,
+    "vx": 5.2
+   },
+   {
+    "dxPx": 70,
+    "fracRaio": 1,
+    "vx": 5.2
+   },
+   {
+    "dxPx": 100,
+    "fracRaio": 1.42,
+    "vx": 5.2
+   }
+  ],
+  "pousoForaDoCentro": {
+   "dxPx": 30,
+   "vx": 2.4
+  },
+  "pousoForaDaBorda": {
+   "vx": 0
+  },
+  "pousoAcima": {
+   "vx": 0
+  },
+  "diagonal45": {
+   "vx": 4.26,
+   "x0": 6.3,
+   "x1": 4.79
+  },
+  "multitoque": {
+   "pulos": 1,
+   "vxNoAr": 5.2,
+   "vyNoAr": -1.5
+  },
+  "msPorQuadroAqui": 132,
+  "toqueRapido_0ms": {
+   "toques": 12,
+   "pulos": 12
+  },
+  "toqueRapido_120ms": {
+   "toques": 12,
+   "pulos": 12
+  },
+  "tiroSegurado3s": 10,
+  "mao": {
+   "maos": 0,
+   "distancia": 6.5,
+   "segurada": true
+  },
+  "pausaComDedoNoJoystick": false,
+  "continuarComDedoNoJoystick": false,
+  "depoisDaPausaComDedoNoJoystick": {
+   "vx": 0
+  },
+  "depoisDaPausaMexendoODedo": {
+   "vx": 0
+  },
+  "troca": {
+   "vxNatan": 0,
+   "vxBruna": 5.2
+  },
+  "capturas": {
+   "1": [
+    {
+     "tick": 1002,
+     "nome": "iphone_cap1_t1002",
+     "j": [
+      [
+       52.6,
+       2.8
+      ],
+      [
+       51.4,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 2004,
+     "nome": "iphone_cap1_t2004",
+     "j": [
+      [
+       85.1,
+       2
+      ],
+      [
+       84.2,
+       3
+      ]
+     ]
+    },
+    {
+     "tick": 3006,
+     "nome": "iphone_cap1_t3006",
+     "j": [
+      [
+       125.5,
+       0
+      ],
+      [
+       120.7,
+       0.8
+      ]
+     ]
+    },
+    {
+     "tick": 3887,
+     "nome": "iphone_cap1_t3887",
+     "j": [
+      [
+       166.9,
+       0.8
+      ],
+      [
+       165.7,
+       0
+      ]
+     ]
+    }
+   ],
+   "2": [
+    {
+     "tick": 1051,
+     "nome": "iphone_cap2_t1051",
+     "j": [
+      [
+       44,
+       0
+      ],
+      [
+       49.3,
+       -3
+      ]
+     ]
+    },
+    {
+     "tick": 2102,
+     "nome": "iphone_cap2_t2102",
+     "j": [
+      [
+       93.8,
+       0
+      ],
+      [
+       92.8,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 3153,
+     "nome": "iphone_cap2_t3153",
+     "j": [
+      [
+       129.7,
+       -3
+      ],
+      [
+       128.7,
+       -3
+      ]
+     ]
+    },
+    {
+     "tick": 4077,
+     "nome": "iphone_cap2_t4077",
+     "j": [
+      [
+       178.2,
+       5.2
+      ],
+      [
+       177.3,
+       2.4
+      ]
+     ]
+    }
+   ],
+   "3": [
+    {
+     "tick": 1839,
+     "nome": "iphone_cap3_t1839",
+     "j": [
+      [
+       73.3,
+       0
+      ],
+      [
+       72.1,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 3678,
+     "nome": "iphone_cap3_t3678",
+     "j": [
+      [
+       110.1,
+       0.6
+      ],
+      [
+       109.6,
+       0.6
+      ]
+     ]
+    },
+    {
+     "tick": 5517,
+     "nome": "iphone_cap3_t5517",
+     "j": [
+      [
+       137.8,
+       0
+      ],
+      [
+       136.8,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 7135,
+     "nome": "iphone_cap3_t7135",
+     "j": [
+      [
+       206.2,
+       6
+      ],
+      [
+       193.2,
+       3.4
+      ]
+     ]
+    }
+   ],
+   "7": [
+    {
+     "tick": 1163,
+     "nome": "iphone_cap7_t1163",
+     "j": [
+      [
+       55.4,
+       3.4
+      ],
+      [
+       54.8,
+       3.4
+      ]
+     ]
+    },
+    {
+     "tick": 2327,
+     "nome": "iphone_cap7_t2327",
+     "j": [
+      [
+       109.7,
+       4.4
+      ],
+      [
+       108.3,
+       0.4
+      ]
+     ]
+    },
+    {
+     "tick": 3491,
+     "nome": "iphone_cap7_t3491",
+     "j": [
+      [
+       172,
+       0
+      ],
+      [
+       171,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 4515,
+     "nome": "iphone_cap7_t4515",
+     "j": [
+      [
+       195.8,
+       0
+      ],
+      [
+       208.6,
+       0
+      ]
+     ]
+    }
+   ]
+  },
+  "erros": []
+ },
+ "android": {
+  "aparelho": "Pixel/Redmi 915×412",
+  "rects": {
+   "#joystick": {
+    "x": 36.59375,
+    "y": 238.96875,
+    "w": 148.3125,
+    "h": 148.3125
+   },
+   "#bt-pulo": {
+    "x": 789.015625,
+    "y": 292.859375,
+    "w": 98.546875,
+    "h": 98.546875
+   },
+   "#bt-tiro": {
+    "x": 673.328125,
+    "y": 302.21875,
+    "w": 81.40625,
+    "h": 81.40625
+   },
+   "#bt-mao": {
+    "x": 797.609375,
+    "y": 196.65625,
+    "w": 77.109375,
+    "h": 77.109375
+   },
+   "#bt-pausa": {
+    "x": 443.359375,
+    "y": 6,
+    "w": 49.140625,
+    "h": 29
+   },
+   "#bt-trocar": {
+    "x": 498.5,
+    "y": 6,
+    "w": 36.578125,
+    "h": 29
+   },
+   "#hud-p1": {
+    "x": 10,
+    "y": 6,
+    "w": 139.390625,
+    "h": 53.546875
+   },
+   "#hud-p2": {
+    "x": 765.609375,
+    "y": 6,
+    "w": 139.390625,
+    "h": 53.546875
+   },
+   ".hud-meio": {
+    "x": 323.4375,
+    "y": 6,
+    "w": 268.125,
+    "h": 64
+   }
+  },
+  "curva": [
+   {
+    "dxPx": 5,
+    "fracRaio": 0.07,
+    "vx": 0
+   },
+   {
+    "dxPx": 10,
+    "fracRaio": 0.13,
+    "vx": 0
+   },
+   {
+    "dxPx": 15,
+    "fracRaio": 0.2,
+    "vx": 0.45
+   },
+   {
+    "dxPx": 20,
+    "fracRaio": 0.27,
+    "vx": 1.04
+   },
+   {
+    "dxPx": 25,
+    "fracRaio": 0.34,
+    "vx": 1.62
+   },
+   {
+    "dxPx": 30,
+    "fracRaio": 0.4,
+    "vx": 2.21
+   },
+   {
+    "dxPx": 40,
+    "fracRaio": 0.54,
+    "vx": 3.37
+   },
+   {
+    "dxPx": 50,
+    "fracRaio": 0.67,
+    "vx": 4.54
+   },
+   {
+    "dxPx": 60,
+    "fracRaio": 0.81,
+    "vx": 5.2
+   },
+   {
+    "dxPx": 70,
+    "fracRaio": 0.94,
+    "vx": 5.2
+   },
+   {
+    "dxPx": 100,
+    "fracRaio": 1.35,
+    "vx": 5.2
+   }
+  ],
+  "pousoForaDoCentro": {
+   "dxPx": 30,
+   "vx": 2.21
+  },
+  "pousoForaDaBorda": {
+   "vx": 0
+  },
+  "pousoAcima": {
+   "vx": 0
+  },
+  "diagonal45": {
+   "vx": 3.96,
+   "x0": 6.74,
+   "x1": 4.86
+  },
+  "multitoque": {
+   "pulos": 1,
+   "vxNoAr": 5,
+   "vyNoAr": 1.5
+  },
+  "msPorQuadroAqui": 218,
+  "toqueRapido_0ms": {
+   "toques": 12,
+   "pulos": 12
+  },
+  "toqueRapido_120ms": {
+   "toques": 12,
+   "pulos": 12
+  },
+  "tiroSegurado3s": 10,
+  "mao": {
+   "maos": 0,
+   "distancia": 6.5,
+   "segurada": true
+  },
+  "pausaComDedoNoJoystick": false,
+  "continuarComDedoNoJoystick": false,
+  "depoisDaPausaComDedoNoJoystick": {
+   "vx": 0
+  },
+  "depoisDaPausaMexendoODedo": {
+   "vx": 0
+  },
+  "troca": {
+   "vxNatan": 0,
+   "vxBruna": 5.2
+  },
+  "capturas": {
+   "1": [
+    {
+     "tick": 1002,
+     "nome": "android_cap1_t1002",
+     "j": [
+      [
+       52.6,
+       2.8
+      ],
+      [
+       51.4,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 2004,
+     "nome": "android_cap1_t2004",
+     "j": [
+      [
+       85.1,
+       2
+      ],
+      [
+       84.2,
+       3
+      ]
+     ]
+    },
+    {
+     "tick": 3006,
+     "nome": "android_cap1_t3006",
+     "j": [
+      [
+       125.5,
+       0
+      ],
+      [
+       120.7,
+       0.8
+      ]
+     ]
+    },
+    {
+     "tick": 3887,
+     "nome": "android_cap1_t3887",
+     "j": [
+      [
+       166.9,
+       0.8
+      ],
+      [
+       165.7,
+       0
+      ]
+     ]
+    }
+   ],
+   "2": [
+    {
+     "tick": 1051,
+     "nome": "android_cap2_t1051",
+     "j": [
+      [
+       44,
+       0
+      ],
+      [
+       49.3,
+       -3
+      ]
+     ]
+    },
+    {
+     "tick": 2102,
+     "nome": "android_cap2_t2102",
+     "j": [
+      [
+       93.8,
+       0
+      ],
+      [
+       92.8,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 3153,
+     "nome": "android_cap2_t3153",
+     "j": [
+      [
+       129.7,
+       -3
+      ],
+      [
+       128.7,
+       -3
+      ]
+     ]
+    },
+    {
+     "tick": 4077,
+     "nome": "android_cap2_t4077",
+     "j": [
+      [
+       178.2,
+       5.2
+      ],
+      [
+       177.3,
+       2.4
+      ]
+     ]
+    }
+   ],
+   "3": [
+    {
+     "tick": 1839,
+     "nome": "android_cap3_t1839",
+     "j": [
+      [
+       73.3,
+       0
+      ],
+      [
+       72.1,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 3678,
+     "nome": "android_cap3_t3678",
+     "j": [
+      [
+       110.1,
+       0.6
+      ],
+      [
+       109.6,
+       0.6
+      ]
+     ]
+    },
+    {
+     "tick": 5517,
+     "nome": "android_cap3_t5517",
+     "j": [
+      [
+       137.8,
+       0
+      ],
+      [
+       136.8,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 7135,
+     "nome": "android_cap3_t7135",
+     "j": [
+      [
+       206.2,
+       6
+      ],
+      [
+       197,
+       0.9
+      ]
+     ]
+    }
+   ],
+   "7": [
+    {
+     "tick": 1163,
+     "nome": "android_cap7_t1163",
+     "j": [
+      [
+       55.4,
+       3.4
+      ],
+      [
+       54.8,
+       3.4
+      ]
+     ]
+    },
+    {
+     "tick": 2327,
+     "nome": "android_cap7_t2327",
+     "j": [
+      [
+       109.7,
+       4.4
+      ],
+      [
+       108.3,
+       0.4
+      ]
+     ]
+    },
+    {
+     "tick": 3491,
+     "nome": "android_cap7_t3491",
+     "j": [
+      [
+       172,
+       0
+      ],
+      [
+       171,
+       0
+      ]
+     ]
+    },
+    {
+     "tick": 4515,
+     "nome": "android_cap7_t4515",
+     "j": [
+      [
+       195.8,
+       0
+      ],
+      [
+       208.6,
+       0
+      ]
+     ]
+    }
+   ]
+  },
+  "erros": []
+ }
+}

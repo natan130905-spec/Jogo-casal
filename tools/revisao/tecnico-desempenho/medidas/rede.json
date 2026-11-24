@@ -1,0 +1,254 @@
+{
+ "lat0_jit0_perda0": {
+  "lat": 0,
+  "perda": 0,
+  "jitter": 0,
+  "anfitriao": {
+   "msgPorSeg": 20.7,
+   "KBps": 3.8,
+   "bytesMsg": {
+    "med": 196,
+    "p95": 232,
+    "max": 272
+   }
+  },
+  "convidado": {
+   "msgPorSeg": 21,
+   "KBps": 0.8,
+   "bytesMsg": {
+    "med": 39,
+    "p95": 40,
+    "max": 40
+   }
+  },
+  "atrasoConvidadoTicks": {
+   "med": 10,
+   "p95": 18
+  },
+  "desvioPosicaoM": {
+   "med": 0.1,
+   "p95": 0.2
+  },
+  "congelamentos": 0,
+  "reacaoPuloConvidadoMs": 216,
+  "reacoes": [
+   216,
+   136,
+   224
+  ],
+  "fps": {
+   "anfitriao": 17,
+   "convidado": 18
+  }
+ },
+ "lat0_jit0_perda3": {
+  "lat": 0,
+  "perda": 3,
+  "jitter": 0,
+  "anfitriao": {
+   "msgPorSeg": 20.8,
+   "KBps": 3.8,
+   "bytesMsg": {
+    "med": 196,
+    "p95": 232,
+    "max": 272
+   }
+  },
+  "convidado": {
+   "msgPorSeg": 22.7,
+   "KBps": 0.8,
+   "bytesMsg": {
+    "med": 39,
+    "p95": 40,
+    "max": 40
+   }
+  },
+  "atrasoConvidadoTicks": {
+   "med": 11,
+   "p95": 16
+  },
+  "desvioPosicaoM": {
+   "med": 0.1,
+   "p95": 0.3
+  },
+  "congelamentos": 0,
+  "reacaoPuloConvidadoMs": 183,
+  "reacoes": [
+   164,
+   199,
+   183
+  ],
+  "fps": {
+   "anfitriao": 18,
+   "convidado": 19
+  }
+ },
+ "lat60_jit25_perda0": {
+  "lat": 60,
+  "perda": 0,
+  "jitter": 25,
+  "anfitriao": {
+   "msgPorSeg": 20.1,
+   "KBps": 3.6,
+   "bytesMsg": {
+    "med": 195,
+    "p95": 232,
+    "max": 272
+   }
+  },
+  "convidado": {
+   "msgPorSeg": 18.3,
+   "KBps": 0.7,
+   "bytesMsg": {
+    "med": 39,
+    "p95": 40,
+    "max": 40
+   }
+  },
+  "atrasoConvidadoTicks": {
+   "med": 16,
+   "p95": 22
+  },
+  "desvioPosicaoM": {
+   "med": 0.1,
+   "p95": 0.3
+  },
+  "congelamentos": 0,
+  "reacaoPuloConvidadoMs": 326,
+  "reacoes": [
+   326,
+   281,
+   548
+  ],
+  "fps": {
+   "anfitriao": 15,
+   "convidado": 16
+  }
+ },
+ "lat60_jit25_perda3": {
+  "lat": 60,
+  "perda": 3,
+  "jitter": 25,
+  "anfitriao": {
+   "msgPorSeg": 20.1,
+   "KBps": 3.7,
+   "bytesMsg": {
+    "med": 195,
+    "p95": 232,
+    "max": 272
+   }
+  },
+  "convidado": {
+   "msgPorSeg": 19.8,
+   "KBps": 0.7,
+   "bytesMsg": {
+    "med": 39,
+    "p95": 40,
+    "max": 40
+   }
+  },
+  "atrasoConvidadoTicks": {
+   "med": 17,
+   "p95": 27
+  },
+  "desvioPosicaoM": {
+   "med": 0.1,
+   "p95": 0.3
+  },
+  "congelamentos": 0,
+  "reacaoPuloConvidadoMs": 433,
+  "reacoes": [
+   502,
+   433,
+   319
+  ],
+  "fps": {
+   "anfitriao": 16,
+   "convidado": 17
+  }
+ },
+ "lat150_jit25_perda0": {
+  "lat": 150,
+  "perda": 0,
+  "jitter": 25,
+  "anfitriao": {
+   "msgPorSeg": 20.4,
+   "KBps": 3.7,
+   "bytesMsg": {
+    "med": 195,
+    "p95": 232,
+    "max": 272
+   }
+  },
+  "convidado": {
+   "msgPorSeg": 19.4,
+   "KBps": 0.7,
+   "bytesMsg": {
+    "med": 39,
+    "p95": 40,
+    "max": 40
+   }
+  },
+  "atrasoConvidadoTicks": {
+   "med": 22,
+   "p95": 28
+  },
+  "desvioPosicaoM": {
+   "med": 0.1,
+   "p95": 0.3
+  },
+  "congelamentos": 0,
+  "reacaoPuloConvidadoMs": 572,
+  "reacoes": [
+   569,
+   572,
+   641
+  ],
+  "fps": {
+   "anfitriao": 14,
+   "convidado": 16
+  }
+ },
+ "lat150_jit25_perda3": {
+  "lat": 150,
+  "perda": 3,
+  "jitter": 25,
+  "anfitriao": {
+   "msgPorSeg": 20.5,
+   "KBps": 3.7,
+   "bytesMsg": {
+    "med": 195,
+    "p95": 232,
+    "max": 272
+   }
+  },
+  "convidado": {
+   "msgPorSeg": 17.8,
+   "KBps": 0.7,
+   "bytesMsg": {
+    "med": 39,
+    "p95": 40,
+    "max": 40
+   }
+  },
+  "atrasoConvidadoTicks": {
+   "med": 22,
+   "p95": 37
+  },
+  "desvioPosicaoM": {
+   "med": 0.1,
+   "p95": 0.9
+  },
+  "congelamentos": 0,
+  "reacaoPuloConvidadoMs": 707,
+  "reacoes": [
+   707,
+   678,
+   828
+  ],
+  "fps": {
+   "anfitriao": 15,
+   "convidado": 15
+  }
+ }
+}

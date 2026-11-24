@@ -1,0 +1,361 @@
+{
+ "iphone": {
+  "1": {
+   "ticks": 4008,
+   "alturaPersonagemPx": {
+    "p10": 52,
+    "mediana": 69,
+    "p90": 70,
+    "min": 42
+   },
+   "fracAlturaTela": 0.177,
+   "distCamera": {
+    "mediana": 7.6,
+    "p90": 10.7,
+    "max": 13.1
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 33,
+    "vistas": 33,
+    "metadeOuMaisDoTempoTapadas": 2,
+    "fracTempoTapado": 0.208
+   },
+   "soltasFracTapadas": 0.351,
+   "bichinhosFracTempoTapados": 0.367
+  },
+  "2": {
+   "ticks": 4204,
+   "alturaPersonagemPx": {
+    "p10": 45,
+    "mediana": 68,
+    "p90": 70,
+    "min": 33
+   },
+   "fracAlturaTela": 0.174,
+   "distCamera": {
+    "mediana": 7.8,
+    "p90": 12.2,
+    "max": 16.6
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 33,
+    "vistas": 33,
+    "metadeOuMaisDoTempoTapadas": 1,
+    "fracTempoTapado": 0.232
+   },
+   "soltasFracTapadas": 0.384,
+   "bichinhosFracTempoTapados": 0.228
+  },
+  "3": {
+   "ticks": 7356,
+   "alturaPersonagemPx": {
+    "p10": 33,
+    "mediana": 61,
+    "p90": 70,
+    "min": 25
+   },
+   "fracAlturaTela": 0.157,
+   "distCamera": {
+    "mediana": 8.8,
+    "p90": 16.2,
+    "max": 22
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 34,
+    "vistas": 34,
+    "metadeOuMaisDoTempoTapadas": 5,
+    "fracTempoTapado": 0.155
+   },
+   "soltasFracTapadas": 0.094,
+   "bichinhosFracTempoTapados": 0.278
+  },
+  "4": {
+   "ticks": 5589,
+   "alturaPersonagemPx": {
+    "p10": 45,
+    "mediana": 64,
+    "p90": 70,
+    "min": 34
+   },
+   "fracAlturaTela": 0.163,
+   "distCamera": {
+    "mediana": 8.5,
+    "p90": 12.3,
+    "max": 16.1
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 32,
+    "vistas": 32,
+    "metadeOuMaisDoTempoTapadas": 3,
+    "fracTempoTapado": 0.208
+   },
+   "soltasFracTapadas": 0.197,
+   "bichinhosFracTempoTapados": 0.373
+  },
+  "5": {
+   "ticks": 4281,
+   "alturaPersonagemPx": {
+    "p10": 31,
+    "mediana": 59,
+    "p90": 70,
+    "min": 25
+   },
+   "fracAlturaTela": 0.152,
+   "distCamera": {
+    "mediana": 9.1,
+    "p90": 17.6,
+    "max": 22
+   },
+   "jogadorAtrasDeControleOuHud": 0.023,
+   "tapadoPor": {
+    "#bt-tiro": 0.008,
+    ".hud-meio": 0.014
+   },
+   "estrelinhas": {
+    "total": 39,
+    "vistas": 38,
+    "metadeOuMaisDoTempoTapadas": 4,
+    "fracTempoTapado": 0.221
+   },
+   "soltasFracTapadas": 0.293,
+   "bichinhosFracTempoTapados": 0.302
+  },
+  "6": {
+   "ticks": 3227,
+   "alturaPersonagemPx": {
+    "p10": 40,
+    "mediana": 67,
+    "p90": 70,
+    "min": 39
+   },
+   "fracAlturaTela": 0.171,
+   "distCamera": {
+    "mediana": 8.1,
+    "p90": 13.2,
+    "max": 14.5
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 33,
+    "vistas": 33,
+    "metadeOuMaisDoTempoTapadas": 8,
+    "fracTempoTapado": 0.276
+   },
+   "soltasFracTapadas": 0.25,
+   "bichinhosFracTempoTapados": 0.283
+  },
+  "7": {
+   "ticks": 4655,
+   "alturaPersonagemPx": {
+    "p10": 31,
+    "mediana": 70,
+    "p90": 70,
+    "min": 31
+   },
+   "fracAlturaTela": 0.179,
+   "distCamera": {
+    "mediana": 7.6,
+    "p90": 17.5,
+    "max": 17.7
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 34,
+    "vistas": 34,
+    "metadeOuMaisDoTempoTapadas": 1,
+    "fracTempoTapado": 0.28
+   },
+   "soltasFracTapadas": 0.149,
+   "bichinhosFracTempoTapados": 0.194
+  }
+ },
+ "android": {
+  "1": {
+   "ticks": 4008,
+   "alturaPersonagemPx": {
+    "p10": 55,
+    "mediana": 73,
+    "p90": 74,
+    "min": 44
+   },
+   "fracAlturaTela": 0.177,
+   "distCamera": {
+    "mediana": 7.6,
+    "p90": 10.7,
+    "max": 13.1
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 33,
+    "vistas": 33,
+    "metadeOuMaisDoTempoTapadas": 3,
+    "fracTempoTapado": 0.247
+   },
+   "soltasFracTapadas": 0.296,
+   "bichinhosFracTempoTapados": 0.561
+  },
+  "2": {
+   "ticks": 4204,
+   "alturaPersonagemPx": {
+    "p10": 48,
+    "mediana": 72,
+    "p90": 74,
+    "min": 35
+   },
+   "fracAlturaTela": 0.174,
+   "distCamera": {
+    "mediana": 7.8,
+    "p90": 12.2,
+    "max": 16.6
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 33,
+    "vistas": 33,
+    "metadeOuMaisDoTempoTapadas": 2,
+    "fracTempoTapado": 0.206
+   },
+   "soltasFracTapadas": 0.347,
+   "bichinhosFracTempoTapados": 0.19
+  },
+  "3": {
+   "ticks": 7356,
+   "alturaPersonagemPx": {
+    "p10": 35,
+    "mediana": 65,
+    "p90": 74,
+    "min": 26
+   },
+   "fracAlturaTela": 0.157,
+   "distCamera": {
+    "mediana": 8.8,
+    "p90": 16.2,
+    "max": 22
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 34,
+    "vistas": 34,
+    "metadeOuMaisDoTempoTapadas": 6,
+    "fracTempoTapado": 0.197
+   },
+   "soltasFracTapadas": 0.068,
+   "bichinhosFracTempoTapados": 0.224
+  },
+  "4": {
+   "ticks": 5589,
+   "alturaPersonagemPx": {
+    "p10": 47,
+    "mediana": 67,
+    "p90": 74,
+    "min": 35
+   },
+   "fracAlturaTela": 0.163,
+   "distCamera": {
+    "mediana": 8.5,
+    "p90": 12.3,
+    "max": 16.1
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 32,
+    "vistas": 32,
+    "metadeOuMaisDoTempoTapadas": 3,
+    "fracTempoTapado": 0.202
+   },
+   "soltasFracTapadas": 0.173,
+   "bichinhosFracTempoTapados": 0.318
+  },
+  "5": {
+   "ticks": 4281,
+   "alturaPersonagemPx": {
+    "p10": 33,
+    "mediana": 62,
+    "p90": 74,
+    "min": 27
+   },
+   "fracAlturaTela": 0.152,
+   "distCamera": {
+    "mediana": 9.1,
+    "p90": 17.6,
+    "max": 22
+   },
+   "jogadorAtrasDeControleOuHud": 0.012,
+   "tapadoPor": {
+    ".hud-meio": 0.012
+   },
+   "estrelinhas": {
+    "total": 39,
+    "vistas": 39,
+    "metadeOuMaisDoTempoTapadas": 7,
+    "fracTempoTapado": 0.226
+   },
+   "soltasFracTapadas": 0.27,
+   "bichinhosFracTempoTapados": 0.324
+  },
+  "6": {
+   "ticks": 3227,
+   "alturaPersonagemPx": {
+    "p10": 42,
+    "mediana": 71,
+    "p90": 74,
+    "min": 41
+   },
+   "fracAlturaTela": 0.171,
+   "distCamera": {
+    "mediana": 8.1,
+    "p90": 13.2,
+    "max": 14.5
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 33,
+    "vistas": 33,
+    "metadeOuMaisDoTempoTapadas": 8,
+    "fracTempoTapado": 0.248
+   },
+   "soltasFracTapadas": 0.242,
+   "bichinhosFracTempoTapados": 0.313
+  },
+  "7": {
+   "ticks": 4655,
+   "alturaPersonagemPx": {
+    "p10": 33,
+    "mediana": 74,
+    "p90": 74,
+    "min": 33
+   },
+   "fracAlturaTela": 0.179,
+   "distCamera": {
+    "mediana": 7.6,
+    "p90": 17.5,
+    "max": 17.7
+   },
+   "jogadorAtrasDeControleOuHud": 0,
+   "tapadoPor": {},
+   "estrelinhas": {
+    "total": 34,
+    "vistas": 34,
+    "metadeOuMaisDoTempoTapadas": 1,
+    "fracTempoTapado": 0.246
+   },
+   "soltasFracTapadas": 0.149,
+   "bichinhosFracTempoTapados": 0.222
+  }
+ }
+}

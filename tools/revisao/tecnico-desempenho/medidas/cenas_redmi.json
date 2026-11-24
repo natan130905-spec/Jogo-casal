@@ -1,0 +1,1680 @@
+{
+ "1_baixa": {
+  "cap": 1,
+  "q": "baixa",
+  "disp": "redmi",
+  "abrirFaseMs": 2576,
+  "montarAtePrimeiroDesenhoMs": 986,
+  "programas": 27,
+  "compilacoes": 27,
+  "compilarShadersMs": 455,
+  "maiorCompilarMs": 114,
+  "chamadasMax": 30,
+  "triMaxK": 40,
+  "quadrosAcel": {
+   "n": 114,
+   "cpuMed": 1.6,
+   "cpuP95": 5.7,
+   "chMed": 26,
+   "chMax": 31,
+   "triMedK": 35,
+   "triMaxK": 40
+  },
+  "quadrosTempoReal": {
+   "n": 43,
+   "cpuMed": 2.4,
+   "cpuP95": 15.6,
+   "chMed": 24,
+   "chMax": 30,
+   "triMedK": 38,
+   "triMaxK": 40,
+   "fpsSwiftShader": 8.7
+  },
+  "texturas": 18,
+  "texMB": 14.4,
+  "buffers": 215,
+  "bufMB": 2.7,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 2.6,
+  "canvas": [
+   873,
+   393
+  ],
+  "antialias": false,
+  "vramEstimadaMB": 19.7,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 6.9,
+    "jsHeapTotalMB": 7.4,
+    "nos": 551,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.4,
+    "jsHeapTotalMB": 9.4,
+    "nos": 551,
+    "ouvintes": 76
+   },
+   "mapaDepois": {
+    "jsHeapMB": 7.9,
+    "jsHeapTotalMB": 8.4,
+    "nos": 559,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   909,
+   1098,
+   230,
+   118,
+   135,
+   147
+  ],
+  "erros": []
+ },
+ "2_baixa": {
+  "cap": 2,
+  "q": "baixa",
+  "disp": "redmi",
+  "abrirFaseMs": 3751,
+  "montarAtePrimeiroDesenhoMs": 1506,
+  "programas": 27,
+  "compilacoes": 27,
+  "compilarShadersMs": 287,
+  "maiorCompilarMs": 82,
+  "chamadasMax": 33,
+  "triMaxK": 96,
+  "quadrosAcel": {
+   "n": 71,
+   "cpuMed": 3,
+   "cpuP95": 9.4,
+   "chMed": 28,
+   "chMax": 33,
+   "triMedK": 83,
+   "triMaxK": 96
+  },
+  "quadrosTempoReal": {
+   "n": 23,
+   "cpuMed": 2.6,
+   "cpuP95": 35.5,
+   "chMed": 27,
+   "chMax": 31,
+   "triMedK": 83,
+   "triMaxK": 83,
+   "fpsSwiftShader": 4.7
+  },
+  "texturas": 20,
+  "texMB": 19.7,
+  "buffers": 229,
+  "bufMB": 4.9,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 2.6,
+  "canvas": [
+   873,
+   393
+  ],
+  "antialias": false,
+  "vramEstimadaMB": 27.2,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 6.8,
+    "jsHeapTotalMB": 8.1,
+    "nos": 553,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 9.1,
+    "nos": 553,
+    "ouvintes": 76
+   },
+   "mapaDepois": {
+    "jsHeapMB": 7.9,
+    "jsHeapTotalMB": 8.4,
+    "nos": 561,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   57,
+   1435,
+   1276,
+   398,
+   285,
+   246
+  ],
+  "erros": []
+ },
+ "3_baixa": {
+  "cap": 3,
+  "q": "baixa",
+  "disp": "redmi",
+  "abrirFaseMs": 3340,
+  "montarAtePrimeiroDesenhoMs": 1216,
+  "programas": 29,
+  "compilacoes": 29,
+  "compilarShadersMs": 445,
+  "maiorCompilarMs": 59,
+  "chamadasMax": 42,
+  "triMaxK": 63,
+  "quadrosAcel": {
+   "n": 124,
+   "cpuMed": 2.9,
+   "cpuP95": 11.4,
+   "chMed": 32,
+   "chMax": 42,
+   "triMedK": 59,
+   "triMaxK": 63
+  },
+  "quadrosTempoReal": {
+   "n": 27,
+   "cpuMed": 2.9,
+   "cpuP95": 39.2,
+   "chMed": 27,
+   "chMax": 31,
+   "triMedK": 50,
+   "triMaxK": 51,
+   "fpsSwiftShader": 5.6
+  },
+  "texturas": 21,
+  "texMB": 19.8,
+  "buffers": 320,
+  "bufMB": 4.6,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 2.6,
+  "canvas": [
+   873,
+   393
+  ],
+  "antialias": false,
+  "vramEstimadaMB": 27,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.7,
+    "jsHeapTotalMB": 8.9,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 9.6,
+    "jsHeapTotalMB": 10.4,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.9,
+    "jsHeapTotalMB": 9.4,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   1095,
+   1398,
+   299,
+   180,
+   242,
+   265
+  ],
+  "erros": []
+ },
+ "4_baixa": {
+  "cap": 4,
+  "q": "baixa",
+  "disp": "redmi",
+  "abrirFaseMs": 2540,
+  "montarAtePrimeiroDesenhoMs": 1060,
+  "programas": 28,
+  "compilacoes": 28,
+  "compilarShadersMs": 243,
+  "maiorCompilarMs": 24,
+  "chamadasMax": 33,
+  "triMaxK": 54,
+  "quadrosAcel": {
+   "n": 94,
+   "cpuMed": 3,
+   "cpuP95": 13.9,
+   "chMed": 26,
+   "chMax": 33,
+   "triMedK": 47,
+   "triMaxK": 54
+  },
+  "quadrosTempoReal": {
+   "n": 31,
+   "cpuMed": 2.5,
+   "cpuP95": 38.7,
+   "chMed": 25,
+   "chMax": 29,
+   "triMedK": 44,
+   "triMaxK": 45,
+   "fpsSwiftShader": 6.3
+  },
+  "texturas": 21,
+  "texMB": 19.8,
+  "buffers": 249,
+  "bufMB": 3.5,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 2.6,
+  "canvas": [
+   873,
+   393
+  ],
+  "antialias": false,
+  "vramEstimadaMB": 25.9,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.4,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.2,
+    "jsHeapTotalMB": 7.9,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.9,
+    "jsHeapTotalMB": 9.6,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.4,
+    "jsHeapTotalMB": 9.1,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   1004,
+   1000,
+   105,
+   189,
+   152,
+   140
+  ],
+  "erros": []
+ },
+ "5_baixa": {
+  "cap": 5,
+  "q": "baixa",
+  "disp": "redmi",
+  "abrirFaseMs": 3834,
+  "montarAtePrimeiroDesenhoMs": 1647,
+  "programas": 30,
+  "compilacoes": 30,
+  "compilarShadersMs": 329,
+  "maiorCompilarMs": 45,
+  "chamadasMax": 38,
+  "triMaxK": 59,
+  "quadrosAcel": {
+   "n": 73,
+   "cpuMed": 4.1,
+   "cpuP95": 17,
+   "chMed": 32,
+   "chMax": 38,
+   "triMedK": 47,
+   "triMaxK": 59
+  },
+  "quadrosTempoReal": {
+   "n": 31,
+   "cpuMed": 2.6,
+   "cpuP95": 24.8,
+   "chMed": 29,
+   "chMax": 31,
+   "triMedK": 41,
+   "triMaxK": 41,
+   "fpsSwiftShader": 6.4
+  },
+  "texturas": 21,
+  "texMB": 19.8,
+  "buffers": 287,
+  "bufMB": 3.4,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 2.6,
+  "canvas": [
+   873,
+   393
+  ],
+  "antialias": false,
+  "vramEstimadaMB": 25.8,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.5,
+    "jsHeapTotalMB": 8.1,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.7,
+    "jsHeapTotalMB": 9.6,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.1,
+    "jsHeapTotalMB": 8.6,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   1551,
+   1468,
+   208,
+   310,
+   118
+  ],
+  "erros": []
+ },
+ "6_baixa": {
+  "cap": 6,
+  "q": "baixa",
+  "disp": "redmi",
+  "abrirFaseMs": 3067,
+  "montarAtePrimeiroDesenhoMs": 1543,
+  "programas": 27,
+  "compilacoes": 27,
+  "compilarShadersMs": 251,
+  "maiorCompilarMs": 33,
+  "chamadasMax": 37,
+  "triMaxK": 58,
+  "quadrosAcel": {
+   "n": 56,
+   "cpuMed": 3.4,
+   "cpuP95": 21.9,
+   "chMed": 31,
+   "chMax": 38,
+   "triMedK": 53,
+   "triMaxK": 58
+  },
+  "quadrosTempoReal": {
+   "n": 42,
+   "cpuMed": 1.8,
+   "cpuP95": 11,
+   "chMed": 27,
+   "chMax": 32,
+   "triMedK": 51,
+   "triMaxK": 54,
+   "fpsSwiftShader": 8.5
+  },
+  "texturas": 21,
+  "texMB": 19.8,
+  "buffers": 257,
+  "bufMB": 3.4,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 2.6,
+  "canvas": [
+   873,
+   393
+  ],
+  "antialias": false,
+  "vramEstimadaMB": 25.8,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.4,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.4,
+    "jsHeapTotalMB": 8.4,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 9.4,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "mapaDepois": {
+    "jsHeapMB": 7.8,
+    "jsHeapTotalMB": 8.6,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   129,
+   1535,
+   983,
+   156,
+   216,
+   95
+  ],
+  "erros": []
+ },
+ "7_baixa": {
+  "cap": 7,
+  "q": "baixa",
+  "disp": "redmi",
+  "abrirFaseMs": 3330,
+  "montarAtePrimeiroDesenhoMs": 1263,
+  "programas": 24,
+  "compilacoes": 24,
+  "compilarShadersMs": 241,
+  "maiorCompilarMs": 36,
+  "chamadasMax": 36,
+  "triMaxK": 52,
+  "quadrosAcel": {
+   "n": 78,
+   "cpuMed": 3.9,
+   "cpuP95": 10.6,
+   "chMed": 29,
+   "chMax": 36,
+   "triMedK": 44,
+   "triMaxK": 52
+  },
+  "quadrosTempoReal": {
+   "n": 29,
+   "cpuMed": 3.7,
+   "cpuP95": 25.7,
+   "chMed": 25,
+   "chMax": 28,
+   "triMedK": 38,
+   "triMaxK": 40,
+   "fpsSwiftShader": 5.9
+  },
+  "texturas": 20,
+  "texMB": 19.7,
+  "buffers": 231,
+  "bufMB": 3.8,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 2.6,
+  "canvas": [
+   873,
+   393
+  ],
+  "antialias": false,
+  "vramEstimadaMB": 26.1,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 6.8,
+    "jsHeapTotalMB": 7.6,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.5,
+    "jsHeapTotalMB": 9.4,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.1,
+    "jsHeapTotalMB": 8.9,
+    "nos": 645,
+    "ouvintes": 58
+   }
+  },
+  "tarefasLongas": [
+   1261,
+   1143,
+   279,
+   392,
+   174,
+   109
+  ],
+  "erros": []
+ },
+ "1_media": {
+  "cap": 1,
+  "q": "media",
+  "disp": "redmi",
+  "abrirFaseMs": 7245,
+  "montarAtePrimeiroDesenhoMs": 2269,
+  "programas": 31,
+  "compilacoes": 31,
+  "compilarShadersMs": 477,
+  "maiorCompilarMs": 52,
+  "chamadasMax": 35,
+  "triMaxK": 64,
+  "quadrosAcel": {
+   "n": 67,
+   "cpuMed": 3.6,
+   "cpuP95": 40,
+   "chMed": 28,
+   "chMax": 35,
+   "triMedK": 50,
+   "triMaxK": 64
+  },
+  "quadrosTempoReal": {
+   "n": 8,
+   "cpuMed": 3.9,
+   "cpuP95": 17.1,
+   "chMed": 25,
+   "chMax": 26,
+   "triMedK": 39,
+   "triMaxK": 39,
+   "fpsSwiftShader": 1.7
+  },
+  "texturas": 19,
+  "texMB": 14.4,
+  "buffers": 236,
+  "bufMB": 4.2,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 48.1,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 6.9,
+    "jsHeapTotalMB": 7.6,
+    "nos": 552,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8,
+    "jsHeapTotalMB": 8.6,
+    "nos": 559,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8,
+    "jsHeapTotalMB": 8.6,
+    "nos": 559,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   2385,
+   2728,
+   609,
+   500,
+   634,
+   511
+  ],
+  "erros": []
+ },
+ "2_media": {
+  "cap": 2,
+  "q": "media",
+  "disp": "redmi",
+  "abrirFaseMs": 8278,
+  "montarAtePrimeiroDesenhoMs": 4133,
+  "programas": 31,
+  "compilacoes": 31,
+  "compilarShadersMs": 297,
+  "maiorCompilarMs": 25,
+  "chamadasMax": 40,
+  "triMaxK": 208,
+  "quadrosAcel": {
+   "n": 71,
+   "cpuMed": 3.7,
+   "cpuP95": 21.5,
+   "chMed": 31,
+   "chMax": 40,
+   "triMedK": 185,
+   "triMaxK": 208
+  },
+  "quadrosTempoReal": {
+   "n": 7,
+   "cpuMed": 2.8,
+   "cpuP95": 27.3,
+   "chMed": 28,
+   "chMax": 32,
+   "triMedK": 173,
+   "triMaxK": 173,
+   "fpsSwiftShader": 1.6
+  },
+  "texturas": 20,
+  "texMB": 19.7,
+  "buffers": 262,
+  "bufMB": 9.9,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 59,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 6.9,
+    "jsHeapTotalMB": 7.9,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.6,
+    "jsHeapTotalMB": 9.4,
+    "nos": 553,
+    "ouvintes": 96
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.1,
+    "jsHeapTotalMB": 8.9,
+    "nos": 561,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   85,
+   3792,
+   2511,
+   1066,
+   557,
+   705
+  ],
+  "erros": []
+ },
+ "3_media": {
+  "cap": 3,
+  "q": "media",
+  "disp": "redmi",
+  "abrirFaseMs": 6249,
+  "montarAtePrimeiroDesenhoMs": 2119,
+  "programas": 33,
+  "compilacoes": 33,
+  "compilarShadersMs": 545,
+  "maiorCompilarMs": 61,
+  "chamadasMax": 46,
+  "triMaxK": 111,
+  "quadrosAcel": {
+   "n": 123,
+   "cpuMed": 3.8,
+   "cpuP95": 19.9,
+   "chMed": 35,
+   "chMax": 46,
+   "triMedK": 100,
+   "triMaxK": 111
+  },
+  "quadrosTempoReal": {
+   "n": 8,
+   "cpuMed": 7.6,
+   "cpuP95": 100.5,
+   "chMed": 31,
+   "chMax": 35,
+   "triMedK": 81,
+   "triMaxK": 88,
+   "fpsSwiftShader": 1.9
+  },
+  "texturas": 22,
+  "texMB": 19.8,
+  "buffers": 353,
+  "bufMB": 7.2,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 56.4,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.5,
+    "jsHeapTotalMB": 8.1,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 9.2,
+    "jsHeapTotalMB": 10.1,
+    "nos": 562,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 9.2,
+    "jsHeapTotalMB": 9.6,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   1992,
+   2091,
+   1024,
+   435,
+   574,
+   646
+  ],
+  "erros": []
+ },
+ "4_media": {
+  "cap": 4,
+  "q": "media",
+  "disp": "redmi",
+  "abrirFaseMs": 6057,
+  "montarAtePrimeiroDesenhoMs": 1867,
+  "programas": 32,
+  "compilacoes": 32,
+  "compilarShadersMs": 286,
+  "maiorCompilarMs": 32,
+  "chamadasMax": 38,
+  "triMaxK": 97,
+  "quadrosAcel": {
+   "n": 94,
+   "cpuMed": 3.7,
+   "cpuP95": 18,
+   "chMed": 30,
+   "chMax": 38,
+   "triMedK": 82,
+   "triMaxK": 97
+  },
+  "quadrosTempoReal": {
+   "n": 8,
+   "cpuMed": 5.7,
+   "cpuP95": 51.6,
+   "chMed": 28,
+   "chMax": 33,
+   "triMedK": 69,
+   "triMaxK": 71,
+   "fpsSwiftShader": 1.8
+  },
+  "texturas": 21,
+  "texMB": 19.8,
+  "buffers": 282,
+  "bufMB": 6,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 55.1,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.2,
+    "jsHeapTotalMB": 7.6,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 9.1,
+    "jsHeapTotalMB": 9.9,
+    "nos": 554,
+    "ouvintes": 96
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.6,
+    "jsHeapTotalMB": 9.1,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   82,
+   1824,
+   2213,
+   869,
+   456,
+   561
+  ],
+  "erros": []
+ },
+ "5_media": {
+  "cap": 5,
+  "q": "media",
+  "disp": "redmi",
+  "abrirFaseMs": 11960,
+  "montarAtePrimeiroDesenhoMs": 3825,
+  "programas": 34,
+  "compilacoes": 34,
+  "compilarShadersMs": 1290,
+  "maiorCompilarMs": 294,
+  "chamadasMax": 42,
+  "triMaxK": 98,
+  "quadrosAcel": {
+   "n": 72,
+   "cpuMed": 6.2,
+   "cpuP95": 51.8,
+   "chMed": 35,
+   "chMax": 42,
+   "triMedK": 77,
+   "triMaxK": 98
+  },
+  "quadrosTempoReal": {
+   "n": 5,
+   "cpuMed": 4,
+   "cpuP95": 300.6,
+   "chMed": 29,
+   "chMax": 32,
+   "triMedK": 68,
+   "triMaxK": 68,
+   "fpsSwiftShader": 1
+  },
+  "texturas": 22,
+  "texMB": 19.8,
+  "buffers": 320,
+  "bufMB": 6,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 55.2,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.1,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.3,
+    "jsHeapTotalMB": 7.9,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 9.4,
+    "nos": 562,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 8.9,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   3311,
+   4718,
+   1234,
+   924,
+   1585,
+   713
+  ],
+  "erros": []
+ },
+ "6_media": {
+  "cap": 6,
+  "q": "media",
+  "disp": "redmi",
+  "abrirFaseMs": 8064,
+  "montarAtePrimeiroDesenhoMs": 2460,
+  "programas": 32,
+  "compilacoes": 32,
+  "compilarShadersMs": 479,
+  "maiorCompilarMs": 114,
+  "chamadasMax": 42,
+  "triMaxK": 73,
+  "quadrosAcel": {
+   "n": 54,
+   "cpuMed": 5.3,
+   "cpuP95": 26,
+   "chMed": 35,
+   "chMax": 42,
+   "triMedK": 66,
+   "triMaxK": 73
+  },
+  "quadrosTempoReal": {
+   "n": 8,
+   "cpuMed": 3.3,
+   "cpuP95": 27.4,
+   "chMed": 29,
+   "chMax": 31,
+   "triMedK": 42,
+   "triMaxK": 42,
+   "fpsSwiftShader": 1.7
+  },
+  "texturas": 22,
+  "texMB": 19.8,
+  "buffers": 295,
+  "bufMB": 5.3,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 54.5,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.1,
+    "jsHeapTotalMB": 7.6,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 7.9,
+    "jsHeapTotalMB": 8.9,
+    "nos": 562,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 7.9,
+    "jsHeapTotalMB": 8.6,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   92,
+   2331,
+   3474,
+   903,
+   663,
+   556
+  ],
+  "erros": []
+ },
+ "7_media": {
+  "cap": 7,
+  "q": "media",
+  "disp": "redmi",
+  "abrirFaseMs": 10503,
+  "montarAtePrimeiroDesenhoMs": 2977,
+  "programas": 29,
+  "compilacoes": 29,
+  "compilarShadersMs": 685,
+  "maiorCompilarMs": 159,
+  "chamadasMax": 39,
+  "triMaxK": 90,
+  "quadrosAcel": {
+   "n": 78,
+   "cpuMed": 4,
+   "cpuP95": 20,
+   "chMed": 33,
+   "chMax": 39,
+   "triMedK": 70,
+   "triMaxK": 90
+  },
+  "quadrosTempoReal": {
+   "n": 5,
+   "cpuMed": 30.4,
+   "cpuP95": 54.8,
+   "chMed": 29,
+   "chMax": 32,
+   "triMedK": 55,
+   "triMaxK": 58,
+   "fpsSwiftShader": 1.2
+  },
+  "texturas": 20,
+  "texMB": 19.7,
+  "buffers": 268,
+  "bufMB": 6.4,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 55.5,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7,
+    "jsHeapTotalMB": 7.6,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 9.4,
+    "nos": 648,
+    "ouvintes": 58
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 8.9,
+    "nos": 645,
+    "ouvintes": 58
+   }
+  },
+  "tarefasLongas": [
+   4554,
+   55,
+   167,
+   1577,
+   1096,
+   864
+  ],
+  "erros": []
+ },
+ "1_alta": {
+  "cap": 1,
+  "q": "alta",
+  "disp": "redmi",
+  "abrirFaseMs": 13875,
+  "montarAtePrimeiroDesenhoMs": 2720,
+  "programas": 43,
+  "compilacoes": 43,
+  "compilarShadersMs": 1201,
+  "maiorCompilarMs": 161,
+  "chamadasMax": 57,
+  "triMaxK": 149,
+  "quadrosAcel": {
+   "n": 67,
+   "cpuMed": 5.9,
+   "cpuP95": 90.3,
+   "chMed": 50,
+   "chMax": 57,
+   "triMedK": 113,
+   "triMaxK": 149
+  },
+  "quadrosTempoReal": {
+   "n": 3,
+   "cpuMed": 6.2,
+   "cpuP95": 6.5,
+   "chMed": 44,
+   "chMax": 44,
+   "triMedK": 92,
+   "triMaxK": 92,
+   "fpsSwiftShader": 0.9
+  },
+  "texturas": 34,
+  "texMB": 107.5,
+  "buffers": 4,
+  "bufMB": 5.2,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 52.4,
+  "canvas": [
+   1746,
+   786
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 165,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.4,
+    "jsHeapTotalMB": 8.1,
+    "nos": 552,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 9.1,
+    "nos": 559,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 9.1,
+    "nos": 559,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   2650,
+   4834,
+   2024,
+   1935,
+   2339,
+   1909
+  ],
+  "erros": []
+ },
+ "2_alta": {
+  "cap": 2,
+  "q": "alta",
+  "disp": "redmi",
+  "abrirFaseMs": 35822,
+  "montarAtePrimeiroDesenhoMs": 12090,
+  "programas": 43,
+  "compilacoes": 43,
+  "compilarShadersMs": 1431,
+  "maiorCompilarMs": 359,
+  "chamadasMax": 62,
+  "triMaxK": 488,
+  "quadrosAcel": {
+   "n": 71,
+   "cpuMed": 5.9,
+   "cpuP95": 24.7,
+   "chMed": 52,
+   "chMax": 62,
+   "triMedK": 396,
+   "triMaxK": 488
+  },
+  "quadrosTempoReal": {
+   "n": 2,
+   "cpuMed": 5.6,
+   "cpuP95": 5.6,
+   "chMed": 46,
+   "chMax": 46,
+   "triMedK": 318,
+   "triMaxK": 318,
+   "fpsSwiftShader": 0
+  },
+  "texturas": 36,
+  "texMB": 112.8,
+  "buffers": 6,
+  "bufMB": 13.1,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 52.4,
+  "canvas": [
+   1746,
+   786
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 178.2,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.4,
+    "jsHeapTotalMB": 8.1,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 9.6,
+    "nos": 561,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.3,
+    "jsHeapTotalMB": 9.1,
+    "nos": 561,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   86,
+   11986,
+   12489,
+   4965,
+   3139,
+   3060
+  ],
+  "erros": []
+ },
+ "3_alta": {
+  "cap": 3,
+  "q": "alta",
+  "disp": "redmi",
+  "abrirFaseMs": 33472,
+  "montarAtePrimeiroDesenhoMs": 5097,
+  "programas": 43,
+  "compilacoes": 43,
+  "compilarShadersMs": 1185,
+  "maiorCompilarMs": 215,
+  "chamadasMax": 70,
+  "triMaxK": 231,
+  "quadrosAcel": {
+   "n": 106,
+   "cpuMed": 4.9,
+   "cpuP95": 22.6,
+   "chMed": 57,
+   "chMax": 70,
+   "triMedK": 202,
+   "triMaxK": 231
+  },
+  "quadrosTempoReal": {
+   "n": 1,
+   "cpuMed": 27.7,
+   "cpuP95": 27.7,
+   "chMed": 46,
+   "chMax": 46,
+   "triMedK": 151,
+   "triMaxK": 151,
+   "fpsSwiftShader": 0
+  },
+  "texturas": 36,
+  "texMB": 112.8,
+  "buffers": 337,
+  "bufMB": 8.4,
+  "renderbuffers": 2,
+  "rbMB": 10.5,
+  "framebufferPadraoMB": 52.4,
+  "canvas": [
+   1746,
+   786
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 184,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.1,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.9,
+    "jsHeapTotalMB": 8.9,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 10.5,
+    "jsHeapTotalMB": 12.6,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "mapaDepois": {
+    "jsHeapMB": 10.3,
+    "jsHeapTotalMB": 11.4,
+    "nos": 555,
+    "ouvintes": 76
+   }
+  },
+  "tarefasLongas": [
+   120,
+   4876,
+   13585,
+   6435,
+   6086,
+   2305
+  ],
+  "erros": []
+ },
+ "4_alta": {
+  "cap": 4,
+  "q": "alta",
+  "disp": "redmi",
+  "abrirFaseMs": 13045,
+  "montarAtePrimeiroDesenhoMs": 2541,
+  "programas": 44,
+  "compilacoes": 44,
+  "compilarShadersMs": 812,
+  "maiorCompilarMs": 84,
+  "chamadasMax": 60,
+  "triMaxK": 218,
+  "quadrosAcel": {
+   "n": 94,
+   "cpuMed": 5,
+   "cpuP95": 20.1,
+   "chMed": 51,
+   "chMax": 60,
+   "triMedK": 170,
+   "triMaxK": 218
+  },
+  "quadrosTempoReal": {
+   "n": 3,
+   "cpuMed": 6.1,
+   "cpuP95": 80.6,
+   "chMed": 45,
+   "chMax": 47,
+   "triMedK": 131,
+   "triMaxK": 131,
+   "fpsSwiftShader": 0.7
+  },
+  "texturas": 37,
+  "texMB": 112.9,
+  "buffers": 4,
+  "bufMB": 7.5,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 52.4,
+  "canvas": [
+   1746,
+   786
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 172.7,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.4,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.6,
+    "jsHeapTotalMB": 8.4,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.9,
+    "jsHeapTotalMB": 9.6,
+    "nos": 562,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.9,
+    "jsHeapTotalMB": 9.6,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   1816,
+   2388,
+   5103,
+   1901,
+   1625,
+   1830
+  ],
+  "erros": []
+ },
+ "5_alta": {
+  "cap": 5,
+  "q": "alta",
+  "disp": "redmi",
+  "abrirFaseMs": 12523,
+  "montarAtePrimeiroDesenhoMs": 3447,
+  "programas": 46,
+  "compilacoes": 46,
+  "compilarShadersMs": 682,
+  "maiorCompilarMs": 63,
+  "chamadasMax": 64,
+  "triMaxK": 222,
+  "quadrosAcel": {
+   "n": 72,
+   "cpuMed": 7.7,
+   "cpuP95": 40.3,
+   "chMed": 56,
+   "chMax": 64,
+   "triMedK": 176,
+   "triMaxK": 222
+  },
+  "quadrosTempoReal": {
+   "n": 4,
+   "cpuMed": 8.2,
+   "cpuP95": 41.2,
+   "chMed": 49,
+   "chMax": 51,
+   "triMedK": 131,
+   "triMaxK": 131,
+   "fpsSwiftShader": 0.9
+  },
+  "texturas": 37,
+  "texMB": 112.9,
+  "buffers": 6,
+  "bufMB": 7.2,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 52.4,
+  "canvas": [
+   1746,
+   786
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 172.4,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.7,
+    "jsHeapTotalMB": 8.6,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.7,
+    "jsHeapTotalMB": 9.6,
+    "nos": 562,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.7,
+    "jsHeapTotalMB": 9.4,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   143,
+   3389,
+   5880,
+   1678,
+   1408
+  ],
+  "erros": []
+ },
+ "6_alta": {
+  "cap": 6,
+  "q": "alta",
+  "disp": "redmi",
+  "abrirFaseMs": 7579,
+  "montarAtePrimeiroDesenhoMs": 1989,
+  "programas": 44,
+  "compilacoes": 44,
+  "compilarShadersMs": 591,
+  "maiorCompilarMs": 90,
+  "chamadasMax": 65,
+  "triMaxK": 183,
+  "quadrosAcel": {
+   "n": 54,
+   "cpuMed": 5,
+   "cpuP95": 19.5,
+   "chMed": 56,
+   "chMax": 65,
+   "triMedK": 163,
+   "triMaxK": 183
+  },
+  "quadrosTempoReal": {
+   "n": 8,
+   "cpuMed": 3.7,
+   "cpuP95": 43.4,
+   "chMed": 49,
+   "chMax": 52,
+   "triMedK": 118,
+   "triMaxK": 122,
+   "fpsSwiftShader": 1.7
+  },
+  "texturas": 37,
+  "texMB": 112.9,
+  "buffers": 301,
+  "bufMB": 6.4,
+  "renderbuffers": 2,
+  "rbMB": 10.5,
+  "framebufferPadraoMB": 52.4,
+  "canvas": [
+   1746,
+   786
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 182.1,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.6,
+    "jsHeapTotalMB": 8.1,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.2,
+    "jsHeapTotalMB": 9.1,
+    "nos": 562,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.2,
+    "jsHeapTotalMB": 8.9,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   1903,
+   2983,
+   1004,
+   800,
+   817,
+   851
+  ],
+  "erros": []
+ },
+ "7_alta": {
+  "cap": 7,
+  "q": "alta",
+  "disp": "redmi",
+  "abrirFaseMs": 7617,
+  "montarAtePrimeiroDesenhoMs": 1989,
+  "programas": 41,
+  "compilacoes": 41,
+  "compilarShadersMs": 500,
+  "maiorCompilarMs": 45,
+  "chamadasMax": 61,
+  "triMaxK": 204,
+  "quadrosAcel": {
+   "n": 78,
+   "cpuMed": 5.1,
+   "cpuP95": 18.7,
+   "chMed": 54,
+   "chMax": 61,
+   "triMedK": 145,
+   "triMaxK": 204
+  },
+  "quadrosTempoReal": {
+   "n": 6,
+   "cpuMed": 34.4,
+   "cpuP95": 45.9,
+   "chMed": 48,
+   "chMax": 52,
+   "triMedK": 105,
+   "triMaxK": 108,
+   "fpsSwiftShader": 1.4
+  },
+  "texturas": 36,
+  "texMB": 112.8,
+  "buffers": 270,
+  "bufMB": 7.7,
+  "renderbuffers": 2,
+  "rbMB": 10.5,
+  "framebufferPadraoMB": 52.4,
+  "canvas": [
+   1746,
+   786
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 183.2,
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.1,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.4,
+    "jsHeapTotalMB": 8.4,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.6,
+    "jsHeapTotalMB": 9.6,
+    "nos": 646,
+    "ouvintes": 58
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.6,
+    "jsHeapTotalMB": 9.1,
+    "nos": 645,
+    "ouvintes": 58
+   }
+  },
+  "tarefasLongas": [
+   1916,
+   2606,
+   941,
+   879,
+   1173,
+   1255
+  ],
+  "erros": []
+ }
+}

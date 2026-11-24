@@ -1,0 +1,1064 @@
+{
+ "2_baixa": {
+  "montarFase": {
+   "ocupadoMs": 3411,
+   "jsMs": 1496,
+   "top": [
+    [
+     "(program)",
+     1490,
+     44
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     795,
+     23
+    ],
+    [
+     "render/util.ts",
+     534,
+     16
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     261,
+     8
+    ],
+    [
+     "(coleta de lixo)",
+     87,
+     3
+    ],
+    [
+     "render/cenario.ts",
+     71,
+     2
+    ],
+    [
+     "render/personagem.ts",
+     26,
+     1
+    ],
+    [
+     "render/texturas.ts",
+     18,
+     1
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     17,
+     1
+    ],
+    [
+     "render/cena.ts",
+     17,
+     0
+    ],
+    [
+     "(nativo: getShaderInfoLog)",
+     13,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     11,
+     0
+    ],
+    [
+     "(nativo: getExtension)",
+     10,
+     0
+    ],
+    [
+     "ui/telas.ts",
+     10,
+     0
+    ],
+    [
+     "render/bichinhos.ts",
+     8,
+     0
+    ],
+    [
+     "(nativo: bufferData)",
+     7,
+     0
+    ]
+   ]
+  },
+  "jogo": {
+   "ocupadoMs": 8116,
+   "jsMs": 79,
+   "top": [
+    [
+     "(program)",
+     7953,
+     98
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     52,
+     1
+    ],
+    [
+     "(coleta de lixo)",
+     18,
+     0
+    ],
+    [
+     "(nativo: requestAnimationFrame)",
+     11,
+     0
+    ],
+    [
+     "(nativo: uniformMatrix4fv)",
+     6,
+     0
+    ],
+    [
+     "simulação: core/sim.ts",
+     6,
+     0
+    ],
+    [
+     "(nativo: anônimo)",
+     5,
+     0
+    ],
+    [
+     "(nativo: bindVertexArray)",
+     5,
+     0
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     5,
+     0
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     5,
+     0
+    ],
+    [
+     "(nativo: useProgram)",
+     4,
+     0
+    ],
+    [
+     "render/bichinhos.ts",
+     4,
+     0
+    ],
+    [
+     "(nativo: bindTexture)",
+     4,
+     0
+    ],
+    [
+     "(nativo: fetch)",
+     4,
+     0
+    ],
+    [
+     "render/particulas.ts",
+     3,
+     0
+    ],
+    [
+     "simulação: core/inimigos.ts",
+     3,
+     0
+    ]
+   ],
+   "segundos": 8,
+   "quadros": 111,
+   "jsMsPorQuadro": 0.7
+  }
+ },
+ "7_baixa": {
+  "montarFase": {
+   "ocupadoMs": 2262,
+   "jsMs": 878,
+   "top": [
+    [
+     "(program)",
+     1058,
+     47
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     462,
+     20
+    ],
+    [
+     "render/util.ts",
+     293,
+     13
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     144,
+     6
+    ],
+    [
+     "(coleta de lixo)",
+     126,
+     6
+    ],
+    [
+     "render/personagem.ts",
+     34,
+     2
+    ],
+    [
+     "render/cenario.ts",
+     29,
+     1
+    ],
+    [
+     "render/bichinhos.ts",
+     14,
+     1
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     14,
+     1
+    ],
+    [
+     "render/cena.ts",
+     13,
+     1
+    ],
+    [
+     "(nativo: getContext)",
+     10,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     9,
+     0
+    ],
+    [
+     "render/texturas.ts",
+     7,
+     0
+    ],
+    [
+     "(nativo: bufferData)",
+     5,
+     0
+    ],
+    [
+     "render/elementos.ts",
+     5,
+     0
+    ],
+    [
+     "render/aderecos.ts",
+     5,
+     0
+    ]
+   ]
+  },
+  "jogo": {
+   "ocupadoMs": 8058,
+   "jsMs": 157,
+   "top": [
+    [
+     "(program)",
+     7827,
+     97
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     120,
+     1
+    ],
+    [
+     "(nativo: requestAnimationFrame)",
+     16,
+     0
+    ],
+    [
+     "(nativo: bufferSubData)",
+     8,
+     0
+    ],
+    [
+     "(nativo: anônimo)",
+     7,
+     0
+    ],
+    [
+     "render/cena.ts",
+     7,
+     0
+    ],
+    [
+     "simulação: core/colisao.ts",
+     7,
+     0
+    ],
+    [
+     "(nativo: bindVertexArray)",
+     6,
+     0
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     5,
+     0
+    ],
+    [
+     "render/particulas.ts",
+     5,
+     0
+    ],
+    [
+     "simulação: core/sim.ts",
+     5,
+     0
+    ],
+    [
+     "(nativo: uniform3f)",
+     4,
+     0
+    ],
+    [
+     "render/elementos.ts",
+     4,
+     0
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     4,
+     0
+    ],
+    [
+     "(nativo: useProgram)",
+     4,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     3,
+     0
+    ]
+   ],
+   "segundos": 8,
+   "quadros": 193,
+   "jsMsPorQuadro": 0.8
+  }
+ },
+ "2_media": {
+  "montarFase": {
+   "ocupadoMs": 4549,
+   "jsMs": 2047,
+   "top": [
+    [
+     "(program)",
+     2001,
+     44
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     1167,
+     26
+    ],
+    [
+     "render/util.ts",
+     724,
+     16
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     293,
+     6
+    ],
+    [
+     "(coleta de lixo)",
+     122,
+     3
+    ],
+    [
+     "render/cenario.ts",
+     64,
+     1
+    ],
+    [
+     "(nativo: getShaderInfoLog)",
+     25,
+     1
+    ],
+    [
+     "render/personagem.ts",
+     23,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     22,
+     0
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     15,
+     0
+    ],
+    [
+     "render/texturas.ts",
+     13,
+     0
+    ],
+    [
+     "render/cena.ts",
+     13,
+     0
+    ],
+    [
+     "render/bichinhos.ts",
+     10,
+     0
+    ],
+    [
+     "(nativo: getContext)",
+     8,
+     0
+    ],
+    [
+     "(nativo: bufferData)",
+     7,
+     0
+    ],
+    [
+     "(nativo: shaderSource)",
+     5,
+     0
+    ]
+   ]
+  },
+  "jogo": {
+   "ocupadoMs": 8314,
+   "jsMs": 44,
+   "top": [
+    [
+     "(program)",
+     8207,
+     99
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     37,
+     0
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     24,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     6,
+     0
+    ],
+    [
+     "ui/telas.ts",
+     4,
+     0
+    ],
+    [
+     "(coleta de lixo)",
+     4,
+     0
+    ],
+    [
+     "(nativo: getShaderInfoLog)",
+     4,
+     0
+    ],
+    [
+     "simulação: core/sim.ts",
+     3,
+     0
+    ],
+    [
+     "(nativo: PerformanceObserver.observe.type)",
+     2,
+     0
+    ],
+    [
+     "simulação: core/colisao.ts",
+     2,
+     0
+    ],
+    [
+     "(nativo: bufferSubData)",
+     2,
+     0
+    ],
+    [
+     "(nativo: fetch)",
+     2,
+     0
+    ],
+    [
+     "(nativo: clear)",
+     2,
+     0
+    ],
+    [
+     "simulação: core/inimigos.ts",
+     1,
+     0
+    ],
+    [
+     "(nativo: drawElements)",
+     1,
+     0
+    ],
+    [
+     "render/cena.ts",
+     1,
+     0
+    ]
+   ],
+   "segundos": 8,
+   "quadros": 35,
+   "jsMsPorQuadro": 1.3
+  }
+ },
+ "7_media": {
+  "montarFase": {
+   "ocupadoMs": 3610,
+   "jsMs": 1462,
+   "top": [
+    [
+     "(program)",
+     1744,
+     48
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     828,
+     23
+    ],
+    [
+     "render/util.ts",
+     478,
+     13
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     188,
+     5
+    ],
+    [
+     "(coleta de lixo)",
+     123,
+     3
+    ],
+    [
+     "render/personagem.ts",
+     37,
+     1
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     35,
+     1
+    ],
+    [
+     "render/bichinhos.ts",
+     27,
+     1
+    ],
+    [
+     "render/cenario.ts",
+     27,
+     1
+    ],
+    [
+     "render/cena.ts",
+     17,
+     0
+    ],
+    [
+     "render/aderecos.ts",
+     16,
+     0
+    ],
+    [
+     "(nativo: getShaderInfoLog)",
+     11,
+     0
+    ],
+    [
+     "(nativo: getContext)",
+     11,
+     0
+    ],
+    [
+     "render/texturas.ts",
+     11,
+     0
+    ],
+    [
+     "(nativo: elementsFromPoint)",
+     9,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     9,
+     0
+    ]
+   ]
+  },
+  "jogo": {
+   "ocupadoMs": 8228,
+   "jsMs": 61,
+   "top": [
+    [
+     "(program)",
+     8102,
+     98
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     39,
+     0
+    ],
+    [
+     "(coleta de lixo)",
+     28,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     5,
+     0
+    ],
+    [
+     "(nativo: texParameteri)",
+     5,
+     0
+    ],
+    [
+     "(nativo: uniformMatrix4fv)",
+     5,
+     0
+    ],
+    [
+     "simulação: core/sim.ts",
+     4,
+     0
+    ],
+    [
+     "(nativo: uniform3f)",
+     4,
+     0
+    ],
+    [
+     "simulação: core/plataformas.ts",
+     3,
+     0
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     3,
+     0
+    ],
+    [
+     "(nativo: clear)",
+     2,
+     0
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     2,
+     0
+    ],
+    [
+     "render/cena.ts",
+     2,
+     0
+    ],
+    [
+     "(nativo: useProgram)",
+     2,
+     0
+    ],
+    [
+     "(nativo: P.<computed>)",
+     2,
+     0
+    ],
+    [
+     "(nativo: anônimo)",
+     2,
+     0
+    ]
+   ],
+   "segundos": 8,
+   "quadros": 49,
+   "jsMsPorQuadro": 1.2
+  }
+ },
+ "2_alta": {
+  "montarFase": {
+   "ocupadoMs": 10548,
+   "jsMs": 3650,
+   "top": [
+    [
+     "(program)",
+     5720,
+     54
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     1973,
+     19
+    ],
+    [
+     "render/util.ts",
+     1393,
+     13
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     697,
+     7
+    ],
+    [
+     "(coleta de lixo)",
+     155,
+     1
+    ],
+    [
+     "(nativo: getShaderInfoLog)",
+     125,
+     1
+    ],
+    [
+     "render/cenario.ts",
+     111,
+     1
+    ],
+    [
+     "render/personagem.ts",
+     78,
+     1
+    ],
+    [
+     "(nativo: bufferData)",
+     60,
+     1
+    ],
+    [
+     "render/pos.ts",
+     41,
+     0
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     35,
+     0
+    ],
+    [
+     "render/cena.ts",
+     17,
+     0
+    ],
+    [
+     "render/texturas.ts",
+     16,
+     0
+    ],
+    [
+     "(nativo: getContext)",
+     14,
+     0
+    ],
+    [
+     "(nativo: attachShader)",
+     12,
+     0
+    ],
+    [
+     "(nativo: shaderSource)",
+     12,
+     0
+    ]
+   ]
+  },
+  "jogo": {
+   "ocupadoMs": 8692,
+   "jsMs": 47,
+   "top": [
+    [
+     "(program)",
+     8497,
+     98
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     85,
+     1
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     37,
+     0
+    ],
+    [
+     "(coleta de lixo)",
+     19,
+     0
+    ],
+    [
+     "(nativo: shaderSource)",
+     13,
+     0
+    ],
+    [
+     "(nativo: bufferData)",
+     7,
+     0
+    ],
+    [
+     "(nativo: bindVertexArray)",
+     5,
+     0
+    ],
+    [
+     "(nativo: viewport)",
+     3,
+     0
+    ],
+    [
+     "(nativo: requestAnimationFrame)",
+     2,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     2,
+     0
+    ],
+    [
+     "(nativo: drawElements)",
+     2,
+     0
+    ],
+    [
+     "simulação: core/inimigos.ts",
+     2,
+     0
+    ],
+    [
+     "(nativo: PerformanceObserver.observe.type)",
+     2,
+     0
+    ],
+    [
+     "render/cena.ts",
+     1,
+     0
+    ],
+    [
+     "(nativo: drawArrays)",
+     1,
+     0
+    ],
+    [
+     "simulação: core/sim.ts",
+     1,
+     0
+    ]
+   ],
+   "segundos": 8,
+   "quadros": 15,
+   "jsMsPorQuadro": 3.1
+  }
+ },
+ "7_alta": {
+  "montarFase": {
+   "ocupadoMs": 6124,
+   "jsMs": 2418,
+   "top": [
+    [
+     "(program)",
+     2818,
+     46
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     1227,
+     20
+    ],
+    [
+     "render/util.ts",
+     885,
+     14
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     481,
+     8
+    ],
+    [
+     "(coleta de lixo)",
+     169,
+     3
+    ],
+    [
+     "render/personagem.ts",
+     131,
+     2
+    ],
+    [
+     "(nativo: getContext)",
+     72,
+     1
+    ],
+    [
+     "render/bichinhos.ts",
+     46,
+     1
+    ],
+    [
+     "(nativo: getShaderInfoLog)",
+     42,
+     1
+    ],
+    [
+     "render/texturas.ts",
+     38,
+     1
+    ],
+    [
+     "render/cenario.ts",
+     33,
+     1
+    ],
+    [
+     "(nativo: shaderSource)",
+     30,
+     0
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     27,
+     0
+    ],
+    [
+     "render/aderecos.ts",
+     15,
+     0
+    ],
+    [
+     "ui/partida.ts",
+     11,
+     0
+    ],
+    [
+     "(nativo: anônimo)",
+     10,
+     0
+    ]
+   ]
+  },
+  "jogo": {
+   "ocupadoMs": 8252,
+   "jsMs": 78,
+   "top": [
+    [
+     "(program)",
+     8074,
+     98
+    ],
+    [
+     "three: núcleo (matrizes, cena)",
+     55,
+     1
+    ],
+    [
+     "(nativo: getProgramInfoLog)",
+     27,
+     0
+    ],
+    [
+     "(nativo: requestAnimationFrame)",
+     15,
+     0
+    ],
+    [
+     "(nativo: drawElements)",
+     11,
+     0
+    ],
+    [
+     "render/cena.ts",
+     7,
+     0
+    ],
+    [
+     "(coleta de lixo)",
+     6,
+     0
+    ],
+    [
+     "(nativo: drawArrays)",
+     4,
+     0
+    ],
+    [
+     "(nativo: uniformMatrix4fv)",
+     4,
+     0
+    ],
+    [
+     "(nativo: getShaderInfoLog)",
+     4,
+     0
+    ],
+    [
+     "(nativo: texSubImage2D)",
+     3,
+     0
+    ],
+    [
+     "(nativo: anônimo)",
+     3,
+     0
+    ],
+    [
+     "(nativo: bindVertexArray)",
+     3,
+     0
+    ],
+    [
+     "simulação: core/sim.ts",
+     3,
+     0
+    ],
+    [
+     "render/elementos.ts",
+     2,
+     0
+    ],
+    [
+     "simulação: core/plataformas.ts",
+     2,
+     0
+    ]
+   ],
+   "segundos": 8,
+   "quadros": 32,
+   "jsMsPorQuadro": 2.4
+  }
+ }
+}

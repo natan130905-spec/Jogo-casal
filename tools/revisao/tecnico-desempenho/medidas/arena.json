@@ -1,0 +1,98 @@
+{
+ "media_sem": {
+  "q": "media",
+  "perfil": "sem",
+  "prontaMs": 9110,
+  "baixadoKB": 1056,
+  "modelos": 7,
+  "chamadas": 26,
+  "triK": 151,
+  "programas": 32,
+  "compilarShadersMs": 525,
+  "texturas": 13,
+  "texMB": 17.3,
+  "bufMB": 7.3,
+  "rbMB": 0,
+  "fbMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "maioresTexturas": [
+   "1024x1024 +mip 5.33 MB",
+   "1024x1024 +mip 5.33 MB",
+   "1024x512 +mip 2.67 MB",
+   "512x512 +mip 1.33 MB",
+   "512x512 +mip 1.33 MB",
+   "512x512 +mip 1.33 MB",
+   "12x12 0.00 MB",
+   "12x12 0.00 MB",
+   "1x1 cubo 0.00 MB",
+   "3x1 0.00 MB",
+   "1x1 0.00 MB",
+   "1x1 0.00 MB"
+  ],
+  "heap": {
+   "jsHeapMB": 8.1,
+   "jsHeapTotalMB": 8.6,
+   "nos": 544,
+   "ouvintes": 87
+  },
+  "tarefasLongas": [
+   167,
+   1141,
+   474,
+   728,
+   715,
+   578
+  ]
+ },
+ "media_4g": {
+  "q": "media",
+  "perfil": "4g",
+  "prontaMs": 7989,
+  "baixadoKB": 1056,
+  "modelos": 7,
+  "chamadas": 26,
+  "triK": 151,
+  "programas": 32,
+  "compilarShadersMs": 240,
+  "texturas": 13,
+  "texMB": 17.3,
+  "bufMB": 7.3,
+  "rbMB": 0,
+  "fbMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "maioresTexturas": [
+   "1024x1024 +mip 5.33 MB",
+   "1024x1024 +mip 5.33 MB",
+   "1024x512 +mip 2.67 MB",
+   "512x512 +mip 1.33 MB",
+   "512x512 +mip 1.33 MB",
+   "512x512 +mip 1.33 MB",
+   "12x12 0.00 MB",
+   "12x12 0.00 MB",
+   "1x1 cubo 0.00 MB",
+   "3x1 0.00 MB",
+   "1x1 0.00 MB",
+   "1x1 0.00 MB"
+  ],
+  "heap": {
+   "jsHeapMB": 8.2,
+   "jsHeapTotalMB": 9.1,
+   "nos": 544,
+   "ouvintes": 87
+  },
+  "tarefasLongas": [
+   1019,
+   653,
+   575,
+   599,
+   613,
+   794
+  ]
+ }
+}

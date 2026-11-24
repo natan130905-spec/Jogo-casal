@@ -8,7 +8,8 @@
 //   node tools/revisao/tecnico-desempenho/medir.mjs carga   [--perfis sem,4g,3g] [--disp redmi|iphone|pixel]
 //   node tools/revisao/tecnico-desempenho/medir.mjs cenas   [--caps 1,2] [--q baixa,media,alta] [--disp redmi] [--acel 6]
 //   node tools/revisao/tecnico-desempenho/medir.mjs cpu     [--caps 2] [--q media] [--seg 8]   (perfil CDP por módulo; precisa de build com --sourcemap)
-//   node tools/revisao/tecnico-desempenho/medir.mjs rede    [--lat 0,80,200] [--jitter 30] [--perda 0,2,5]
+//   node tools/revisao/tecnico-desempenho/medir.mjs rede    [--lat 0,80,200] [--jitter 30] [--perda 0,2,5] [--disp mini]
+//   node tools/revisao/tecnico-desempenho/medir.mjs arena   [--q baixa,media,alta] [--perfis sem,4g]   (retrato da Arena do Coração)
 // Opções gerais: --porta 4961 (servidor estático), --saida <dir> (JSON e capturas; padrão scratch/medidas), --fotos
 // Sem GPU (SwiftShader) o fps NÃO vale: as medidas úteis são chamadas, triângulos, programas, memória estimada,
 // bytes, tempos de CPU do JavaScript (proporcionais, não absolutos) e tempos de rede.
@@ -99,7 +100,7 @@ const sonda = (p) => p.evaluate(() => {
   const fb = c ? c.width * c.height * 8 * (at.antialias ? 5 : 1) : 0;
   return { contextos: S.contextos, tex: S.tex, texMB: S.texBytes / 2 ** 20, buf: S.buf, bufMB: S.bufBytes / 2 ** 20, rb: S.rb, rbMB: S.rbBytes / 2 ** 20,
     fbMB: fb / 2 ** 20, canvas: c ? [c.width, c.height] : null, aa: !!at.antialias, programas: S.programas, compilacoes: S.compilacoes, compilarMs: S.compilarMs,
-    maiorCompilarMs: S.maiorCompilarMs, ctxCriadoEm: S.ctxCriadoEm, primeiroDesenhoEm: S.primeiroDesenhoEm, quadros: S.quadros.slice(-300), longas: S.longas.slice(-50) };
+    maiorCompilarMs: S.maiorCompilarMs, texLista: S.texLista(), ctxCriadoEm: S.ctxCriadoEm, primeiroDesenhoEm: S.primeiroDesenhoEm, quadros: S.quadros.slice(-300), longas: S.longas.slice(-50) };
 });
 
 // ---------- bundle ----------
@@ -160,6 +161,18 @@ async function cmdCarga(nav) {
 }
 
 // ---------- cenas: capítulo × qualidade ----------
+async function voltarAoMapa(p) {
+  for (let i = 0; i < 20; i++) {
+    const t = await p.evaluate(() => { const v = (s) => { const e = document.querySelector(s); return e && !e.hidden && e.offsetParent !== null; }; return v('#mapa') ? 'mapa' : v('#concluido') ? 'concluido' : v('#quadrinhos') ? 'quadrinhos' : v('#pausa') ? 'pausa' : 'jogo'; });
+    if (t === 'mapa') return true;
+    if (t === 'concluido') await p.click('#bt-conc-continuar').catch(() => {});
+    else if (t === 'quadrinhos') await p.click('#bt-pular').catch(() => {});
+    else if (t === 'pausa') await p.click('#bt-pausa-mapa').catch(() => {});
+    else await p.evaluate(() => document.querySelector('#bt-pausa')?.click());
+    await pausa(400);
+  }
+  return false;
+}
 async function roteiros(caps) {
   process.chdir(RAIZ);
   const { gravarRoteiros } = await import(join(RAIZ, 'test/e2e/roteiros.mjs'));
@@ -192,40 +205,39 @@ async function cmdCenas(nav) {
     const tPronto = Date.now() - tc;
     const s0 = await sonda(p);
     const h1 = await heap(cdp, true);
+    // primeiro um trecho em tempo real (acelerar 1): custo de CPU por quadro sem passos extras de simulação
+    await p.evaluate(([l]) => { window.__edm.acelerar(1); window.__edm.roteiro(l); window.__sonda.zerar(); }, [R[n].lista]);
+    await pausa(Number(arg('seg', 6)) * 1000);
+    const real = await p.evaluate(() => window.__sonda.quadros.slice());
+    // depois a fase inteira acelerada (máximos de chamadas, triângulos, texturas e programas)
     await p.evaluate(([l, k]) => { window.__sonda.zerar(); window.__edm.acelerar(k); return window.__edm.roteiro(l); }, [R[n].lista, acel]);
     const m = { ch: 0, tri: 0, texMax: 0, texMBMax: 0, bufMBMax: 0, progMax: 0, quadros: [] };
     const fotos = arg('fotos', false) ? [0.3, 0.6] : [];
     const total = R[n].lista.length; const t0 = Date.now();
     for (;;) {
-      const st = await p.evaluate(() => { const e = window.__edm?.estado(); const i = window.__edm?.info(); const S = window.__sonda; return e && { tick: e.tick, c: e.concluida, i, tex: S.tex, texMB: S.texBytes / 2 ** 20, bufMB: S.bufBytes / 2 ** 20, prog: S.programas, q: S.quadros.splice(0) }; }).catch(() => null);
+      const st = await p.evaluate(() => { const e = window.__edm?.estado(); const i = window.__edm?.info(); const S = window.__sonda; return e && { tick: e.tick, c: e.concluida, i, tex: S.tex, texMB: S.texBytes / 2 ** 20, lista: S.texLista(), bufMB: S.bufBytes / 2 ** 20, prog: S.programas, q: S.quadros.splice(0) }; }).catch(() => null);
       if (!st) break;
       m.ch = Math.max(m.ch, st.i.chamadas); m.tri = Math.max(m.tri, st.i.triangulos); m.texMax = Math.max(m.texMax, st.tex);
+      if (st.texMB >= m.texMBMax) m.texLista = st.lista;
       m.texMBMax = Math.max(m.texMBMax, st.texMB); m.bufMBMax = Math.max(m.bufMBMax, st.bufMB); m.progMax = Math.max(m.progMax, st.prog);
       m.quadros.push(...st.q);
       while (fotos.length && st.tick >= fotos[0] * total) { const f = fotos.shift(); await p.evaluate(() => window.__edm.acelerar(1)); await pausa(400); await p.screenshot({ path: join(SAIDA, `cap${n}_${q}_${Math.round(f * 100)}.png`) }); await p.evaluate((k) => window.__edm.acelerar(k), acel); }
       if (st.c || Date.now() - t0 > 240000) break;
       await pausa(150);
     }
-    // um trecho em tempo real (acelerar 1) para o custo de CPU por quadro sem passos extras de simulação
-    await p.evaluate(([l]) => { window.__edm.acelerar(1); window.__edm.roteiro(l); window.__sonda.zerar(); }, [R[n].lista]).catch(() => {});
-    await pausa(Number(arg('seg', 6)) * 1000);
-    const real = await p.evaluate(() => window.__sonda.quadros.slice()).catch(() => []);
     const s1 = await sonda(p);
     const h2 = await heap(cdp, true);
-    // volta ao mapa: a memória da fase é devolvida?
-    await p.evaluate(() => document.querySelector('#bt-pausa').click());
-    await pausa(200);
-    await p.click('#bt-pausa-mapa');
-    await p.waitForSelector('#mapa:not([hidden])');
+    // volta ao mapa (pausa → mapa, ou concluído → lembrança → mapa): a memória da fase é devolvida?
+    await voltarAoMapa(p);
     await pausa(500);
     const h3 = await heap(cdp, true);
     const tempoReal = real.length > 2 ? (real.at(-1)[0] - real[0][0]) / 1000 : 0;
     res[`${n}_${q}`] = {
       cap: n, q, disp, abrirFaseMs: tPronto, montarAtePrimeiroDesenhoMs: Math.round(s0.primeiroDesenhoEm - s0.ctxCriadoEm),
-      programas: s1.programas, compilacoes: s1.compilacoes, compilarShadersMs: Math.round(s1.compilarMs), maiorCompilarMs: Math.round(s1.maiorCompilarMs),
+      programas: s1.programas, compilacoesNoInicio: s0.compilacoes, compilacoes: s1.compilacoes, compilarShadersMs: Math.round(s1.compilarMs), maiorCompilarMs: Math.round(s1.maiorCompilarMs),
       chamadasMax: m.ch, triMaxK: Math.round(m.tri / 1000), quadrosAcel: resumoQuadros(m.quadros), quadrosTempoReal: { ...resumoQuadros(real), fpsSwiftShader: tempoReal ? r1(real.length / tempoReal) : 0 },
       texturas: m.texMax, texMB: r1(m.texMBMax), buffers: s1.buf, bufMB: r1(m.bufMBMax), renderbuffers: s1.rb, rbMB: r1(s1.rbMB), framebufferPadraoMB: r1(s1.fbMB), canvas: s1.canvas, antialias: s1.aa,
-      vramEstimadaMB: r1(m.texMBMax + m.bufMBMax + s1.rbMB + s1.fbMB),
+      vramEstimadaMB: r1(m.texMBMax + m.bufMBMax + s1.rbMB + s1.fbMB), maioresTexturas: m.texLista ?? s1.texLista,
       heap: { mapaAntes: h0, faseAberta: h1, fimDaFase: h2, mapaDepois: h3 }, tarefasLongas: s0.longas.filter((l) => l[1] > 50).map((l) => Math.round(l[1])).slice(-6), erros: erros.slice(0, 3),
     };
     console.log(`cap ${n} [${q}] ${JSON.stringify({ ...res[`${n}_${q}`], heap: undefined })}`);
@@ -324,7 +336,7 @@ async function cmdRede(nav) {
   for (const lat of lista('lat', '0,80,200').map(Number)) for (const perda of lista('perda', '0,3').map(Number)) cenarios.push({ lat, perda, jitter: Number(arg('jitter', 30)) * (lat ? 1 : 0) });
   for (const c of cenarios) {
     const base = `http://127.0.0.1:${PORTA}/?q=baixa&resfixa&sinal=127.0.0.1:${portaSinal}`;
-    const A = await abrir(nav, 'redmi'); const B = await abrir(nav, 'iphone');
+    const A = await abrir(nav, arg('disp', 'mini')); const B = await abrir(nav, arg('disp', 'mini')); // tela pequena: sem GPU, quadros fluindo
     // latência de ida em cada sentido (cada lado atrasa o que recebe)
     for (const x of [A, B]) await x.p.addInitScript((c) => { window.__redeSim = c; }, c);
     await A.p.goto(base); await B.p.goto(base);
@@ -337,9 +349,23 @@ async function cmdRede(nav) {
     await A.p.click('#bt-jogar');
     await A.p.waitForFunction(() => window.__edm?.cap === 1, null, { timeout: 60000 });
     await B.p.waitForFunction(() => window.__edm?.cap === 1, null, { timeout: 60000 });
+    // já na fase: encolhe as duas janelas (sem GPU, para a simulação do anfitrião não atrasar por quadro lento)
+    for (const x of [A, B]) await x.p.evaluate(() => { Object.defineProperty(window, 'innerWidth', { get: () => 200 }); Object.defineProperty(window, 'innerHeight', { get: () => 90 }); dispatchEvent(new Event('resize')); });
     await pausa(800);
     await A.p.evaluate(() => { window.__sonda.rede.hist.length = 0; window.__sonda.rede.env = 0; window.__sonda.rede.envBytes = 0; });
     await B.p.evaluate(() => { window.__sonda.rede.hist.length = 0; window.__sonda.rede.env = 0; window.__sonda.rede.envBytes = 0; });
+    // tempo do botão do convidado até ele ver o próprio boneco reagir (pulo do P2): ida + simulação + volta + buffer.
+    // Antes do roteiro (com roteiro, o anfitrião ignora a entrada remota). 3 tentativas, mediana.
+    const reacoes = [];
+    for (let k = 0; k < 3; k++) {
+      reacoes.push(await B.p.evaluate(async () => {
+        const t = performance.now();
+        window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space', key: ' ' }));
+        return await new Promise((r) => { const f = () => { const j = window.__edm.estado().jogadores[1]; if (j.vy > 1) { window.dispatchEvent(new KeyboardEvent('keyup', { code: 'Space', key: ' ' })); r(performance.now() - t); } else if (performance.now() - t > 4000) { window.dispatchEvent(new KeyboardEvent('keyup', { code: 'Space', key: ' ' })); r(null); } else requestAnimationFrame(f); }; f(); });
+      }).catch(() => null));
+      await pausa(1500);
+    }
+    const reacao = reacoes.filter((x) => x !== null).sort((x, y) => x - y)[1] ?? null;
     await A.p.evaluate(([l]) => { window.__edm.acelerar(1); return window.__edm.roteiro(l); }, [R[1].lista]);
     // amostra: o convidado mostra qual tick, e o quanto ele está atrás/desviado do anfitrião
     const am = []; const t0 = Date.now(); let congel = 0, ultimoTick = -1, iguais = 0;
@@ -352,12 +378,6 @@ async function cmdRede(nav) {
       ultimoTick = b.tick;
       await pausa(50);
     }
-    // tempo do botão do convidado até ele ver o próprio boneco reagir (pulo do P2): ida + simulação + volta + buffer
-    const reacao = await B.p.evaluate(async () => {
-      const ini = window.__edm.estado().jogadores[1].vy; const t = performance.now();
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space', key: ' ' }));
-      return await new Promise((r) => { const f = () => { const j = window.__edm.estado().jogadores[1]; if (j.vy > 1 && j.vy !== ini) { window.dispatchEvent(new KeyboardEvent('keyup', { code: 'Space', key: ' ' })); r(performance.now() - t); } else if (performance.now() - t > 3000) r(null); else requestAnimationFrame(f); }; f(); });
-    }).catch(() => null);
     const ra = await A.p.evaluate(() => window.__sonda.rede); const rb = await B.p.evaluate(() => window.__sonda.rede);
     const dur = (h) => (h.length > 1 ? (h.at(-1)[0] - h[0][0]) / 1000 : 1);
     const tamMed = (h) => { const a = h.map((x) => x[1]).sort((x, y) => x - y); return a.length ? { med: a[Math.floor(a.length / 2)], p95: a[Math.floor(a.length * 0.95)], max: a.at(-1) } : {}; };
@@ -367,7 +387,8 @@ async function cmdRede(nav) {
     res[k] = { ...c, anfitriao: { msgPorSeg: r1(ra.hist.length / dur(ra.hist)), KBps: r1(ra.hist.reduce((s, x) => s + x[1], 0) / 1024 / dur(ra.hist)), bytesMsg: tamMed(ra.hist) },
       convidado: { msgPorSeg: r1(rb.hist.length / dur(rb.hist)), KBps: r1(rb.hist.reduce((s, x) => s + x[1], 0) / 1024 / dur(rb.hist)), bytesMsg: tamMed(rb.hist) },
       atrasoConvidadoTicks: { med: atr[Math.floor(atr.length / 2)], p95: atr[Math.floor(atr.length * 0.95)] },
-      desvioPosicaoM: { med: r1(desv[Math.floor(desv.length / 2)] ?? 0), p95: r1(desv[Math.floor(desv.length * 0.95)] ?? 0) }, congelamentos: congel, reacaoPuloConvidadoMs: reacao && Math.round(reacao) };
+      desvioPosicaoM: { med: r1(desv[Math.floor(desv.length / 2)] ?? 0), p95: r1(desv[Math.floor(desv.length * 0.95)] ?? 0) }, congelamentos: congel, reacaoPuloConvidadoMs: reacao && Math.round(reacao), reacoes: reacoes.map((x) => x && Math.round(x)),
+      fps: { anfitriao: await A.p.evaluate(() => { const q = window.__sonda.quadros; return q.length > 2 ? Math.round(1000 * (q.length - 1) / (q.at(-1)[0] - q[0][0])) : 0; }), convidado: await B.p.evaluate(() => { const q = window.__sonda.quadros; return q.length > 2 ? Math.round(1000 * (q.length - 1) / (q.at(-1)[0] - q[0][0])) : 0; }) } };
     console.log(k, JSON.stringify(res[k]));
     await A.ctx.close(); await B.ctx.close();
   }
@@ -375,9 +396,38 @@ async function cmdRede(nav) {
   sinal.close?.();
 }
 
+
+// ---------- arena: retrato da Arena do Coração (em desenvolvimento por outra equipe; só um instantâneo) ----------
+async function cmdArena(nav) {
+  const res = {};
+  for (const q of lista('q', 'baixa,media,alta')) for (const perfil of lista('perfis', 'sem,4g')) {
+    const { ctx, p, cdp } = await abrir(nav, arg('disp', 'redmi'), { rede: REDE[perfil], cache: false });
+    let bytes = 0; const modelos = [];
+    cdp.on('Network.loadingFinished', (e) => { bytes += e.encodedDataLength; });
+    cdp.on('Network.responseReceived', (e) => { if (/modelos\//.test(e.response.url)) modelos.push(e.response.url.split('/').pop()); });
+    await p.goto(`http://127.0.0.1:${PORTA}/?q=${q}&resfixa`);
+    await p.click('#bt-treino'); await p.waitForSelector('#mapa:not([hidden])');
+    await p.evaluate(() => document.querySelectorAll('#mapa .ilha')[6].click());
+    await p.waitForSelector('#bt-arena:not([hidden])', { timeout: 10000 });
+    const b0 = bytes, t0 = Date.now();
+    await p.click('#bt-arena');
+    await p.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 300000 });
+    const tPronta = Date.now() - t0, bArena = bytes - b0;
+    await pausa(4000);
+    const s = await sonda(p); const i = await p.evaluate(() => window.__edm.info());
+    const h = await heap(cdp, true);
+    res[`${q}_${perfil}`] = { q, perfil, prontaMs: tPronta, baixadoKB: kb(bArena), modelos: modelos.length, chamadas: i.chamadas, triK: Math.round(i.triangulos / 1000), programas: s.programas,
+      compilarShadersMs: Math.round(s.compilarMs), texturas: s.tex, texMB: r1(s.texMB), bufMB: r1(s.bufMB), rbMB: r1(s.rbMB), fbMB: r1(s.fbMB), canvas: s.canvas, maioresTexturas: s.texLista, heap: h,
+      tarefasLongas: s.longas.filter((l) => l[1] > 50).map((l) => Math.round(l[1])).slice(-6) };
+    console.log('arena', q, perfil, JSON.stringify(res[`${q}_${perfil}`]));
+    await ctx.close();
+  }
+  writeFileSync(join(SAIDA, 'arena.json'), JSON.stringify(res, null, 1));
+}
+
 // ---------- principal ----------
 if (cmd === 'bundle') { await cmdBundle(); process.exit(0); }
-if (!['carga', 'cenas', 'cpu', 'rede'].includes(cmd)) { console.log(readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(0, 16).join('\n')); process.exit(1); }
+if (!['carga', 'cenas', 'cpu', 'rede', 'arena'].includes(cmd)) { console.log(readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(0, 16).join('\n')); process.exit(1); }
 const srv = await servir(DIST, PORTA);
 const nav = await chromium.launch();
 try {
@@ -385,5 +435,6 @@ try {
   if (cmd === 'cenas') await cmdCenas(nav);
   if (cmd === 'cpu') await cmdCpu(nav);
   if (cmd === 'rede') await cmdRede(nav);
+  if (cmd === 'arena') await cmdArena(nav);
 } finally { await nav.close(); srv.close(); }
 process.exit(0);

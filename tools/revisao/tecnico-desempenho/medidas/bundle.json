@@ -1,0 +1,56 @@
+{
+ "grupos": {
+  "arte": {
+   "n": 19,
+   "KB": 4167,
+   "gzipKB": 4167
+  },
+  "assets": {
+   "n": 4,
+   "KB": 1107,
+   "gzipKB": 313
+  },
+  "raiz": {
+   "n": 7,
+   "KB": 228,
+   "gzipKB": 220
+  },
+  "modelos": {
+   "n": 19,
+   "KB": 10647,
+   "gzipKB": 7165
+  },
+  "som": {
+   "n": 22,
+   "KB": 10523,
+   "gzipKB": 10523
+  }
+ },
+ "assets": [
+  {
+   "arq": "assets/arena-B_-9l6Pa.js",
+   "KB": 134,
+   "gzipKB": 44,
+   "brKB": 38
+  },
+  {
+   "arq": "assets/arenaEsboco-DHrwkDYo.js",
+   "KB": 6,
+   "gzipKB": 2,
+   "brKB": 2
+  },
+  {
+   "arq": "assets/index-Bv4aBBZw.js",
+   "KB": 947,
+   "gzipKB": 261,
+   "brKB": 215
+  },
+  {
+   "arq": "assets/index-CcGXK5fw.css",
+   "KB": 20,
+   "gzipKB": 5,
+   "brKB": 5
+  }
+ ],
+ "totalMB": 26
+}

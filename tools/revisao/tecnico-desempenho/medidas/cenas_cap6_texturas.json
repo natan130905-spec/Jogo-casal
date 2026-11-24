@@ -1,0 +1,192 @@
+{
+ "6_alta": {
+  "cap": 6,
+  "q": "alta",
+  "disp": "redmi",
+  "abrirFaseMs": 11974,
+  "montarAtePrimeiroDesenhoMs": 2646,
+  "programas": 40,
+  "compilacoesNoInicio": 32,
+  "compilacoes": 40,
+  "compilarShadersMs": 746,
+  "maiorCompilarMs": 91,
+  "chamadasMax": 62,
+  "triMaxK": 181,
+  "quadrosAcel": {
+   "n": 18,
+   "cpuMed": 12.8,
+   "cpuP95": 147.6,
+   "chMed": 52,
+   "chMax": 62,
+   "triMedK": 167,
+   "triMaxK": 181
+  },
+  "quadrosTempoReal": {
+   "n": 1,
+   "cpuMed": 6,
+   "cpuP95": 6,
+   "chMed": 47,
+   "chMax": 47,
+   "triMedK": 117,
+   "triMaxK": 117,
+   "fpsSwiftShader": 0
+  },
+  "texturas": 36,
+  "texMB": 77.3,
+  "buffers": 277,
+  "bufMB": 6.2,
+  "renderbuffers": 2,
+  "rbMB": 10.5,
+  "framebufferPadraoMB": 52.4,
+  "canvas": [
+   1746,
+   786
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 146.4,
+  "maioresTexturas": [
+   "2048x2048 16.00 MB",
+   "2048x2048 16.00 MB",
+   "1746x786 10.47 MB",
+   "1746x786 10.47 MB",
+   "2048x512 +mip 5.33 MB",
+   "873x393 2.62 MB",
+   "873x393 2.62 MB",
+   "873x393 2.62 MB",
+   "1024x256 +mip 1.33 MB",
+   "1024x256 +mip 1.33 MB",
+   "1024x256 +mip 1.33 MB",
+   "1024x256 +mip 1.33 MB"
+  ],
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.6,
+    "jsHeapTotalMB": 8.4,
+    "nos": 555,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.2,
+    "jsHeapTotalMB": 9.4,
+    "nos": 562,
+    "ouvintes": 56
+   },
+   "mapaDepois": {
+    "jsHeapMB": 8.2,
+    "jsHeapTotalMB": 8.6,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   2505,
+   4783,
+   1365,
+   1700,
+   1522,
+   1471
+  ],
+  "erros": []
+ },
+ "6_media": {
+  "cap": 6,
+  "q": "media",
+  "disp": "redmi",
+  "abrirFaseMs": 4708,
+  "montarAtePrimeiroDesenhoMs": 1559,
+  "programas": 29,
+  "compilacoesNoInicio": 19,
+  "compilacoes": 29,
+  "compilarShadersMs": 558,
+  "maiorCompilarMs": 43,
+  "chamadasMax": 40,
+  "triMaxK": 76,
+  "quadrosAcel": {
+   "n": 18,
+   "cpuMed": 13,
+   "cpuP95": 108.8,
+   "chMed": 30,
+   "chMax": 40,
+   "triMedK": 67,
+   "triMaxK": 76
+  },
+  "quadrosTempoReal": {
+   "n": 4,
+   "cpuMed": 6.5,
+   "cpuP95": 13.8,
+   "chMed": 27,
+   "chMax": 27,
+   "triMedK": 42,
+   "triMaxK": 42,
+   "fpsSwiftShader": 2.5
+  },
+  "texturas": 21,
+  "texMB": 14.8,
+  "buffers": 277,
+  "bufMB": 5.3,
+  "renderbuffers": 0,
+  "rbMB": 0,
+  "framebufferPadraoMB": 29.4,
+  "canvas": [
+   1309,
+   589
+  ],
+  "antialias": true,
+  "vramEstimadaMB": 49.4,
+  "maioresTexturas": [
+   "2048x512 +mip 5.33 MB",
+   "1024x256 +mip 1.33 MB",
+   "1024x256 +mip 1.33 MB",
+   "1024x256 +mip 1.33 MB",
+   "1024x256 +mip 1.33 MB",
+   "1024x256 +mip 1.33 MB",
+   "1024x256 +mip 1.33 MB",
+   "512x256 +mip 0.67 MB",
+   "512x128 +mip 0.33 MB",
+   "256x128 +mip 0.17 MB",
+   "256x128 +mip 0.17 MB",
+   "128x128 +mip 0.08 MB"
+  ],
+  "heap": {
+   "mapaAntes": {
+    "jsHeapMB": 3.3,
+    "jsHeapTotalMB": 4.4,
+    "nos": 537,
+    "ouvintes": 55
+   },
+   "faseAberta": {
+    "jsHeapMB": 7.1,
+    "jsHeapTotalMB": 8.4,
+    "nos": 554,
+    "ouvintes": 76
+   },
+   "fimDaFase": {
+    "jsHeapMB": 8.5,
+    "jsHeapTotalMB": 9.1,
+    "nos": 554,
+    "ouvintes": 96
+   },
+   "mapaDepois": {
+    "jsHeapMB": 7.9,
+    "jsHeapTotalMB": 8.4,
+    "nos": 562,
+    "ouvintes": 56
+   }
+  },
+  "tarefasLongas": [
+   1498,
+   1863,
+   518,
+   323,
+   414,
+   608
+  ],
+  "erros": []
+ }
+}

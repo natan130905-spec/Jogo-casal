@@ -1,0 +1,74 @@
+[
+ {
+  "q": "baixa",
+  "cap": 1,
+  "ateTick1": 5005,
+  "maiorTarefa": 2648,
+  "somaTarefas": 4745,
+  "mem": 51
+ },
+ {
+  "q": "baixa",
+  "cap": 2,
+  "ateTick1": 7099,
+  "maiorTarefa": 3328,
+  "somaTarefas": 6497,
+  "mem": 40
+ },
+ {
+  "q": "baixa",
+  "cap": 7,
+  "ateTick1": 3653,
+  "maiorTarefa": 1466,
+  "somaTarefas": 3362,
+  "mem": 38
+ },
+ {
+  "q": "media",
+  "cap": 1,
+  "ateTick1": 7061,
+  "maiorTarefa": 3509,
+  "somaTarefas": 6867,
+  "mem": 43
+ },
+ {
+  "q": "media",
+  "cap": 2,
+  "ateTick1": 10261,
+  "maiorTarefa": 6161,
+  "somaTarefas": 9699,
+  "mem": 98
+ },
+ {
+  "q": "media",
+  "cap": 7,
+  "ateTick1": 4814,
+  "maiorTarefa": 2118,
+  "somaTarefas": 4613,
+  "mem": 30
+ },
+ {
+  "q": "alta",
+  "cap": 1,
+  "ateTick1": 10230,
+  "maiorTarefa": 4309,
+  "somaTarefas": 9904,
+  "mem": 61
+ },
+ {
+  "q": "alta",
+  "cap": 2,
+  "ateTick1": 14456,
+  "maiorTarefa": 6751,
+  "somaTarefas": 14141,
+  "mem": 104
+ },
+ {
+  "q": "alta",
+  "cap": 7,
+  "ateTick1": 7950,
+  "maiorTarefa": 4160,
+  "somaTarefas": 7754,
+  "mem": 40
+ }
+]

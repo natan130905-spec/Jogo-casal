@@ -1,0 +1,1274 @@
+{
+ "iphone": {
+  "aparelho": "iPhone 14 (PWA)",
+  "telas": {
+   "menu": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "h1",
+      "texto": "Entre Dois Mundos",
+      "px": 42.9,
+      "cor": "rgb(255, 242, 207)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "span",
+      "texto": "Dois",
+      "px": 42.9,
+      "cor": "rgb(255, 207, 107)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "p.sub",
+      "texto": "Uma jornada para dois",
+      "px": 16,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-criar",
+      "texto": "Criar sala",
+      "px": 21,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#bt-entrar",
+      "texto": "Entrar",
+      "px": 18,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#bt-treino",
+      "texto": "Treinar sozinho",
+      "px": 18,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     },
+     {
+      "el": "label.leve",
+      "texto": "Gráficos\n        LeveNormalBonito",
+      "px": 16,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-criar",
+      "rotulo": "Criar sala",
+      "x": 456,
+      "y": 93,
+      "w": 340,
+      "h": 49,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#codigo",
+      "rotulo": "Código da sala",
+      "x": 456,
+      "y": 150,
+      "w": 246,
+      "h": 41,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-entrar",
+      "rotulo": "Entrar",
+      "x": 710,
+      "y": 150,
+      "w": 86,
+      "h": 41,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-treino",
+      "rotulo": "Treinar sozinho",
+      "x": 456,
+      "y": 199,
+      "w": 340,
+      "h": 45,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#qualidade",
+      "rotulo": "LeveNormalBonito",
+      "x": 680,
+      "y": 258,
+      "w": 102,
+      "h": 31,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "sala": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "p.sub",
+      "texto": "Código da sala",
+      "px": 16,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#sala-codigo",
+      "texto": "2QJBG",
+      "px": 62.4,
+      "cor": "rgb(255, 231, 160)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-compartilhar",
+      "texto": "Compartilhar convite",
+      "px": 18,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#sala-status",
+      "texto": "Envie o código para a outra pessoa. Espe",
+      "px": 16,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-voltar",
+      "texto": "Voltar",
+      "px": 18,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-compartilhar",
+      "rotulo": "Compartilhar convite",
+      "x": 313,
+      "y": 173,
+      "w": 217,
+      "h": 41,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-voltar",
+      "rotulo": "Voltar",
+      "x": 378,
+      "y": 290,
+      "w": 89,
+      "h": 45,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "mapa": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "#bt-mapa-sair",
+      "texto": "✕",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     },
+     {
+      "el": "h2",
+      "texto": "Mapa da jornada",
+      "px": 23.4,
+      "cor": "rgb(255, 242, 207)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-historia",
+      "texto": "📖 História",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     },
+     {
+      "el": "#mapa-pedacos",
+      "texto": "Pedaços 0/7",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0.25)"
+     },
+     {
+      "el": "#mapa-estrelinhas",
+      "texto": "★ 0",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0.25)"
+     },
+     {
+      "el": "span.num",
+      "texto": "1",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.selo",
+      "texto": "novo!",
+      "px": 10.92,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0.667)"
+     },
+     {
+      "el": "span.num",
+      "texto": "2",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "3",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "4",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "5",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "6",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "7",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#mapa-nome",
+      "texto": "1. Pequenos em um mundo gigante",
+      "px": 17.16,
+      "cor": "rgb(255, 242, 207)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#mapa-desc",
+      "texto": "Novidade: Andar, pular, atirar, placas e",
+      "px": 13.26,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-jogar",
+      "texto": "Jogar ▶",
+      "px": 21,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-mapa-sair",
+      "rotulo": "Sair",
+      "x": 47,
+      "y": 6,
+      "w": 41,
+      "h": 35,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-historia",
+      "rotulo": "📖 História",
+      "x": 507,
+      "y": 6,
+      "w": 107,
+      "h": 35,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha.sel",
+      "rotulo": "Capítulo 1: Pequenos em um mun",
+      "x": 122,
+      "y": 160,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 2: A floresta dos son",
+      "x": 203,
+      "y": 94,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 3: A cidade do tempo",
+      "x": 284,
+      "y": 163,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 4: O oceano das lembr",
+      "x": 365,
+      "y": 90,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 5: O reino dos doces",
+      "x": 445,
+      "y": 161,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 6: O labirinto dos es",
+      "x": 526,
+      "y": 92,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 7: O coração do unive",
+      "x": 607,
+      "y": 156,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-jogar",
+      "rotulo": "Jogar ▶",
+      "x": 672,
+      "y": 313,
+      "w": 116,
+      "h": 49,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "prologo1": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "#qd-texto",
+      "texto": "Um ano juntos. Natan e Bruna sobem o mor",
+      "px": 17.16,
+      "cor": "rgb(58, 35, 80)",
+      "fundo": "rgba(255, 247, 232, 0.95)"
+     },
+     {
+      "el": "#qd-dica",
+      "texto": "Toque para continuar",
+      "px": 14,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-pular",
+      "texto": "Pular ››",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-pular",
+      "rotulo": "Pular ››",
+      "x": 715,
+      "y": 8,
+      "w": 82,
+      "h": 35,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "prologo_ultimo": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "#qd-texto",
+      "texto": "Juntem os sete pedaços da estrela, um em",
+      "px": 17.16,
+      "cor": "rgb(58, 35, 80)",
+      "fundo": "rgba(255, 247, 232, 0.95)"
+     },
+     {
+      "el": "#qd-dica",
+      "texto": "Toque para começar a jornada",
+      "px": 14,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-pular",
+      "texto": "Pular ››",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-pular",
+      "rotulo": "Pular ››",
+      "x": 715,
+      "y": 8,
+      "w": 82,
+      "h": 35,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "mapa_sel3": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "#bt-mapa-sair",
+      "texto": "✕",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     },
+     {
+      "el": "h2",
+      "texto": "Mapa da jornada",
+      "px": 23.4,
+      "cor": "rgb(255, 242, 207)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-historia",
+      "texto": "📖 História",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     },
+     {
+      "el": "#mapa-pedacos",
+      "texto": "Pedaços 0/7",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0.25)"
+     },
+     {
+      "el": "#mapa-estrelinhas",
+      "texto": "★ 0",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0.25)"
+     },
+     {
+      "el": "span.num",
+      "texto": "1",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.selo",
+      "texto": "novo!",
+      "px": 10.92,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0.667)"
+     },
+     {
+      "el": "span.num",
+      "texto": "2",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "3",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "4",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "5",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "6",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "span.num",
+      "texto": "7",
+      "px": 11.7,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#mapa-nome",
+      "texto": "3. A cidade do tempo",
+      "px": 17.16,
+      "cor": "rgb(255, 242, 207)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#mapa-desc",
+      "texto": "Novidade: Ponteiros que giram e portas d",
+      "px": 13.26,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-jogar",
+      "texto": "Jogar ▶",
+      "px": 21,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-mapa-sair",
+      "rotulo": "Sair",
+      "x": 47,
+      "y": 6,
+      "w": 41,
+      "h": 35,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-historia",
+      "rotulo": "📖 História",
+      "x": 507,
+      "y": 6,
+      "w": 107,
+      "h": 35,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 1: Pequenos em um mun",
+      "x": 122,
+      "y": 169,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 2: A floresta dos son",
+      "x": 203,
+      "y": 97,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha.sel",
+      "rotulo": "Capítulo 3: A cidade do tempo",
+      "x": 284,
+      "y": 161,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 4: O oceano das lembr",
+      "x": 365,
+      "y": 91,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 5: O reino dos doces",
+      "x": 445,
+      "y": 161,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 6: O labirinto dos es",
+      "x": 526,
+      "y": 90,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "button.ilha",
+      "rotulo": "Capítulo 7: O coração do unive",
+      "x": 607,
+      "y": 153,
+      "w": 78,
+      "h": 97,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-jogar",
+      "rotulo": "Jogar ▶",
+      "x": 672,
+      "y": 313,
+      "w": 116,
+      "h": 49,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "fase1_inicio": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "i",
+      "texto": "❤",
+      "px": 23.4,
+      "cor": "rgb(255, 77, 109)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "span.voce",
+      "texto": "você",
+      "px": 11,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#hud-estrelinhas",
+      "texto": "★ 0",
+      "px": 17.16,
+      "cor": "rgb(255, 233, 160)",
+      "fundo": "rgba(26, 18, 64, 0.627)"
+     },
+     {
+      "el": "#bt-pausa",
+      "texto": "❚❚",
+      "px": 15,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(26, 18, 64, 0.627)"
+     },
+     {
+      "el": "#bt-trocar",
+      "texto": "⇄",
+      "px": 15,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(26, 18, 64, 0.627)"
+     },
+     {
+      "el": "#hud-cap",
+      "texto": "Capítulo 1 · Pequenos em um mundo gigant",
+      "px": 12,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(26, 18, 64, 0.4)"
+     },
+     {
+      "el": "#hud-info",
+      "texto": "3 fps",
+      "px": 11,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(26, 18, 64, 0.4)"
+     },
+     {
+      "el": "#bt-mao",
+      "texto": "✋",
+      "px": 27.3,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(26, 18, 64, 0.3)"
+     },
+     {
+      "el": "#bt-tiro",
+      "texto": "✨",
+      "px": 31.2,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(255, 207, 107, 0.2)"
+     },
+     {
+      "el": "#bt-pulo",
+      "texto": "⬆",
+      "px": 35.1,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(26, 18, 64, 0.3)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-pausa",
+      "rotulo": "Pausa",
+      "x": 407,
+      "y": 6,
+      "w": 49,
+      "h": 29,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-trocar",
+      "rotulo": "Trocar personagem",
+      "x": 462,
+      "y": 6,
+      "w": 37,
+      "h": 29,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#joystick",
+      "rotulo": "",
+      "x": 47,
+      "y": 226,
+      "w": 140,
+      "h": 140,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-mao",
+      "rotulo": "Mão",
+      "x": 712,
+      "y": 186,
+      "w": 73,
+      "h": 73,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-tiro",
+      "rotulo": "Atirar",
+      "x": 594,
+      "y": 286,
+      "w": 77,
+      "h": 77,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-pulo",
+      "rotulo": "Pular",
+      "x": 704,
+      "y": 277,
+      "w": 93,
+      "h": 93,
+      "noEntalhe": false,
+      "naBarraHome": true,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "pausa": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "i",
+      "texto": "❤",
+      "px": 23.4,
+      "cor": "rgb(255, 77, 109)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "span.voce",
+      "texto": "você",
+      "px": 11,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#hud-estrelinhas",
+      "texto": "★ 0",
+      "px": 17.16,
+      "cor": "rgb(255, 233, 160)",
+      "fundo": "rgba(26, 18, 64, 0.627)"
+     },
+     {
+      "el": "#bt-pausa",
+      "texto": "❚❚",
+      "px": 15,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(26, 18, 64, 0.627)"
+     },
+     {
+      "el": "#bt-trocar",
+      "texto": "⇄",
+      "px": 15,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(26, 18, 64, 0.627)"
+     },
+     {
+      "el": "#hud-cap",
+      "texto": "Capítulo 1 · Pequenos em um mundo gigant",
+      "px": 12,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(26, 18, 64, 0.4)"
+     },
+     {
+      "el": "#hud-info",
+      "texto": "4 fps",
+      "px": 11,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(26, 18, 64, 0.4)"
+     },
+     {
+      "el": "#bt-mao",
+      "texto": "✋",
+      "px": 27.3,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(26, 18, 64, 0.3)"
+     },
+     {
+      "el": "#bt-tiro",
+      "texto": "✨",
+      "px": 31.2,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(255, 207, 107, 0.2)"
+     },
+     {
+      "el": "#bt-pulo",
+      "texto": "⬆",
+      "px": 35.1,
+      "cor": "rgb(255, 255, 255)",
+      "fundo": "rgba(26, 18, 64, 0.3)"
+     },
+     {
+      "el": "h2",
+      "texto": "Pausa",
+      "px": 23.4,
+      "cor": "rgb(255, 242, 207)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-continuar",
+      "texto": "Continuar",
+      "px": 21,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#bt-pausa-mapa",
+      "texto": "Mapa da jornada",
+      "px": 18,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     },
+     {
+      "el": "#bt-som",
+      "texto": "Som: ligado",
+      "px": 18,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     },
+     {
+      "el": "#bt-pausa-sair",
+      "texto": "Sair",
+      "px": 18,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     },
+     {
+      "el": "#dica-teclas",
+      "texto": "PC: setas/WASD andar · Espaço pular · J ",
+      "px": 11,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-pausa",
+      "rotulo": "Pausa",
+      "x": 407,
+      "y": 6,
+      "w": 49,
+      "h": 29,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-trocar",
+      "rotulo": "Trocar personagem",
+      "x": 462,
+      "y": 6,
+      "w": 37,
+      "h": 29,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#joystick",
+      "rotulo": "",
+      "x": 47,
+      "y": 226,
+      "w": 140,
+      "h": 140,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-mao",
+      "rotulo": "Mão",
+      "x": 712,
+      "y": 186,
+      "w": 73,
+      "h": 73,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-tiro",
+      "rotulo": "Atirar",
+      "x": 594,
+      "y": 286,
+      "w": 77,
+      "h": 77,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-pulo",
+      "rotulo": "Pular",
+      "x": 704,
+      "y": 277,
+      "w": 93,
+      "h": 93,
+      "noEntalhe": false,
+      "naBarraHome": true,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-continuar",
+      "rotulo": "Continuar",
+      "x": 252,
+      "y": 124,
+      "w": 340,
+      "h": 49,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-pausa-mapa",
+      "rotulo": "Mapa da jornada",
+      "x": 252,
+      "y": 181,
+      "w": 340,
+      "h": 41,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-som",
+      "rotulo": "Som: ligado",
+      "x": 252,
+      "y": 230,
+      "w": 166,
+      "h": 45,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     },
+     {
+      "el": "#bt-pausa-sair",
+      "rotulo": "Sair",
+      "x": 426,
+      "y": 230,
+      "w": 166,
+      "h": 45,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "concluido": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "#conc-cap",
+      "texto": "Capítulo 1 · Pequenos em um mundo gigant",
+      "px": 16,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "h2",
+      "texto": "Capítulo concluído!",
+      "px": 23.4,
+      "cor": "rgb(255, 242, 207)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#conc-estrelinhas",
+      "texto": "★★★36 estrelinhas de lembrança de 38 · p",
+      "px": 27.3,
+      "cor": "rgb(255, 233, 160)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "small",
+      "texto": "36 estrelinhas de lembrança de 38 · peda",
+      "px": 14,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#conc-frase",
+      "texto": "“Você riu do mesmo urso de pelúcia que e",
+      "px": 17.16,
+      "cor": "rgb(255, 231, 240)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-conc-continuar",
+      "texto": "Continuar",
+      "px": 21,
+      "cor": "rgb(58, 35, 16)",
+      "fundo": "rgb(255, 207, 107)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-conc-continuar",
+      "rotulo": "Continuar",
+      "x": 212,
+      "y": 294,
+      "w": 420,
+      "h": 49,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   },
+   "lembranca1": {
+    "W": 844,
+    "H": 390,
+    "textos": [
+     {
+      "el": "#qd-texto",
+      "texto": "A tarde em que se conheceram, numa loja ",
+      "px": 17.16,
+      "cor": "rgb(58, 35, 80)",
+      "fundo": "rgba(255, 247, 232, 0.95)"
+     },
+     {
+      "el": "#qd-dica",
+      "texto": "Toque para continuar",
+      "px": 14,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(0, 0, 0, 0)"
+     },
+     {
+      "el": "#bt-pular",
+      "texto": "Pular ››",
+      "px": 15,
+      "cor": "rgb(255, 247, 232)",
+      "fundo": "rgba(255, 255, 255, 0.063)"
+     }
+    ],
+    "alvos": [
+     {
+      "el": "#bt-pular",
+      "rotulo": "Pular ››",
+      "x": 715,
+      "y": 8,
+      "w": 82,
+      "h": 35,
+      "noEntalhe": false,
+      "naBarraHome": false,
+      "foraDaTela": false
+     }
+    ]
+   }
+  },
+  "tempos": {
+   "menu": 1175,
+   "mapa": 633,
+   "prologoArte1": 11,
+   "fase1PrimeiroTick": 3702
+  },
+  "rede": {
+   "menu": {
+    "arquivos": 2,
+    "kB": 45,
+    "lista": [
+     "/arte/14_rosto_natan.webp 24k",
+     "/arte/15_rosto_bruna.webp 21k"
+    ]
+   },
+   "sala": {
+    "arquivos": 1,
+    "kB": 1056,
+    "lista": [
+     "/som/musica_menu.mp3 1056k"
+    ]
+   },
+   "mapa": {
+    "arquivos": 8,
+    "kB": 2837,
+    "lista": [
+     "/som/musica_menu.mp3 1056k",
+     "/arte/06_cap1_brinquedos.webp 229k",
+     "/arte/07_cap2_floresta.webp 243k",
+     "/arte/08_cap3_relogio.webp 310k",
+     "/arte/09_cap4_praia.webp 268k",
+     "/arte/10_cap5_doces.webp 261k",
+     "/arte/11_cap6_espelhos.webp 237k",
+     "/arte/12_cap7_estrela.webp 234k"
+    ]
+   },
+   "prologo": {
+    "arquivos": 5,
+    "kB": 1311,
+    "lista": [
+     "/arte/01_prologo1.webp 254k",
+     "/arte/02_prologo2.webp 213k",
+     "/arte/03_prologo3.webp 295k",
+     "/arte/04_prologo4.webp 305k",
+     "/arte/05_prologo5.webp 243k"
+    ]
+   },
+   "fase1": {
+    "arquivos": 1,
+    "kB": 1056,
+    "lista": [
+     "/som/musica_cap1_brinquedos.mp3 1056k"
+    ]
+   },
+   "concluido": {
+    "arquivos": 8,
+    "kB": 98,
+    "lista": [
+     "/som/sfx_estrelinha.mp3 8k",
+     "/som/sfx_pulo.mp3 8k",
+     "/som/sfx_tiro.mp3 8k",
+     "/som/sfx_estouro.mp3 8k",
+     "/som/sfx_lanterna.mp3 16k",
+     "/som/sfx_porta.mp3 16k",
+     "/som/sfx_maos.mp3 8k",
+     "/som/sfx_pedaco_estrela.mp3 24k"
+    ]
+   }
+  },
+  "salaStatus": "Envie o código para a outra pessoa. Esperando…",
+  "erroCodigo": "O código tem 5 letras/números.",
+  "textosPrologo": 74,
+  "hudInfo": "3 fps",
+  "pausaPara": true,
+  "erros": []
+ }
+}

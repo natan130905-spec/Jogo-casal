@@ -20,6 +20,8 @@
     zerar() { this.quadros.length = 0; this.longas.length = 0; },
   });
   const N = 900;
+  const vivas = new Set();
+  S.texLista = () => [...vivas].filter((i) => i.bytes > 0).sort((a, b) => b.bytes - a.bytes).slice(0, 12).map((i) => `${i.w}x${i.h}${i.faces ? ' cubo' : ''}${i.mip ? ' +mip' : ''} ${(i.bytes / 2 ** 20).toFixed(2)} MB`);
   const texInfo = new WeakMap(), bufInfo = new WeakMap(), rbInfo = new WeakMap();
   const ligadoTex = new WeakMap(); // gl -> Map(unit:target -> tex)
   const unidade = new WeakMap();
@@ -28,7 +30,7 @@
   // bytes por texel de formatos internos comuns (WebGL2)
   const BPP = { 0x8058: 4, 0x8C43: 4, 0x881A: 8, 0x8814: 16, 0x822F: 4, 0x8230: 8, 0x8229: 1, 0x822B: 2, 0x81A5: 2, 0x81A6: 4, 0x88F0: 4, 0x8CAC: 4, 0x8CAD: 8, 0x1908: 4, 0x1907: 3, 0x1909: 1, 0x190A: 2, 0x8D48: 1, 0x8C3A: 4, 0x8C3D: 4, 0x8051: 3, 0x8D62: 2, 0x8056: 2, 0x8057: 2 };
   const bpp = (fmt, type) => {
-    if (type === 0x140B || type === 0x8D61) return (BPP[fmt] ?? 4) * 2; // HALF_FLOAT com formato não dimensionado
+    if ((type === 0x140B || type === 0x8D61) && (fmt === 0x1908 || fmt === 0x1907)) return fmt === 0x1908 ? 8 : 6; // HALF_FLOAT com formato não dimensionado (o dimensionado já está na tabela)
     if (type === 0x1406 && (fmt === 0x1908 || fmt === 0x1907)) return fmt === 0x1908 ? 16 : 12;
     return BPP[fmt] ?? 4;
   };
@@ -62,10 +64,11 @@
     embrulhar(P, 'drawElementsInstanced', (a) => marcarDesenho(a[0], a[1], a[4]));
     embrulhar(P, 'activeTexture', function (a) { unidade.set(this, a[0] - 0x84C0); });
     embrulhar(P, 'bindTexture', function (a) { let m = ligadoTex.get(this); if (!m) ligadoTex.set(this, (m = new Map())); m.set(chaveTex(this, a[0]), a[1]); });
-    embrulhar(P, 'createTexture', null, (a, t) => { S.tex++; texInfo.set(t, { bytes: 0 }); });
-    embrulhar(P, 'deleteTexture', (a) => { const i = texInfo.get(a[0]); if (i) { S.tex--; S.texBytes -= i.bytes; texInfo.delete(a[0]); } });
-    const definirTex = function (gl, target, level, bytes, faces = 1) {
+    embrulhar(P, 'createTexture', null, (a, t) => { S.tex++; const i = { bytes: 0 }; texInfo.set(t, i); vivas.add(i); });
+    embrulhar(P, 'deleteTexture', (a) => { const i = texInfo.get(a[0]); if (i) { S.tex--; S.texBytes -= i.bytes; texInfo.delete(a[0]); vivas.delete(i); } });
+    const definirTex = function (gl, target, level, bytes, faces = 1, w = 0, h = 0) {
       const t = texAtual(gl, target); const i = t && texInfo.get(t); if (!i) return;
+      if (level === 0) { i.w = w; i.h = h; }
       S.uploadsTexQuadro++; S.bytesUploadQuadro += bytes;
       if (level !== 0) return;
       const ehFace = target >= 0x8515 && target <= 0x851A;
@@ -76,15 +79,15 @@
       let w, h, fmt = a[2], type;
       if (a.length >= 8 && typeof a[3] === 'number') { w = a[3]; h = a[4]; type = a[7]; }
       else { const s = a[5]; w = s?.videoWidth || s?.naturalWidth || s?.width || 0; h = s?.videoHeight || s?.naturalHeight || s?.height || 0; type = a[4]; }
-      definirTex(this, a[0], a[1], w * h * bpp(fmt, type));
+      definirTex(this, a[0], a[1], w * h * bpp(fmt, type), 1, w, h);
     });
     embrulhar(P, 'texStorage2D', function (a) {
       const [target, levels, fmt, w, h] = a; const base = w * h * bpp(fmt);
       const t = texAtual(this, target); const i = t && texInfo.get(t); if (!i) return;
-      const total = (levels > 1 ? base * 4 / 3 : base) * (target === 0x8513 ? 6 : 1);
+      const total = (levels > 1 ? base * 4 / 3 : base) * (target === 0x8513 ? 6 : 1); i.w = w; i.h = h; i.mip = levels > 1;
       S.texBytes += total - i.bytes; i.bytes = total;
     });
-    embrulhar(P, 'texImage3D', function (a) { if (typeof a[3] === 'number') definirTex(this, a[0], a[1], a[3] * a[4] * a[5] * bpp(a[2], a[8])); });
+    embrulhar(P, 'texImage3D', function (a) { if (typeof a[3] === 'number') definirTex(this, a[0], a[1], a[3] * a[4] * a[5] * bpp(a[2], a[8]), 1, a[3], a[4] * a[5]); });
     embrulhar(P, 'texSubImage2D', function () { S.uploadsTexQuadro++; });
     embrulhar(P, 'generateMipmap', function (a) { const t = texAtual(this, a[0]); const i = t && texInfo.get(t); if (i && !i.mip) { i.mip = 1; const n = i.bytes * 4 / 3; S.texBytes += n - i.bytes; i.bytes = n; } });
     embrulhar(P, 'createBuffer', null, (a, b) => { S.buf++; bufInfo.set(b, { bytes: 0 }); });
@@ -157,6 +160,12 @@
     ultima = em;
     const self = this, dado = ev.data;
     setTimeout(() => h.call(self, new MessageEvent('message', { data: dado })), em - t);
+  };
+  // o PeerJS 1.5 escuta com addEventListener('message', …) (o onmessage dele só registra log)
+  const addOrig = RTCDataChannel.prototype.addEventListener;
+  RTCDataChannel.prototype.addEventListener = function (tipo, h, ...r) {
+    if (tipo === 'message' && typeof h === 'function') return addOrig.call(this, tipo, atrasar(h), ...r);
+    return addOrig.call(this, tipo, h, ...r);
   };
   Object.defineProperty(RTCDataChannel.prototype, 'onmessage', {
     configurable: true, get() { return d.get.call(this); }, set(h) { d.set.call(this, h ? atrasar(h) : h); },
