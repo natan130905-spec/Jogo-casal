@@ -7,7 +7,7 @@
 //     entrada do convidado, pausa sincronizada → luta inteira gravada, convidado em sincronia → vitória → concluído,
 //     lembrança, final e créditos nos dois → conexão perdida.
 // Uso: node test/e2e/arena.mjs [treino|dupla]   (sem argumento: os dois). Capturas em test-out/arena/.
-// Ambiente: PORTA (vite preview, padrão 4863), ACEL (padrão 6; o treino usa o dobro).
+// Ambiente: PORTA (vite preview, padrão 4863), ACEL (padrão 6; o treino usa o dobro), LIMITE_LUTA (s reais, padrão 900).
 import { createRequire } from 'node:module';
 const { chromium, devices } = createRequire(import.meta.url)('/opt/node-tools/node_modules/playwright');
 import { PeerServer } from 'peer';
@@ -20,6 +20,9 @@ const partes = process.argv[2] ? [process.argv[2]] : ['treino', 'dupla'];
 const ACEL = Number(process.env.ACEL ?? 6);
 const porta = Number(process.env.PORTA ?? 4863);
 const ORCAMENTO = { ch: 80, tri: 250000 };
+// tempo real máximo de cada luta gravada: no SwiftShader (sem GPU) e com a máquina carregada a cena real roda a 2–4 fps,
+// e cada quadro anda no máximo 0,1 s × ACEL de jogo; 300 s não bastava para a dupla (dois aparelhos desenhando).
+const LIMITE_LUTA = Number(process.env.LIMITE_LUTA ?? 900);
 const saida = new URL('../../test-out/arena/', import.meta.url).pathname; mkdirSync(saida, { recursive: true });
 const pausa = (ms) => new Promise((r) => setTimeout(r, ms));
 let ok = true; const checar = (c, msg) => { console.log(`${c ? 'OK ' : 'FALHOU'} ${msg}`); ok &&= !!c; };
@@ -47,6 +50,16 @@ const tela = (p) => p.evaluate(() => window.__edmFluxo.tela()).catch(() => null)
 const estado = (p) => p.evaluate(() => { const e = window.__edm?.arena && window.__edm.estado(); return e && {
   tick: e.tick, vitoria: e.vitoria, fase: e.rei.fase, vida: e.rei.vida, solo: e.solo,
   j: e.jogadores.map((j) => ({ x: j.x, y: j.y, z: j.z, c: j.coracoes, p: j.poder })) }; }).catch(() => null);
+
+/** Espera o jogo andar n ticks (1/60 s de jogo cada), não importa o fps: no SwiftShader carregado a cena real
+ *  roda a poucos quadros por segundo e o passo é limitado a 0,1 s por quadro, então esperar em ms reais media o fps. */
+async function esperarTicks(p, n, limiteMs = 60000) {
+  const k0 = (await estado(p))?.tick ?? 0; const fim = Date.now() + limiteMs;
+  while (Date.now() < fim) { const k = (await estado(p))?.tick ?? 0; if (k - k0 >= n) return; await pausa(40); }
+}
+/** Quadros por segundo da página (requestAnimationFrame) medidos em ms reais. */
+const medirFps = (p, ms = 2000) => p.evaluate((ms) => new Promise((r) => { let n = 0; const t0 = performance.now();
+  const f = () => { n++; if (performance.now() - t0 < ms) requestAnimationFrame(f); else r(n * 1000 / (performance.now() - t0)); }; requestAnimationFrame(f); }), ms);
 
 /** Desvio (m) entre o que o convidado mostra e o que o anfitrião simulou perto daquele tick. */
 async function desvioDoConvidado(A, B) {
@@ -118,7 +131,7 @@ async function jogarLuta(r, A, B, acel, nome) {
       await A.evaluate((k) => window.__edm.acelerar(k), acel).catch(() => {});
     }
     if (s.vitoria) break;
-    if (Date.now() - t0 > 300000) break;
+    if (Date.now() - t0 > LIMITE_LUTA * 1000) break;
     await pausa(150);
   }
   const s = await estado(A);
@@ -182,21 +195,22 @@ if (partes.includes('treino')) {
   await conferirControles(A, 'treino');
   // teclado do PC: D anda, Espaço pula, J golpe, K tiro
   const e0 = await estado(A);
-  await A.keyboard.down('KeyD'); await pausa(700); await A.keyboard.up('KeyD');
+  console.log(`  fps medido (treino, SwiftShader, sem GPU): ${(await medirFps(A)).toFixed(1)}`);
+  await A.keyboard.down('KeyD'); await esperarTicks(A, 42); await A.keyboard.up('KeyD');
   const e1 = await estado(A);
   checar(Math.hypot(e1.j[0].x - e0.j[0].x, e1.j[0].z - e0.j[0].z) > 1.5, `treino: D anda (${e0.j[0].x.toFixed(1)},${e0.j[0].z.toFixed(1)} → ${e1.j[0].x.toFixed(1)},${e1.j[0].z.toFixed(1)})`);
   await A.keyboard.down('Space');
-  let alto = 0; for (let k = 0; k < 6; k++) { await pausa(70); alto = Math.max(alto, (await estado(A)).j[0].y); }
+  let alto = 0; { const k0 = (await estado(A)).tick; for (let k = 0; k < 400; k++) { const e = await estado(A); alto = Math.max(alto, e.j[0].y); if (e.tick - k0 > 30) break; await pausa(15); } }
   await A.keyboard.up('Space');
   checar(alto > 0.5, `treino: Espaço pula (y ${alto.toFixed(2)} m)`);
   const c0 = await A.evaluate(() => window.__edm.contagem());
-  await A.keyboard.press('KeyJ'); await pausa(400);
-  await A.keyboard.down('KeyK'); await pausa(700); await A.keyboard.up('KeyK');
+  await A.keyboard.down('KeyJ'); await esperarTicks(A, 3); await A.keyboard.up('KeyJ'); await esperarTicks(A, 24);
+  await A.keyboard.down('KeyK'); await esperarTicks(A, 42); await A.keyboard.up('KeyK');
   const c1 = await A.evaluate(() => window.__edm.contagem());
   checar((c1.golpe ?? 0) > (c0.golpe ?? 0) && (c1.tiro ?? 0) - (c0.tiro ?? 0) >= 2, `treino: J golpeia (${c1.golpe ?? 0}) e K segurado atira (${(c1.tiro ?? 0) - (c0.tiro ?? 0)} tiros)`);
   // toque: segurar ✨ atira
   const box = await A.locator('#controles-arena [data-b="tiro"]').boundingBox();
-  await A.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2); await pausa(300);
+  await A.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2); await esperarTicks(A, 6);
   const c2 = await A.evaluate(() => window.__edm.contagem());
   checar((c2.tiro ?? 0) > (c1.tiro ?? 0), 'treino: tocar ✨ atira');
   await A.click('#bt-trocar'); await pausa(300);
@@ -251,14 +265,14 @@ if (partes.includes('dupla')) {
   const cdp = await B.context().newCDPSession(B);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: cx, y: cy }] });
   for (let k = 1; k <= 5; k++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: cx + k * 12, y: cy }] });
-  await pausa(900);
+  await esperarTicks(A, 54);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await pausa(300);
   const b1 = (await estado(A)).j[1];
   checar(Math.hypot(b1.x - b0.x, b1.z - b0.z) > 1.5, `dupla: joystick de toque do convidado move a Bruna no anfitrião (${Math.hypot(b1.x - b0.x, b1.z - b0.z).toFixed(1)} m)`);
   // tiro do convidado (K)
   const cA0 = await A.evaluate(() => window.__edm.contagem());
-  await B.keyboard.down('KeyK'); await pausa(800); await B.keyboard.up('KeyK'); await pausa(200);
+  await B.keyboard.down('KeyK'); await esperarTicks(A, 48); await B.keyboard.up('KeyK'); await esperarTicks(A, 12);
   const cA1 = await A.evaluate(() => window.__edm.contagem());
   checar((cA1.tiro ?? 0) > (cA0.tiro ?? 0), 'dupla: tiro do convidado aparece no anfitrião');
   // pausa sincronizada
