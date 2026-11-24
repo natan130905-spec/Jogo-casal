@@ -269,9 +269,10 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   `visibilitychange`/`pagehide` em `src/`.
 - **Correção:** entrada do convidado vale no máximo 6 ticks sem nova (a Bruna para em ≤ 18 ticks = 0,3 s depois da
   última mensagem); 1,5 s sem nada do outro aparelho pausa com "Bruna/Natan saiu do jogo" (o prazo cresce para 8 × o
-  intervalo típico quando o aparelho já mandava devagar, para não pausar à toa); `visibilitychange`/`pagehide` nos
-  dois (mensagem `ausente`, pausa, música e `AudioContext` suspensos). Estado: **corrigido** (L1a, `58ccd30`,
-  `c80ff3f`, `888d95c`).
+  intervalo típico quando o aparelho já mandava devagar, e só depois de 10 mensagens, para não pausar à toa); quem
+  pausa é sempre o anfitrião: o convidado só avisa (se parasse de mandar entradas, o anfitrião acharia que foi ele
+  quem saiu); `visibilitychange`/`pagehide` nos dois (mensagem `ausente`, pausa, música e `AudioContext` suspensos).
+  Estado: **corrigido** (L1a, `58ccd30`, `c80ff3f`, `888d95c`, `6f17bbd`).
 - **Teste que impede a volta:** `test/e2e/interface.mjs` (dupla): convidado sem mandar nada ⇒ `vxBruna = 0` em 18
   ticks e aviso "Bruna saiu do jogo"; anfitrião escondido ⇒ o convidado vê "Natan saiu do jogo". Ver R74 (o
   "congelado" do CDP não congelava).
