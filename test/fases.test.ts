@@ -2,7 +2,7 @@
 // vitória de verdade com dois bots cooperativos roteirizados rodando a simulação inteira, do início ao pedaço da estrela.
 import { describe, expect, it } from 'vitest';
 import { CAPITULOS } from '../src/core/fases/index';
-import { estadoInicial, passo, solidos } from '../src/core/sim';
+import { DT, estadoInicial, passo, solidos } from '../src/core/sim';
 import { INIMIGO } from '../src/core/inimigos';
 import { pontoDentro, sobrepoe } from '../src/core/colisao';
 import { instantaneo, restaurar } from '../src/core/instantaneo';
@@ -12,6 +12,7 @@ import { chao } from '../src/core/fases/comum';
 import { alcancaveis, descreverNo, montarGrafo, noSob, nosQueTocam, pares, type Grafo } from './fases/alcance';
 import { jogar, NEUTRO } from './fases/bot';
 import { PLANOS } from './fases/planos';
+import { T15_EXTRA } from './fases/t15';
 
 const TEMAS = ['brinquedos', 'floresta', 'relogio', 'oceano', 'doces', 'espelhos', 'cosmos'];
 
@@ -163,12 +164,20 @@ describe('fases dos capítulos: dois bots cooperativos vencem', () => {
       const plano = PLANOS[f.id];
       expect(plano, 'plano dos bots').toBeDefined();
       let presoDentro = 0;
+      // T15 (R20): nenhum passo move o corpo mais que |vx·dt| + 0,35 m na horizontal (fora quedas, bolha e renascer)
+      let ant: { x: number; vx: number }[] | null = null, teleporte = 0, ondeTeleporte = '';
       const r = jogar(f, plano, {
         limite: 420,
         cada: (e) => {
           // ninguém atravessa parede
           const sol = solidos(f, e);
           for (const j of e.jogadores) if (!j.bolha && sol.some((s) => sobrepoe({ x: j.x - 0.29, y: j.y + 0.02, w: 0.58, h: 1.0 }, s))) presoDentro++;
+          if (ant) e.jogadores.forEach((j, i) => {
+            if (j.bolha || e.eventos.some((ev) => ev === `caiu:${i}` || ev === `renasce:${i}` || ev === 'volta-checkpoint')) return;
+            const extra = Math.abs(j.x - ant![i].x) - Math.max(Math.abs(ant![i].vx), Math.abs(j.vx)) * DT;
+            if (extra > teleporte) { teleporte = extra; ondeTeleporte = `jogador ${i} ${ant![i].x.toFixed(2)}→${j.x.toFixed(2)} no tick ${e.tick}`; }
+          });
+          ant = e.jogadores.map((j) => ({ x: j.x, vx: j.vx }));
         },
       });
       console.log(`cap ${f.capitulo}: ${r.concluida ? 'VENCEU' : 'NÃO VENCEU'} em ${r.segundos.toFixed(1)} s; estrelinhas ${r.estrelinhas}/${(f.estrelinhas ?? []).length}+soltas; ` +
@@ -177,6 +186,7 @@ describe('fases dos capítulos: dois bots cooperativos vencem', () => {
       expect(r.concluida).toBe(true);
       expect(r.voltas, 'os dois viraram bolha').toBe(0);
       expect(presoDentro, 'ticks com alguém dentro de parede').toBe(0);
+      expect(teleporte, `T15: maior salto além de |vx·dt| (${ondeTeleporte})`).toBeLessThanOrEqual(T15_EXTRA);
       // os bots não erram e não exploram: um casal de verdade leva de 2 a 3 vezes mais (2–4 minutos)
       expect(r.segundos).toBeGreaterThan(45);
       expect(r.segundos).toBeLessThan(150);
