@@ -63,9 +63,13 @@ export function materialMundo(q: Qualidade, o: OpcoesMundo = {}): THREE.Material
   const plano = o.plano !== false;
   const ruido = o.ruido !== false;
   const oitavas = q === 'baixa' ? 1 : 2;
-  const esc = (o.escalaRuido ?? 1.6).toFixed(3), forca = (o.forcaRuido ?? 0.26).toFixed(3);
+  // escala e força do ruído são uniforms (R58): escritas no código do shader, cada combinação virava um programa a
+  // mais (2 a 4 por capítulo)
+  const uEscRuido = { value: o.escalaRuido ?? 1.6 }, uForcaRuido = { value: o.forcaRuido ?? 0.26 };
   mat.onBeforeCompile = (sh) => {
     sh.uniforms.uTempo = TEMPO;
+    sh.uniforms.uEscRuido = uEscRuido;
+    sh.uniforms.uForcaRuido = uForcaRuido;
     Object.assign(sh.uniforms, ESTILO);
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>\nuniform float uTempo; varying vec3 vMundoP; varying vec3 vMundoN;`)
@@ -92,13 +96,13 @@ ${o.vento ? `{
   vMundoN = normalize(mat3(modelMatrix) * nn);
 }`);
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', `#include <common>\nvarying vec3 vMundoP; varying vec3 vMundoN;\nuniform vec3 uNevoaPerto, uNevoaLonge; uniform float uNevoaForca;\n${RUIDO_GLSL}`)
+      .replace('#include <common>', `#include <common>\nvarying vec3 vMundoP; varying vec3 vMundoN;\nuniform vec3 uNevoaPerto, uNevoaLonge; uniform float uNevoaForca, uEscRuido, uForcaRuido;\n${RUIDO_GLSL}`)
       .replace('#include <gradientmap_pars_fragment>', RAMPA_GLSL)
       .replace('#include <color_fragment>', `#include <color_fragment>
 ${ruido ? `{
-  vec3 pr = vMundoP * ${esc};
+  vec3 pr = vMundoP * uEscRuido;
   float rn = edmRuido(pr)${oitavas > 1 ? ' * 0.62 + edmRuido(pr * 3.7 + 11.0) * 0.38' : ''};
-  diffuseColor.rgb *= 1.0 + ${forca} * (rn * 2.0 - 1.0);
+  diffuseColor.rgb *= 1.0 + uForcaRuido * (rn * 2.0 - 1.0);
 }` : ''}
 {
   // tom quente do pôr do sol nas faces voltadas para cima, arroxeado nas de baixo (pintura, não física; ≤ 1)
@@ -116,7 +120,7 @@ diffuseColor.rgb *= mix(1.0, 0.42, smoothstep(2.3, 5.0, vMundoP.z));` : ''}`)
   gl_FragColor.rgb = mix(gl_FragColor.rgb, corN, f);
 }` : '#include <fog_fragment>');
   };
-  mat.customProgramCacheKey = () => `mundo2-${q}-${o.vento ? 1 : 0}-${ruido ? 1 : 0}-${plano ? 1 : 0}-${esc}-${forca}`;
+  mat.customProgramCacheKey = () => `mundo3-${q}-${o.vento ? 1 : 0}-${ruido ? 1 : 0}-${plano ? 1 : 0}`;
   return mat;
 }
 
