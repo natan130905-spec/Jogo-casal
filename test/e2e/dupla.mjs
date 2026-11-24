@@ -72,6 +72,12 @@ await A.waitForSelector('#mapa:not([hidden])', { timeout: 10000 });
 await B.waitForSelector('#mapa:not([hidden])', { timeout: 10000 });
 const progB = await B.evaluate(() => window.__edmFluxo.progresso());
 checar(progB.prologoVisto === true, 'convidado recebeu o progresso do anfitrião');
+{
+  // L2b (R23): o convidado também grava a campanha do casal, com o mesmo id da do anfitrião
+  const [sa, sb] = await Promise.all([A, B].map((p) => p.evaluate(() => JSON.parse(localStorage.getItem('edm-salvo-v2') ?? 'null'))));
+  const ca = sa?.slots.find((c) => c.id === sa.ativo), cb = sb?.slots.find((c) => c.id === sb.ativo);
+  checar(!!ca && !!cb && ca.id === cb.id && cb.prologoVisto === true, `convidado grava edm-salvo-v2 com o mesmo id (${ca?.id} / ${cb?.id})`);
+}
 checar(await B.isHidden('#bt-jogar') && await A.isVisible('#bt-jogar'), 'só o anfitrião escolhe o capítulo');
 await A.screenshot({ path: saida + 'A_mapa.png' }); await B.screenshot({ path: saida + 'B_mapa.png' });
 await A.click('#bt-jogar');
