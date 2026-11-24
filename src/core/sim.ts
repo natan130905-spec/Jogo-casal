@@ -23,6 +23,18 @@ export const FISICA = Object.freeze({
   velAndar: 5.2, acelChao: 60, acelAr: 30,
   gravidade: 30, velQuedaMax: 18,
   pulo: 10.5, impulsoPulo: 16.5,
+  /** coyote time: o pulo ainda sai até estes ticks depois de sair da quina (0,10 s) */
+  coyote: 6,
+  /** jump buffer: apertar o pulo até estes ticks antes de pousar pula no pouso (0,12 s) */
+  buffer: 7,
+  /** pulo mínimo: soltar o botão só corta a subida depois destes ticks (0,13 s); toque rápido ≈ 1,4 m */
+  puloMinimo: 8,
+  /** corte da subida por tick com o pulo solto (altura variável) */
+  corte: 0.88,
+  /** quina dos pés: no ar, contra a parede, subindo devagar (vy ≤ quinaVy), sobe se o topo está até isto acima */
+  quinaPes: 0.2, quinaVy: 4,
+  /** coyote da rede (convidado sem predição): teto do coyote + tolerância extra, em ticks (0,25 s) */
+  coyoteRedeMax: 15,
   /** distância para dar as mãos / impulsionar */
   alcanceMao: 1.4,
   /** de cima de uma plataforma alta, alcança o parceiro até esta altura abaixo (puxar pela mão) */
@@ -45,7 +57,7 @@ export function novoJogador(x: number, y: number): EstadoJogador {
     x, y, vx: 0, vy: 0, noChao: false, olhando: 1, seguroX: x, seguroY: y, impulso: 0, pulouSegurado: false,
     coracoes: VIDA.coracoes, invencivel: 0, bolha: false, recarga: 0, estrelinhas: 0,
     pendurado: false, segurando: false, soltouFio: false, argola: -1, raioArgola: 0, esperaArgola: 0,
-    plataforma: -1, maoSegurada: false, lancado: false,
+    plataforma: -1, maoSegurada: false, lancado: false, arTicks: 99, puloGuardado: -1, semCorte: 0,
   };
 }
 
@@ -105,7 +117,7 @@ function machucar(e: Estado, i: number, deX: number) {
   }
   j.invencivel = VIDA.invencivel;
   j.vx = (j.x >= deX ? 1 : -1) * VIDA.recuoX;
-  j.vy = VIDA.recuoY; j.noChao = false;
+  j.vy = VIDA.recuoY; j.noChao = false; j.arTicks = 99;
 }
 
 function renascer(j: EstadoJogador, x: number, y: number) {
@@ -158,7 +170,7 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
       j.vy = (dy / d) * VIDA.velBolha + (inp.y ?? 0) * 1.5;
       j.x += j.vx * DT; j.y += j.vy * DT;
       j.x = Math.max(0.3, Math.min(fase.largura - 0.3, j.x));
-      j.pulouSegurado = inp.jump;
+      j.pulouSegurado = inp.jump; j.puloGuardado = -1;
       continue;
     }
 
@@ -169,7 +181,11 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
       j.y += dd.dy;
     }
 
+    // borda de descida do botão de pulo: guarda a idade (jump buffer). Soltar a argola com o pulo consome a borda.
+    if (inp.jump && !j.pulouSegurado) j.puloGuardado = 0;
+    const tinhaArgola = j.argola >= 0;
     const naArgola = controleArgola(fase, e, i, inp);
+    if (naArgola || tinhaArgola || j.pendurado) j.puloGuardado = -1;
     if (naArgola) {
       // balanço: só gravidade e o joystick (em controleArgola)
     } else if (j.pendurado) {
@@ -182,15 +198,21 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
       j.vx += Math.max(-acel, Math.min(acel, alvo - j.vx));
       if (x !== 0) j.olhando = x > 0 ? 1 : -1;
 
-      if (inp.jump && !j.pulouSegurado && j.noChao) {
+      // pode pular: no chão, ou caindo há no máximo `coyote` ticks depois de sair da quina andando
+      const extraRede = Math.max(0, Math.min(FISICA.coyoteRedeMax - FISICA.coyote, e.toleranciaRede?.[i] ?? 0));
+      const coyote = !j.noChao && j.arTicks <= FISICA.coyote + extraRede && j.vy <= 0;
+      const guardado = j.puloGuardado >= 0 && j.puloGuardado <= FISICA.buffer + 1;
+      if (guardado && (j.noChao || coyote)) {
         const forte = j.impulso > 0;
         j.vy = forte ? FISICA.impulsoPulo : FISICA.pulo;
-        j.noChao = false; j.impulso = 0;
+        j.noChao = false; j.impulso = 0; j.puloGuardado = -1; j.arTicks = 99; j.semCorte = FISICA.puloMinimo;
         ev.push(forte ? `superpulo:${i}` : `pulo:${i}`);
       }
-      // pulo variável: soltar cedo corta a subida
-      if (!inp.jump && j.vy > 0 && !j.lancado) j.vy *= 0.88;
+      // pulo variável: soltar corta a subida, mas só depois do pulo mínimo
+      if (!inp.jump && j.vy > 0 && !j.lancado && j.semCorte <= 0) j.vy *= FISICA.corte;
     }
+    j.semCorte = Math.max(0, j.semCorte - 1);
+    if (j.puloGuardado >= 0) j.puloGuardado = j.puloGuardado > FISICA.buffer + 1 ? -1 : j.puloGuardado + 1;
     if (j.vy <= 0) j.lancado = false;
     j.pulouSegurado = inp.jump;
     j.impulso = Math.max(0, j.impulso - DT);
@@ -200,7 +222,8 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
     j.noChao = false;
     const naPlataforma = j.plataforma;
     j.plataforma = -1;
-    moverEixo(j, FISICA.largura, FISICA.altura, sol, j.vx * DT, 0);
+    const xAntes = j.x, dx = j.vx * DT, vxAntes = j.vx;
+    if (moverEixo(j, FISICA.largura, FISICA.altura, sol, dx, 0) && !estavaNoChao && j.argola < 0 && !j.pendurado) quinaDosPes(j, sol, xAntes + dx, vxAntes);
     const yAntes = j.y;
     moverEixo(j, FISICA.largura, FISICA.altura, sol, 0, j.vy * DT, true);
 
@@ -218,11 +241,12 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
         j.y = topoMelhor; j.vy = 0; j.noChao = true; j.plataforma = melhor;
         const d = defsEsp[melhor];
         if (d.tipo === 'quicante') {
-          j.vy = (d.forca ?? 15) * (inp.jump ? 1.2 : 1); j.noChao = false; j.plataforma = -1; j.lancado = true;
+          j.vy = (d.forca ?? 15) * (inp.jump ? 1.2 : 1); j.noChao = false; j.plataforma = -1; j.lancado = true; j.arTicks = 99;
           ev.push(`quique:${i}`);
         }
       }
     }
+    j.arTicks = j.noChao ? 0 : Math.min(99, j.arTicks + 1);
     if (j.noChao && !estavaNoChao) ev.push(`pouso:${i}`);
     if (j.noChao && j.plataforma < 0) { j.seguroX = j.x; j.seguroY = j.y; }
     j.x = Math.max(0.3, Math.min(fase.largura - 0.3, j.x));
@@ -279,7 +303,8 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
       const topo = cn.y + cn.h;
       const deCima = j.vy <= 0 && peAntes[i] >= topo - 0.3;
       if (deCima) {
-        j.y = topo; j.vy = entradas[i].jump ? PISAO.quiqueSegurando : PISAO.quique; j.noChao = false;
+        // lançado: soltar o pulo não corta o quique (sem isso o quique solto subia só 0,47 m em vez de 1,35 m)
+        j.y = topo; j.vy = entradas[i].jump ? PISAO.quiqueSegurando : PISAO.quique; j.noChao = false; j.lancado = true; j.arTicks = 99;
         ev.push(`pisao:${i}:${k}`);
         if (n.tipo === 'espinhudo') machucar(e, i, n.x);
         else if (n.tipo === 'rei') { if (n.aberto && ferir(n, k, 1, ev)) soltarEstrelinha(e, k); }
@@ -361,6 +386,26 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
 
   for (let i = 0; i < 2; i++) e.jogadores[i].maoSegurada = entradas[i].act;
   return e;
+}
+
+/**
+ * Quina dos pés: no ar, batendo de lado numa parede cujo topo está até `quinaPes` acima dos pés e subindo devagar
+ * (ou caindo), o corpo sobe para o topo em vez de escorregar. Perdoa o "quase" num degrau (1,75 → ~1,95 m).
+ */
+function quinaDosPes(j: EstadoJogador, sol: readonly Retangulo[], xQuer: number, vx: number) {
+  if (j.vy > FISICA.quinaVy) return;
+  const meia = FISICA.largura / 2;
+  let topo = Infinity;
+  for (const r of sol) {
+    const t = r.y + r.h;
+    if (t <= j.y || t - j.y > FISICA.quinaPes) continue;
+    if (xQuer + meia <= r.x || xQuer - meia >= r.x + r.w || j.y + FISICA.altura <= r.y) continue;
+    topo = Math.min(topo, t);
+  }
+  if (!Number.isFinite(topo)) return;
+  const alvo: Retangulo = { x: xQuer - meia, y: topo + 1e-3, w: FISICA.largura, h: FISICA.altura };
+  if (sol.some((r) => sobrepoe(alvo, r))) return;
+  j.x = xQuer; j.y = topo + 1e-3; j.vx = vx; j.vy = Math.min(j.vy, -0.01);
 }
 
 function soltarEstrelinha(e: Estado, k: number) {

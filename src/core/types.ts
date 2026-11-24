@@ -123,6 +123,12 @@ export interface EstadoJogador {
   maoSegurada: boolean;
   /** lançado por gelatina ou pisão: soltar o pulo não corta a subida */
   lancado: boolean;
+  /** ticks seguidos no ar desde o último chão (coyote time; 99 depois de pular ou ser lançado) */
+  arTicks: number;
+  /** idade em ticks do último aperto do pulo ainda não usado (jump buffer; -1 = nenhum) */
+  puloGuardado: number;
+  /** ticks restantes do pulo mínimo (soltar o botão ainda não corta a subida) */
+  semCorte: number;
 }
 
 export interface EstadoInimigo {
@@ -191,4 +197,7 @@ export interface Estado {
   checkpoint: number;
   especiais: EstadoEspecial[];
   fio: EstadoFio;
+  /** coyote da rede: ticks extras de coyote por jogador (o anfitrião põe ≈ RTT/2 do convidado enquanto não há
+   *  predição local; teto total FISICA.coyoteRedeMax). Opcional; ausente = 0. */
+  toleranciaRede?: [number, number];
 }

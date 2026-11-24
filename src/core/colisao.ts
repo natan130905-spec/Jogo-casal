@@ -11,6 +11,12 @@ export const caixaDe = (c: { x: number; y: number }, w: number, h: number): Reta
 export const pontoDentro = (r: Retangulo, px: number, py: number, folga = 0) =>
   px >= r.x - folga && px <= r.x + r.w + folga && py >= r.y - folga && py <= r.y + r.h + folga;
 
+/** Correção de quina da cabeça: até quanto a cabeça raspando a borda de baixo de um teto desliza para fora (m).
+ *  A auditoria propôs 0,20 m (0,32 é mais que meia largura). Medido em 2026-11-24: com 0,20 o capítulo 3 fica com
+ *  206 pares de posições sem saída e os bots não passam de x = 164,7 (um trecho depende do deslize de 0,32).
+ *  Fica 0,32 até o trecho ser redesenhado. */
+export const QUINA_CABECA = 0.32;
+
 /**
  * Move o corpo num eixo e resolve colisões. `quina` (só jogadores): se a cabeça só raspa a borda de cima,
  * desliza para fora em vez de parar o pulo. Retorna se bateu.
@@ -32,8 +38,8 @@ export function moverEixo(c: Corpo, w: number, h: number, sol: readonly Retangul
       if (dy > 0 && quina) {
         const meia = w / 2;
         const sobraEsq = c.x + meia - r.x, sobraDir = r.x + r.w - (c.x - meia);
-        if (sobraEsq > 0 && sobraEsq <= 0.32) { c.x = r.x - meia - 1e-4; continue; }
-        if (sobraDir > 0 && sobraDir <= 0.32) { c.x = r.x + r.w + meia + 1e-4; continue; }
+        if (sobraEsq > 0 && sobraEsq <= QUINA_CABECA) { c.x = r.x - meia - 1e-4; continue; }
+        if (sobraDir > 0 && sobraDir <= QUINA_CABECA) { c.x = r.x + r.w + meia + 1e-4; continue; }
       }
       if (dy < 0) { c.y = r.y + r.h; c.noChao = true; } else { c.y = r.y - h - 1e-4; }
       c.vy = 0; bateu = true;
