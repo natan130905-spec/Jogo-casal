@@ -88,30 +88,10 @@ export class IndicadorParceiro {
     if (vy > 0) k = Math.min(k, (b - my) / vy); else if (vy < 0) k = Math.min(k, (t - my) / vy);
     let x = Math.min(r, Math.max(l, mx + vx * Math.max(0, k)));
     let y = Math.min(b, Math.max(t, my + vy * Math.max(0, k)));
-    // fora dos controles e do HUD: desliza ao longo da borda até sair do retângulo inflado do obstáculo
-    this.obstaculos ??= this.medirObstaculos();
-    const folga = RAIO + FOLGA;
-    const naBordaLateral = x <= l + 0.5 || x >= r - 0.5;
-    for (let volta = 0; volta < 4; volta++) {
-      let mexeu = false;
-      for (const q of this.obstaculos) {
-        const L = q.l - folga, R = q.r + folga, T = q.t - folga, B = q.b + folga;
-        if (x <= L || x >= R || y <= T || y >= B) continue;
-        const opcoes: [number, number][] = naBordaLateral
-          ? [[x, T], [x, B]]
-          : [[L, y], [R, y]];
-        // também vale sair pelo outro eixo, se a borda deixar
-        opcoes.push(...(naBordaLateral ? [[L, y], [R, y]] as [number, number][] : [[x, T], [x, B]] as [number, number][]));
-        let melhor: [number, number] | null = null, dMelhor = Infinity;
-        for (const [cx, cy] of opcoes) {
-          if (cx < l || cx > r || cy < t || cy > b) continue;
-          const d = Math.hypot(cx - x, cy - y);
-          if (d < dMelhor) { dMelhor = d; melhor = [cx, cy]; }
-        }
-        if (melhor) { [x, y] = melhor; mexeu = true; }
-      }
-      if (!mexeu) break;
-    }
+    // fora dos controles e do HUD (≥ FOLGA px): procura o ponto livre mais perto ao longo da borda (e, se a borda
+    // toda estiver ocupada ali, no outro eixo). Os retângulos são remedidos a cada ~0,5 s (o texto do HUD muda).
+    if (!this.obstaculos || ++this.idade > 30) { this.obstaculos = this.medirObstaculos(); this.idade = 0; }
+    [x, y] = this.livre(x, y, l, r, t, b, x <= l + 0.5 || x >= r - 0.5);
     const est = this.estado(o, e);
     this.el.hidden = false;
     this.el.style.transform = `translate(${(x - RAIO).toFixed(1)}px, ${(y - RAIO).toFixed(1)}px)`;
@@ -122,6 +102,28 @@ export class IndicadorParceiro {
     const txt = `${d} m`;
     if (this.dist.textContent !== txt) this.dist.textContent = txt;
     this.ultimo = { visivel: true, x, y, estado: est };
+  }
+
+  private idade = 0;
+
+  private livre(x: number, y: number, l: number, r: number, t: number, b: number, lateral: boolean): [number, number] {
+    const f = RAIO + FOLGA, obs = this.obstaculos ?? [];
+    const ok = (px: number, py: number) => px >= l - 0.01 && px <= r + 0.01 && py >= t - 0.01 && py <= b + 0.01 &&
+      obs.every((q) => px <= q.l - f || px >= q.r + f || py <= q.t - f || py >= q.b + f);
+    if (ok(x, y)) return [x, y];
+    // candidatos: as bordas (infladas) dos obstáculos, deslizando no eixo da borda da tela (lateral → y; topo/base → x)
+    const cand: [number, number][] = [[x, t], [x, b], [l, y], [r, y]];
+    for (const q of obs) {
+      cand.push([x, q.t - f - 0.5], [x, q.b + f + 0.5], [q.l - f - 0.5, y], [q.r + f + 0.5, y]);
+    }
+    let melhor: [number, number] = [x, y], dMelhor = Infinity;
+    for (const [cx, cy] of cand) {
+      if (!ok(cx, cy)) continue;
+      // preferir deslizar ao longo da borda em que está (o outro eixo custa o dobro)
+      const d = lateral ? Math.abs(cy - y) + 2 * Math.abs(cx - x) : Math.abs(cx - x) + 2 * Math.abs(cy - y);
+      if (d < dMelhor) { dMelhor = d; melhor = [cx, cy]; }
+    }
+    return melhor;
   }
 
   esconder() { this.el.hidden = true; this.ultimo = { ...this.ultimo, visivel: false }; }
