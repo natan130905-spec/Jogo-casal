@@ -612,3 +612,81 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   **lição**.
 - **Teste que impede a volta:** o relatório de cada lote cita o commit do núcleo usado para gravar as entradas.
 - Fonte: ARTE_DIAGNOSTICO §1 (limites).
+
+## QA do Lote 0 (integração, 2026-11-24)
+
+Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitados). Relatório: `docs/revisao/lote0/RELATORIO.md`.
+
+### R65 · Quadrado claro em volta das estrelinhas na alta
+- **Sintoma:** na qualidade alta, um quadrado mais claro e borrado aparece em volta de faíscas e vaga-lumes quando eles
+  passam na frente de um fundo claro. Na captura do cap. 3 (p012, estrelinha sobre o mostrador grande), o quadrado
+  aparece bem nítido. Não acontece na média nem na baixa, que não têm brilho.
+- **Causa (confirmada no código e por captura):** o brilho seletivo (`pos.ts`, commit `56027a0`) só deixa florescer
+  pixels com alfa > 1,5 no alvo HalfFloat. Em `particulas.ts` (lote aditivo) e `efeitos.ts` (vaga-lumes) a cor já
+  vinha multiplicada pela forma, mas o alfa era a constante **1,0** no quadrado inteiro, com `AdditiveBlending`
+  (alfa: src·src + dst). Sobre o fundo opaco (alfa 1), o quadrado todo ia para 2 e ficava marcado.
+- **Correção:** `CustomBlending` com cor 1·src + 1·dst (a cor não muda) e alfa 1·src + 1·dst, com alfa = 1,5 ×
+  a forma da textura. Assim só a forma da partícula marca o brilho. Estado: **corrigido** (`4cab0bf`).
+- **Teste que impede a volta:** `test/render_brilho.test.ts`, que falha com o código antigo (2/2) e confere o modo de
+  mistura e que o alfa depende da textura. Comparação: `docs/revisao/lote0/qa/r65_quadrado_antes_depois.webp`.
+- Fonte: QA do Lote 0, a partir das capturas `capturas.mjs`.
+
+### R66 · Câmera nova deixa o parceiro fora do quadro com 4–5 m de desnível
+- **Sintoma:** no cap. 6 (dois corredores, y 0 e y 5), com o Natan em cima e a Bruna 4,6 m abaixo e 3,9 m ao lado,
+  a câmera do Natan mostra só o nome da Bruna na borda de baixo. Na câmera antiga ela aparecia inteira.
+- **Causa (confirmada no código e por teste):** em `camera.ts` (`47d08a3`) o centro vertical ao enquadrar os dois era
+  `aE + limitar(dy/2, ±1,5)`. Com os pés a 30 % da tela e o afastamento no teto (personagem a 15 %), sobram só
+  0,3 × 7,3 m = 2,2 m abaixo do centro, e o parceiro 4,6 m abaixo não cabia. Os dois **cabiam** se o centro descesse.
+- **Correção:** com o afastamento já calculado, o y desliza até a faixa em que os dois cabem, se ela existir
+  (`fyMin ≤ fyMax`). O resto da câmera não muda: os 12 testes de `camera.test.ts` passam, incluindo a faixa de
+  21–25 % nos quadros normais. Estado: **corrigido** (`2bd4b8b`).
+- **Teste que impede a volta:** `camera.test.ts` › "R66 · parceiro 4,6 m abaixo…", com 4 casos × 2 telas. Ele
+  falha com o código antigo (dx 4, dy −4,6).
+- Fonte: QA do Lote 0 (captura do cap. 6, p012).
+
+### R67 · e2e "P2 andou no anfitrião" reprovava sem GPU com a máquina carregada
+- **Sintoma:** `dupla.mjs` reprovava com `3,00 → 5,60` (pedia > 3 m) em 2 de 3 rodadas. O `f362fe6` passava na
+  mesma carga, com o anfitrião a 6 fps contra 3 fps.
+- **Causa (confirmada pela conta):** cada quadro do laço anda no máximo 0,1 s de jogo (`partida.ts`). A 3 fps, 1,6 s
+  reais viram cerca de 0,5 s de jogo, e 5,2 m/s × 0,5 s = 2,6 m. O teste media a distância em tempo real. Não é
+  defeito do jogo.
+- **Correção:** a distância esperada agora é medida em ticks de jogo (≥ 60 % de 5,2 m/s × ticks com a tecla, no
+  máximo 3 m). Estado: **corrigido** (`1ad5dfc`).
+- **Teste que impede a volta:** o próprio `dupla.mjs`. Na tela de partida, o fps do anfitrião sai em `HUD A`.
+- Fonte: QA do Lote 0.
+
+### R68 · e2e "convidado em sincronia" pega 1,30 m de vez em quando (antes do Lote 0 também)
+- **Sintoma:** `capitulos.mjs dupla` reprova às vezes em um capítulo com "maior desvio 1,30 m" (cap. 5 numa rodada,
+  cap. 6 noutra). Nas outras rodadas o mesmo capítulo fica em 0,07–0,09 m.
+- **Causa (hipótese, não confirmada):** a medida compara o que o convidado mostra com a história do anfitrião nos
+  ticks [t−24, t+3]. Com quadros longos (sem GPU e com a máquina carregada) e ACEL 6, os instantâneos chegam em rajadas
+  e o convidado interpola entre dois que estão a mais de 24 ticks um do outro. O valor 1,30 m também apareceu no
+  `f362fe6`, rodado limpo e na mesma carga (cap. 6), então o problema já existia antes do Lote 0. Não é o teleporte
+  R20: a busca de saltos de 0,4–3 m em 1 tick nos 7 planos não acha nada no cap. 6. Uma rodada instrumentada dos
+  caps. 1–6 não reproduziu.
+- **Correção:** nenhuma ainda. A proposta é o convidado expor o intervalo de ticks que está interpolando
+  (`a.tick`–`b.tick`) e a medida usar esse intervalo. Estado: **planejado**: precisa de um gancho em `partida.ts`
+  (L1a/L3b).
+- **Teste que impede a volta:** quando o gancho existir, o próprio `capitulos.mjs dupla` com o intervalo real.
+- Fonte: QA do Lote 0. Rodadas: HEAD 1/3 reprovada com 1,30 m (cap. 5), 1/3 com 1,30 m (cap. 6) e 1/3 em que caiu
+  a conexão; caps. 1–6 instrumentados 0,02–0,09 m; `f362fe6`, cap. 6 com 1,30 m.
+
+### R69 · Conexão perdida no meio do cap. 2 do e2e com a máquina sobrecarregada
+- **Sintoma:** uma rodada de `capitulos.mjs dupla` mostrou "Conexão perdida" no cap. 2, ao mesmo tempo em que
+  rodavam o vitest e as capturas (carga > 8 em 4 núcleos).
+- **Causa (hipótese):** `PRAZO_SILENCIO` = 7 s em `rede.ts`. Uma aba que fica parada mais de 7 s (SwiftShader
+  sobrecarregado) é tratada como queda. Não se repetiu com a máquina só para o e2e.
+- **Correção:** nenhuma. É limite do ambiente de teste. Estado: **lição**: os e2e de dupla rodam sozinhos na
+  máquina, sem capturas nem vitest em paralelo.
+- **Teste que impede a volta:** —
+- Fonte: QA do Lote 0.
+
+### R70 · Lição: o "antes" do QA usa o núcleo do "depois"
+- **Sintoma (risco):** comparar a arte e a câmera do `f362fe6` com o HEAD pelos pontos dos bots compara lugares
+  diferentes, porque o Lote 0 mudou a física e as fases (R64).
+- **Correção:** o worktree "antes" é o `f362fe6` com `src/core` e `test/fases` do HEAD (`git checkout e9cd8ae --
+  src/core test/fases`). As posições dos dois jogadores ficaram iguais em 83 das 84 capturas (uma difere 0,02 m). O
+  tick da foto varia em até 29, mas só com os jogadores parados no fim do roteiro. Estado: **lição**.
+- **Teste que impede a volta:** `RELATORIO.md` cita o commit do núcleo usado e a lista de posições
+  (`capturas.json`).
+- Fonte: QA do Lote 0.

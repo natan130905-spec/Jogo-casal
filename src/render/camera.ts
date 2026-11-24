@@ -10,7 +10,7 @@
 // - zona morta horizontal ±0,35 m; foco à frente 1,0 m parado → 1,8 m correndo, para o lado em que olha;
 // - vertical por encaixe na plataforma: a âncora só muda ao pousar; no ar, só se sair da faixa −0,8 / +2,4 m
 //   (pulo no plano não mexe a câmera);
-// - parceiro perto (|dx| ≤ 8 m, transição até 12 m; |dy| ≤ 4,5 m): enquadra os dois, afastando até 15 %;
+// - parceiro perto (|dx| ≤ 8 m, transição até 12 m; |dy| ≤ 5,2 m, os dois corredores do cap. 6 a 5 m): enquadra os dois, afastando até 15 %;
 // - estrelinha logo acima do personagem e fora do quadro: baixa os pés na tela (até 18 %) e, se preciso, afasta um
 //   pouco, para o coletável não ficar invisível (o superpulo chega a 4,5 m);
 // - suavização exponencial por meia-vida (igual em 30 e 60 fps).
@@ -31,7 +31,7 @@ export const CAM = Object.freeze({
   /** faixa vertical (em relação à âncora) fora da qual a câmera segue no ar */
   faixaBaixo: 0.8, faixaCima: 2.4,
   /** parceiro: enquadra os dois até `pertoX`, some de vez em `longeX` */
-  pertoX: 8, longeX: 12, pertoY: 4.5, longeY: 6,
+  pertoX: 8, longeX: 12, pertoY: 5.2, longeY: 6.5,
   /** meias-vidas (s) */
   mvX: 0.14, mvY: 0.25, mvAncora: 0.18, mvFrente: 0.45, mvZoom: 0.6,
 });

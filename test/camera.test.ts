@@ -142,9 +142,9 @@ describe('câmera por jogador: comportamento', () => {
     }
   });
 
-  it('R66 · parceiro 4,6 m abaixo e 4 m ao lado (cap. 6, dois andares): os dois inteiros no quadro', () => {
+  it('R66 · parceiro 4–5 m abaixo ou acima (cap. 6, corredores a 5 m): os dois inteiros no quadro', () => {
     const f = CAPITULOS[5];
-    for (const asp of ASPECTOS) for (const [dx, dy] of [[4, -4.6], [4, 4.6], [-3, -4.2], [6, -3.5]] as const) {
+    for (const asp of ASPECTOS) for (const [dx, dy] of [[4, -4.6], [4, 4.6], [-3, -4.2], [6, -3.5], [-2.9, 5], [3.9, -5]] as const) {
       const e = estadoInicial(f), c = new CameraJogador(f), p = projetor(asp);
       const [a, b] = e.jogadores; a.y = 4.6; a.noChao = true; b.noChao = true; b.x = a.x + dx; b.y = a.y + dy;
       for (let t = 0; t < 240; t++) aplicarCamera(p.cam, c.atualizar(e, 0, asp, DT));
