@@ -41,6 +41,14 @@ export class Partida {
   private concluiuEm = 0;
   private avisou = false;
   private seq = 0;
+  /** gancho de teste: entradas gravadas dos dois jogadores, uma por tick (anfitrião/treino) */
+  private roteiro: [Input, Input][] | null = null;
+  /** gancho de teste: passos de simulação por passo de tempo (1 = tempo real) */
+  private aceleracao = 1;
+  /** gancho de teste: quantos eventos de cada tipo este aparelho mostrou (ex.: 'derrota', 'estrelinha') */
+  private contagem: Record<string, number> = {};
+  /** gancho de teste (anfitrião/treino): posições [x0, y0, x1, y1] dos últimos 512 ticks, para conferir a sincronia */
+  private historico = new Float32Array(512 * 4);
   private ajustar = () => this.cena.redimensionar(innerWidth, innerHeight);
 
   constructor(private o: OpcoesPartida) {
@@ -63,8 +71,25 @@ export class Partida {
     bTrocar.onclick = () => { this.euControlo = 1 - this.euControlo; o.hud.eu(this.euControlo); };
     o.hud.configurar(o.cap, this.euControlo);
     som.tocarMusica(o.cap);
-    // gancho de teste e depuração (só leitura)
-    (window as unknown as { __edm: unknown }).__edm = { estado: () => this.ultimo, modo: o.modo, cap: o.cap, info: () => this.cena.info() };
+    // gancho de teste e depuração. roteiro/acelerar só valem no anfitrião e no treino (o convidado não simula):
+    // roteiro(lista) recomeça a fase e joga as entradas gravadas (uma [P1, P2] por tick); acelerar(k) roda k passos
+    // por passo de tempo, para o teste não demorar o tempo real da fase.
+    (window as unknown as { __edm: unknown }).__edm = {
+      estado: () => this.ultimo, modo: o.modo, cap: o.cap, info: () => this.cena.info(),
+      roteiro: (lista: [Input, Input][]) => {
+        if (o.modo === 'convidado') return false;
+        this.estado = estadoInicial(this.fase); this.roteiro = lista; this.acumulado = 0; this.concluiuEm = 0; this.avisou = false;
+        return true;
+      },
+      contagem: () => ({ ...this.contagem }),
+      /** posições dos dois no tick t (anfitrião/treino; só os últimos 512 ticks) */
+      posicoes: (t: number) => {
+        if (o.modo === 'convidado' || t < 0 || t > this.estado.tick || this.estado.tick - t >= 512) return null;
+        const k = (t % 512) * 4, h = this.historico;
+        return [[h[k], h[k + 1]], [h[k + 2], h[k + 3]]];
+      },
+      acelerar: (k: number) => { this.aceleracao = Math.max(1, Math.min(60, Math.round(k) || 1)); },
+    };
     requestAnimationFrame(this.quadro);
   }
 
@@ -119,12 +144,13 @@ export class Partida {
         mostrar.eventos = eventos;
       } else mostrar = this.ultimo;
     } else if (!this.pausada) {
-      this.acumulado += dt;
+      this.acumulado += dt * this.aceleracao;
       while (this.acumulado >= DT) {
-        const ent: [Input, Input] = o.modo === 'treino'
+        const ent: [Input, Input] = this.roteiro ? (this.roteiro[this.estado.tick] ?? [INPUT_NEUTRO, INPUT_NEUTRO]) : o.modo === 'treino'
           ? (this.euControlo === 0 ? [local, INPUT_NEUTRO] : [INPUT_NEUTRO, local])
           : [local, this.entradaRemota];
         passo(this.fase, this.estado, ent);
+        { const k = (this.estado.tick % 512) * 4, [j0, j1] = this.estado.jogadores; this.historico.set([j0.x, j0.y, j1.x, j1.y], k); }
         eventos.push(...this.estado.eventos);
         this.eventosParaEnviar.push(...this.estado.eventos);
         this.acumulado -= DT;
@@ -142,7 +168,13 @@ export class Partida {
     this.cena.desenhar(mostrar, this.pausada ? 0 : dt);
     this.ultimo = mostrar;
     o.hud.atualizar(mostrar, eventos);
+    for (const ev of eventos) { const tipo = ev.split(':')[0]; this.contagem[tipo] = (this.contagem[tipo] ?? 0) + 1; }
     som.eventos(eventos);
+    // música do chefe enquanto o Rei-Pesadelo está vivo e alguém chegou perto da arena
+    if ((this.fps.n & 15) === 0) {
+      const rei = mostrar.inimigos.find((n) => n.tipo === 'rei' && n.vivo);
+      som.tocarMusica(rei && mostrar.jogadores.some((j) => Math.abs(j.x - rei.x) < 16) ? 'chefe' : o.cap);
+    }
 
     this.fps.n++;
     if (agora - this.fps.t > 1000) {
