@@ -23,7 +23,7 @@ export const ROTEIRO_CAP1: Roteiro = {
     // ---- abertura (x 0–6): os controles já respondem; os balões vão junto
     { id: 'c1-01', gatilho: { inicio: true }, quem: 'B', texto: 'A gente… encolheu?', depois: 'c1-02' },
     { id: 'c1-02', quem: 'N', texto: 'Ou a loja cresceu. Prefiro essa versão.', depois: 'c1-03' },
-    { id: 'c1-03', quem: 'L', texto: 'Hu-hu! Tomem o Lança-Estrelas, meus filhotes.', depois: 'c1-05' },
+    { id: 'c1-03', quem: 'L', texto: 'Hu-hu! Tomem estilingue e espada, meus filhotes.', depois: 'c1-05' },
     { id: 'c1-05', quem: 'L', texto: 'A névoa virou bichinho. Devolvam com carinho…', depois: 'c1-08' },
     { id: 'c1-08', quem: 'L', texto: 'E não se separem. Sozinho ninguém chega ao fim.' },
 
@@ -34,7 +34,7 @@ export const ROTEIRO_CAP1: Roteiro = {
       gatilho: { zona: [4, 8.5], por: 4 } },
     { id: 'c1-12', emPerigo: true, quem: 'B', texto: 'Olha. Ele tem cara de quem perdeu o ônibus.',
       gatilho: { zona: [11, 16], cond: ({ e }) => (e.inimigos[0]?.vivo ? 0 : -1) } },
-    { id: 'c1-11', pool: 'dica', mecanica: 'atirar', emPerigo: true, quem: 'O', texto: 'Toca no ✨ e manda uma estrelinha nele!',
+    { id: 'c1-11', pool: 'dica', mecanica: 'atirar', emPerigo: true, quem: 'O', texto: 'Toca no 🎯 e manda uma pedrinha nele!',
       gatilho: { por: 2, cond: ({ e }) => { const n = e.inimigos[0]; return n?.vivo ? qual(e, (j) => Math.abs(j.x - n.x) < 7) : -1; } } },
     { id: 'c1-13', pool: 'reacao', quem: 'P', texto: 'Virou estrelinha!', depois: 'c1-14', gatilho: { evento: 'derrota' } },
     { id: 'c1-14', pool: 'reacao', quem: 'O', texto: 'Só precisava de um carinho. De pedra.' },

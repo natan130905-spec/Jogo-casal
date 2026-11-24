@@ -15,9 +15,13 @@ Junto com a estrela caiu a **Névoa do Esquecimento**: uma bruma roxa que apaga 
 **bichinhos-pesadelo** — criaturas emburradas, de olhos vermelhos, que vagam pelos lugares que o casal amou.
 Se a névoa terminar o serviço, os dois acordam **sem lembrar um do outro**.
 
-Uma vovó-coruja chamada **Dona Lume**, guardiã dos sonhos, entrega a eles duas coisas:
-- o **Lança-Estrelas**: um estilingue de luz que dispara faíscas. Cada faísca acerta um bichinho-pesadelo e
-  **devolve a lembrança** (o bichinho estoura em brilho e vira uma estrelinha que se pode pegar);
+Uma vovó-coruja chamada **Dona Lume**, guardiã dos sonhos, entrega a eles:
+- o **Estilingue de Xuxinha** e a **Espada de Papelão**: brinquedos feitos em casa (a forquilha com a xuxinha da
+  Bruna e uma espada de caixa de papelão com fita adesiva). A pedrinha do estilingue volta sozinha para a mão, e
+  cada pedrinha ou golpe que acerta um bichinho-pesadelo **devolve a lembrança** (o bichinho estoura em brilho e
+  vira uma estrelinha que se pode pegar). Pelo caminho aparecem outros brinquedos (o Martelo de Brinquedo já no
+  capítulo 1, num baú no alto da pirâmide de blocos), e tudo que se acha vai para a mochila do casal, aberta em
+  qualquer lanterna. Nada fere o outro: nem pedrinha, nem espada, nem martelo;
 - o **Fio Vermelho**: a velha lenda diz que pessoas destinadas uma à outra estão ligadas por um fio vermelho invisível.
   No sonho ele aparece de verdade, e em certos lugares **prende os dois**: um segura o outro quando o chão some.
 
@@ -27,7 +31,7 @@ Para acordarem juntos, precisam juntar os **sete pedaços da estrela**, um em ca
 ## Os sete capítulos (as lembranças)
 | # | Capítulo | A lembrança | Novidade de jogo |
 |---|---|---|---|
-| 1 | **Pequenos em um mundo gigante** | A tarde em que se conheceram, numa loja de brinquedos | aprender a andar, pular, atirar, a placa e as mãos dadas; brinquedos gigantes viram plataforma |
+| 1 | **Pequenos em um mundo gigante** | A tarde em que se conheceram, numa loja de brinquedos | aprender a andar, pular, o Estilingue e a Espada, a placa e as mãos dadas; brinquedos gigantes viram plataforma |
 | 2 | **A floresta dos sonhos** | O primeiro passeio, quando se perderam numa trilha e riram disso | o **Fio Vermelho** aparece: trechos amarrados, um segura o outro sobre o abismo |
 | 3 | **A cidade do tempo** | O dia em que um esperou o outro por horas e não desistiu | plataformas-ponteiro que giram; portas que só abrem com os dois em placas ao mesmo tempo |
 | 4 | **O oceano das lembranças** | A primeira viagem à praia | bolhas que flutuam; o fio vira cabo de **pêndulo** para balançar sobre a água |

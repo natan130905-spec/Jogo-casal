@@ -61,7 +61,7 @@ export const PROLOGO: readonly Quadro[] = [
   { ilustracao: 'nevoa', arte: A('04_prologo4'),
     texto: 'Acordam dentro do sonho. Mas a Névoa do Esquecimento transforma as lembranças em bichinhos-pesadelo, todos emburrados.' },
   { ilustracao: 'coruja', arte: A('05_prologo5'),
-    texto: 'Dona Lume, a vovó-coruja dos sonhos, entrega o Lança-Estrelas, que devolve as lembranças, e o Fio Vermelho, que une os dois.' },
+    texto: 'Dona Lume, a vovó-coruja dos sonhos, entrega um Estilingue de Xuxinha e uma Espada de Papelão, que devolvem as lembranças, e o Fio Vermelho, que une os dois.' },
   { ilustracao: 'sete',
     texto: 'Juntem os sete pedaços da estrela, um em cada lembrança… e acordem juntos.' },
 ];
