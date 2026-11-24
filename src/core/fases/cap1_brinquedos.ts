@@ -1,15 +1,18 @@
 // Capítulo 1 — Pequenos em um mundo gigante (a loja de brinquedos onde se conheceram).
-// Ensina: andar, pular, atirar, a placa que abre a tampa da caixa, mãos dadas (impulso e puxar de cima) e o
-// trenzinho (plataforma móvel). Brinquedos gigantes viram plataforma.
+// Ensina: andar, pular, o Estilingue de Xuxinha e a Espada de Papelão, a placa que abre a tampa da caixa, mãos
+// dadas (impulso e puxar de cima) e o trenzinho (plataforma móvel). Brinquedos gigantes viram plataforma.
+// Armas (L4, todos opcionais): alvo-sino em x 14 (estrelinhas em cima do cubo), barbante em x 22,5 (a Espada corta e
+// o pacote solta estrelinhas), baú do Martelo no topo da pirâmide (x 83) e bloco rachado em x 100 (o Martelo quebra).
 //
-//   0–26    blocos de montar, primeira bolotinha (atirar)          lanterna em 31
+//   0–26    blocos de montar, alvo-sino, barbante, primeira bolotinha (Estilingue)   lanterna em 31
 //   28–64   tampa da caixa (placa dos dois lados), caixa alta (mãos dadas)   lanterna em 60
 //   64–72   trenzinho sobre o vão
-//   72–104  pirâmide de blocos e bolotinha                          lanterna em 96
+//   72–104  pirâmide de blocos (baú do Martelo), bolotinha, bloco rachado   lanterna em 96
 //   104–124 blocos de montar sobre o vão; segredo na prateleira alta (mãos dadas)
 //   124–152 prateleira com placa: um sobe e abre o portão do outro  lanterna em 127
 //   152–184 pódio com o pedaço da estrela                           lanterna em 156
 import { arco, bloco, chao, fileira, tabua, type FaseCapitulo } from './comum';
+import { ITEM } from '../arsenal';
 
 export const CAP1_BRINQUEDOS: FaseCapitulo = {
   id: 'cap1-brinquedos',
@@ -18,7 +21,7 @@ export const CAP1_BRINQUEDOS: FaseCapitulo = {
   tema: 'brinquedos',
   lembranca: 'A tarde em que se conheceram, numa loja de brinquedos.',
   frase: 'Você riu do mesmo urso de pelúcia que eu. Foi ali que tudo começou.',
-  novidade: 'Andar, pular, atirar, placas e mãos dadas',
+  novidade: 'Andar, pular, Estilingue e Espada, placas e mãos dadas',
   largura: 184,
   inicio: [{ x: 1.5, y: 0 }, { x: 3, y: 0 }],
   fundo: -8,
@@ -82,6 +85,11 @@ export const CAP1_BRINQUEDOS: FaseCapitulo = {
   ],
   // ponto de dupla: daqui, de mãos dadas, o superpulo alcança a prateleira secreta (estrelinhas 22–24)
   marcas: [{ tipo: 'maos-dadas', x: 116.8, y: 1.5 }],
+  // armas (L4): um uso opcional de cada elemento; o caminho principal não precisa de nenhum (A3)
+  alvos: [{ x: 14.2, y: 3.8, premio: 3, premioEm: { x: 13.8, y: 2.1 }, requer: 'estilingue' }],
+  barbantes: [{ x: 22.5, y0: 1.1, y1: 4.4, premio: 3, premioEm: { x: 22.5, y: 0.6 }, requer: 'corpo' }],
+  baus: [{ x: 83, y: 3, item: ITEM.martelo }],
+  rachados: [{ x: 99.6, y: 0, w: 1, h: 1, premio: 3, requer: 'martelo' }],
   lanternas: [{ x: 31, y: 0 }, { x: 60, y: 0 }, { x: 96, y: 0 }, { x: 127, y: 0 }, { x: 156, y: 0 }],
   especiais: [
     // trenzinho de brinquedo: vai e volta sobre o vão de 64 a 72

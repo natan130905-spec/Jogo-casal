@@ -90,7 +90,8 @@ function periodoEspecial(d: DefEspecial): number {
 }
 
 export function montarGrafo(f: Fase, o: { passoAmostra?: number } = {}): Grafo {
-  const sol: Retangulo[] = [...f.plataformas, ...f.portas.map((p) => ({ x: p.x, y: p.y, w: p.w, h: p.h }))];
+  // blocos rachados (L4) contam como inteiros: quebrar só tira um obstáculo do chão firme (não cria armadilha)
+  const sol: Retangulo[] = [...f.plataformas, ...(f.rachados ?? []), ...f.portas.map((p) => ({ x: p.x, y: p.y, w: p.w, h: p.h }))];
   const nos: No[] = [];
   const add = (n: Omit<No, 'id'>) => { const id = nos.length; nos.push({ ...n, id }); return id; };
   for (const s of superficies(sol)) add({ chave: `f:${s.y.toFixed(2)}:${s.x0.toFixed(2)}`, tipo: 'fixo', ...s });

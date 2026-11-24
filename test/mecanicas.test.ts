@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { estadoInicial, passo, FIO, TIRO, VIDA, normalizarInput } from '../src/core/sim';
+import { estadoInicial, passo, FIO, VIDA, normalizarInput } from '../src/core/sim';
+import { ARSENAL } from '../src/core/arsenal';
 import { criarFase, EXEMPLO_MECANICAS, FLORESTA_1 } from '../src/core/fases';
 import { INIMIGO } from '../src/core/inimigos';
 import { instantaneo, interpolar, restaurar } from '../src/core/instantaneo';
@@ -23,16 +24,21 @@ const dist = (e: Estado) => Math.hypot(e.jogadores[0].x - e.jogadores[1].x, e.jo
 
 const CHAO = { x: -2, y: -1, w: 40, h: 1 };
 
-describe('Lança-Estrelas', () => {
-  it('cadência de ~3 por segundo, alcance de ~8 m', () => {
+// L4: o Lança-Estrelas virou o Estilingue de Xuxinha (src/core/arsenal.ts); os testes do arsenal estão em
+// test/arsenal.test.ts. Aqui ficam os mesmos casos de antes, com a arma nova.
+/** ATACAR em pulsos (o aperto é que conta): aperta num tick, solta no outro */
+const pulso = (t: number) => t % 2 === 0;
+describe('Estilingue (no lugar do Lança-Estrelas)', () => {
+  it('cadência de 2,5 por segundo com pedrinha na carga; alcance de ~9 m em arco', () => {
     const f = criarFase({ id: 't', plataformas: [CHAO], largura: 40 });
     const e = estadoInicial(f);
     rodar(f, e, 0.3);
     let maxX = 0;
-    const evs = rodar(f, e, 1, { shoot: true }, {}, (s) => { for (const x of s.faiscas) maxX = Math.max(maxX, x.x); });
-    expect(evs.filter((x) => x === 'tiro:0')).toHaveLength(3);
-    expect(maxX).toBeGreaterThan(1 + TIRO.alcance - 0.5);
-    expect(maxX).toBeLessThan(1 + TIRO.alcance + 0.6);
+    const evs = rodar(f, e, 1.2, (_e, t) => ({ shoot: pulso(t) }), {}, (s) => { for (const x of s.faiscas) maxX = Math.max(maxX, x.x); });
+    // 0,4 s entre tiros: 0; 0,4; 0,8 (a carga não esvazia: a 1ª pedrinha já voltou aos 0,6 s)
+    expect(evs.filter((x) => x.startsWith('tiro:0'))).toHaveLength(3);
+    expect(maxX).toBeGreaterThan(1 + 6);
+    expect(maxX).toBeLessThan(1 + ARSENAL.mira.alcance + 0.6);
     rodar(f, e, 1);
     expect(e.faiscas).toHaveLength(0);
   });
@@ -42,25 +48,25 @@ describe('Lança-Estrelas', () => {
     const e = estadoInicial(f);
     pos(e, 1, 30, 0);
     rodar(f, e, 0.2);
-    const evs = rodar(f, e, 1, { shoot: true });
+    const evs = rodar(f, e, 1, (_e, t) => ({ shoot: pulso(t) }));
     expect(evs).toContain('derrota:0:bolotinha');
     expect(e.inimigos[0].vivo).toBe(false);
     expect(e.soltas).toHaveLength(1); // a lembrança volta como estrelinha
-    // vira para a esquerda e acerta o cogumelo: precisa de 2 faíscas
+    // vira para a esquerda e acerta o cogumelo: precisa de 2 pedrinhas
     rodar(f, e, 0.05, { x: -1 });
     const ev2: string[] = [];
-    for (let k = 0; k < 120 && e.inimigos[1].vivo; k++) ev2.push(...rodar(f, e, 1 / 60, { shoot: true }));
+    for (let k = 0; k < 120 && e.inimigos[1].vivo; k++) ev2.push(...rodar(f, e, 1 / 60, { shoot: pulso(k) }));
     expect(ev2.filter((x) => x === 'acerto:1')).toHaveLength(2);
     expect(e.inimigos[1].vivo).toBe(false);
   });
 
-  it('faísca estoura esporo e some na parede', () => {
+  it('pedrinha estoura esporo e some na parede', () => {
     const f = criarFase({ id: 't', plataformas: [CHAO, { x: 4, y: 0, w: 1, h: 3 }], largura: 40 });
     const e = estadoInicial(f);
     pos(e, 1, 30, 0);
     rodar(f, e, 0.2);
     e.esporos.push({ x: 2.6, y: 0.6, vx: 0, vy: 0, t: 5 });
-    rodar(f, e, 0.5, { shoot: true });
+    rodar(f, e, 0.5, (_e, t) => ({ shoot: pulso(t) }));
     expect(e.esporos).toHaveLength(0);
     rodar(f, e, 0.5);
     expect(e.faiscas.every((x) => x.x < 4)).toBe(true);
@@ -195,7 +201,7 @@ describe('coletáveis e pedaço da estrela', () => {
     expect(e.estrelinhasCasal).toBe(3);
     // derrotar a bolotinha solta uma estrelinha que dá para pegar
     pos(e, 0, 8, 0);
-    rodar(f, e, 3, (s) => ({ shoot: s.inimigos[0].vivo }));
+    rodar(f, e, 3, (s, t) => ({ shoot: s.inimigos[0].vivo && pulso(t) }));
     expect(e.soltas).toHaveLength(1);
     pos(e, 0, e.soltas[0].x, 0);
     rodar(f, e, 0.1);
@@ -493,7 +499,7 @@ describe('plataformas especiais e portas', () => {
 });
 
 describe('Rei-Pesadelo', () => {
-  it('só sofre com o ponto fraco à mostra, muda de fase e cai com 20 faíscas; libera o pedaço da estrela', () => {
+  it('só sofre com o ponto fraco à mostra, muda de fase e cai com 20 pedrinhas; libera o pedaço da estrela', () => {
     const f = criarFase({ id: 'rei', largura: 40, plataformas: [CHAO], inimigos: [{ tipo: 'rei', x: 20, y: 0, alcance: 5 }], portal: { x: 1, y: 0, w: 2, h: 2 } });
     const e = estadoInicial(f);
     const evs: string[] = [];
@@ -503,7 +509,7 @@ describe('Rei-Pesadelo', () => {
       // teste da regra de dano: P1 fica a 3 m do Rei, olhando para ele, sempre protegido
       Object.assign(e.jogadores[0], { x: r.x - 3.2, y: 0, vx: 0, vy: 0, olhando: 1, invencivel: 1 });
       Object.assign(e.jogadores[1], { x: 2, y: 0, invencivel: 1 });
-      passo(f, e, [{ ...N, shoot: true }, N]);
+      passo(f, e, [{ ...N, shoot: pulso(t) }, N]);
       evs.push(...e.eventos);
       if (e.eventos.some((x) => x.startsWith('defendeu'))) defendeu++;
     }

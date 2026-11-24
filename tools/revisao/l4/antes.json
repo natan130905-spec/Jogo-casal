@@ -1,0 +1,149 @@
+{
+ "cap1-brinquedos": {
+  "concluida": true,
+  "tick": 4008,
+  "instantaneoMedio": 342,
+  "combate": 0.082,
+  "tiros": 11,
+  "golpes": 0,
+  "defendeu": 0,
+  "derrotados": 5,
+  "danos": [
+   0,
+   0
+  ],
+  "bolhas": 0,
+  "sino": 0,
+  "barbante": 0,
+  "racha": 0,
+  "bau": 0,
+  "pote": 0,
+  "estrelinhas": 36
+ },
+ "cap2-floresta": {
+  "concluida": true,
+  "tick": 4201,
+  "instantaneoMedio": 426,
+  "combate": 0.154,
+  "tiros": 24,
+  "golpes": 0,
+  "defendeu": 0,
+  "derrotados": 7,
+  "danos": [
+   1,
+   0
+  ],
+  "bolhas": 0,
+  "sino": 0,
+  "barbante": 0,
+  "racha": 0,
+  "bau": 0,
+  "pote": 0,
+  "estrelinhas": 39
+ },
+ "cap3-relogio": {
+  "concluida": true,
+  "tick": 7356,
+  "instantaneoMedio": 431,
+  "combate": 0.117,
+  "tiros": 26,
+  "golpes": 0,
+  "defendeu": 0,
+  "derrotados": 8,
+  "danos": [
+   0,
+   0
+  ],
+  "bolhas": 0,
+  "sino": 0,
+  "barbante": 0,
+  "racha": 0,
+  "bau": 0,
+  "pote": 0,
+  "estrelinhas": 36
+ },
+ "cap4-oceano": {
+  "concluida": true,
+  "tick": 5589,
+  "instantaneoMedio": 406,
+  "combate": 0.187,
+  "tiros": 19,
+  "golpes": 0,
+  "defendeu": 0,
+  "derrotados": 7,
+  "danos": [
+   0,
+   0
+  ],
+  "bolhas": 0,
+  "sino": 0,
+  "barbante": 0,
+  "racha": 0,
+  "bau": 0,
+  "pote": 0,
+  "estrelinhas": 37
+ },
+ "cap5-doces": {
+  "concluida": true,
+  "tick": 4394,
+  "instantaneoMedio": 561,
+  "combate": 0.34,
+  "tiros": 47,
+  "golpes": 0,
+  "defendeu": 0,
+  "derrotados": 14,
+  "danos": [
+   1,
+   0
+  ],
+  "bolhas": 0,
+  "sino": 0,
+  "barbante": 0,
+  "racha": 0,
+  "bau": 0,
+  "pote": 0,
+  "estrelinhas": 50
+ },
+ "cap6-espelhos": {
+  "concluida": true,
+  "tick": 3227,
+  "instantaneoMedio": 380,
+  "combate": 0.211,
+  "tiros": 26,
+  "golpes": 0,
+  "defendeu": 0,
+  "derrotados": 7,
+  "danos": [
+   0,
+   0
+  ],
+  "bolhas": 0,
+  "sino": 0,
+  "barbante": 0,
+  "racha": 0,
+  "bau": 0,
+  "pote": 0,
+  "estrelinhas": 40
+ },
+ "cap7-cosmos": {
+  "concluida": true,
+  "tick": 5343,
+  "instantaneoMedio": 471,
+  "combate": 0.356,
+  "tiros": 88,
+  "golpes": 0,
+  "defendeu": 38,
+  "derrotados": 7,
+  "danos": [
+   0,
+   2
+  ],
+  "bolhas": 0,
+  "sino": 0,
+  "barbante": 0,
+  "racha": 0,
+  "bau": 0,
+  "pote": 0,
+  "estrelinhas": 39
+ }
+}

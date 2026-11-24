@@ -160,10 +160,13 @@ describe('fases dos capítulos: alcançabilidade por saltos', () => {
 // ---------- vitória com bots ----------
 /** Tick em que cada plano conclui, travado (L2a: as manobras saíram de test/fases/bot.ts para
  *  src/core/companheiro/manobras.ts sem mudar nada; medido com tools/revisao/l2a/planos_ticks.ts). Mudou a física,
- *  uma fase ou uma manobra de propósito? Rode a ferramenta e atualize aqui, citando o motivo no commit. */
+ *  uma fase ou uma manobra de propósito? Rode a ferramenta e atualize aqui, citando o motivo no commit.
+ *  L4: o Lança-Estrelas virou o arsenal (Estilingue com mira assistida e 3 pedrinhas, Espada, Martelo) e os bots
+ *  usam o `autoAtaque`; o cap. 1 ganhou o bloco rachado em x 100. Mudaram os caps. 1 (4008 → 4011), 2 (4201 → 4187),
+ *  5 (4394 → 4379) e 7 (5343 → 5630, o Rei com 3 pedrinhas que voltam em vez do tiro contínuo). */
 const TICK_PLANO: Record<string, number> = {
-  'cap1-brinquedos': 4008, 'cap2-floresta': 4201, 'cap3-relogio': 7356, 'cap4-oceano': 5589,
-  'cap5-doces': 4394, 'cap6-espelhos': 3227, 'cap7-cosmos': 5343,
+  'cap1-brinquedos': 4011, 'cap2-floresta': 4187, 'cap3-relogio': 7356, 'cap4-oceano': 5589,
+  'cap5-doces': 4379, 'cap6-espelhos': 3227, 'cap7-cosmos': 5630,
 };
 describe('fases dos capítulos: dois bots cooperativos vencem', () => {
   for (const f of CAPITULOS) {

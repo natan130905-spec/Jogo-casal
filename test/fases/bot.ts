@@ -6,7 +6,8 @@
 // usa; aqui ficam o roteiro dos bots (etapas para os dois, com barreira) e o diretor que roda o plano.
 import { estadoInicial, passo } from '../../src/core/sim';
 import type { Estado, Input, Fase } from '../../src/core/types';
-import { autoTiro, darImpulso, esperar, ir, NEUTRO, saltar, superpulo, type Ctx, type Passo } from '../../src/core/companheiro/manobras';
+import { darImpulso, esperar, ir, NEUTRO, saltar, superpulo, type Ctx, type Passo } from '../../src/core/companheiro/manobras';
+import { autoAtaque } from '../../src/core/arsenal';
 
 export * from '../../src/core/companheiro/manobras';
 
@@ -71,7 +72,11 @@ export function jogar(f: Fase, plano: Etapa[], o: { e?: Estado; limite?: number;
           break;
         }
         tPasso[i]++;
-        if (ents[i].shoot === undefined || ents[i].shoot === false) ents[i].shoot = autoTiro(e, e.jogadores[i]);
+        // autoAtaque (L4): escolhe a arma (troca) e aperta ATACAR em pulsos; o plano que pede `shoot` (luta do Rei)
+        // ataca mesmo sem alvo na mira
+        const auto = autoAtaque(f, e, i, ents[i].shoot === true);
+        ents[i].shoot = !!auto.shoot;
+        if (auto.troca && !ents[i].troca) ents[i].troca = auto.troca;
       }
       if (idx[0] >= etapa.p[0].length && idx[1] >= etapa.p[1].length) {
         k++; idx[0] = idx[1] = 0; tPasso[0] = tPasso[1] = 0; mem[0] = {}; mem[1] = {}; tEtapa = 0;

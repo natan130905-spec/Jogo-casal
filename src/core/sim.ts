@@ -3,7 +3,8 @@
 //
 // Eventos (Estado.eventos, só do último passo; i = jogador 0/1, k = índice na lista da fase):
 //   pulo:i superpulo:i pouso:i caiu:i maos:i quique:i          movimento
-//   tiro:i acerto:k defendeu:k derrota:k:<tipo> pisao:i:k esporo:k   Lança-Estrelas e bichinhos
+//   tiro:i:arma golpe:i:arma acerto:k defendeu:k derrota:k:<tipo> pisao:i:k esporo:k   armas e bichinhos
+//   (os outros eventos das armas, dos baús, sinos, barbantes e blocos rachados: src/core/arsenal.ts)
 //   dano:i bolha:i renasce:i volta-checkpoint lanterna:k        vida
 //   estrelinha:i (pegou) pedaco (os dois tocaram o pedaço) concluida
 //   placa:<id> solta:<id> porta-abriu:<id>                       placas e portas
@@ -12,8 +13,9 @@
 //   ponto-fraco:k fecha:k chefe-fase:n chefe-derrotado          Rei-Pesadelo
 import { caixaDe, moverEixo, pontoDentro, sobrepoe } from './colisao';
 import { ARGOLA, controleArgola, empurrarArgola, FIO, fioInicial, passoFio, restringirArgola } from './fio';
-import { caixaInimigo, ferir, INIMIGO, inimigosIniciais, passoInimigos } from './inimigos';
+import { caixaInimigo, ferir, inimigosIniciais, passoInimigos } from './inimigos';
 import { especiaisIniciais, passoEspeciais, retEspecial } from './plataformas';
+import { arsenalInicial, DESBLOQUEADAS_INICIAIS, elementosIniciais, passoArmas, passoElementos, passoProjeteis, rachadosInteiros, recompensaDerrota, sinosDaPorta } from './arsenal';
 import type { Estado, EstadoJogador, Fase, Input, Ponto, Retangulo } from './types';
 
 export { FIO, ARGOLA };
@@ -48,6 +50,7 @@ export const VIDA = Object.freeze({
   recuoX: 4, recuoY: 6,
   velBolha: 3.5, encostar: 1.0,
 });
+/** @deprecated Lança-Estrelas (trocado pelo arsenal, L4: src/core/arsenal.ts). Fica só para a arena antiga ler. */
 export const TIRO = Object.freeze({ vel: 14, alcance: 8, cadencia: 1 / 3, altura: 0.6 });
 export const PISAO = Object.freeze({ quique: 9, quiqueSegurando: 13 });
 export const COLETA = Object.freeze({ raio: 0.55 });
@@ -83,6 +86,7 @@ export function novoJogador(x: number, y: number): EstadoJogador {
     coracoes: VIDA.coracoes, invencivel: 0, bolha: false, recarga: 0, estrelinhas: 0,
     pendurado: false, segurando: false, soltouFio: false, argola: -1, raioArgola: 0, esperaArgola: 0,
     plataforma: -1, maoSegurada: false, lancado: false, arTicks: 99, puloGuardado: -1, semCorte: 0,
+    arsenal: arsenalInicial(),
   };
 }
 
@@ -98,14 +102,15 @@ export function estadoInicial(fase: Fase): Estado {
     inimigos: inimigosIniciais(fase), faiscas: [], proxFaisca: 0, esporos: [],
     coletadas: [], soltas: [], estrelinhasCasal: 0, checkpoint: -1,
     especiais: especiaisIniciais(fase), fio: fioInicial(),
+    potes: [], desbloqueadas: DESBLOQUEADAS_INICIAIS, ...elementosIniciais(fase),
   };
 }
 
 const caixa = (j: EstadoJogador): Retangulo => caixaDe(j, FISICA.largura, FISICA.altura);
 
-/** Sólidos fixos do momento: plataformas + portas ainda não abertas (a parte fechada da porta). */
+/** Sólidos fixos do momento: plataformas + blocos rachados inteiros + portas ainda não abertas (a parte fechada). */
 export function solidos(fase: Fase, e: Estado): Retangulo[] {
-  const s: Retangulo[] = [...fase.plataformas];
+  const s: Retangulo[] = [...fase.plataformas, ...rachadosInteiros(fase, e)];
   for (const p of fase.portas) {
     const aberta = e.portas[p.id] ?? 0;
     const h = p.h * (1 - aberta);
@@ -185,7 +190,6 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
     const j = e.jogadores[i], inp = entradas[i];
     const x = Math.max(-1, Math.min(1, inp.x || 0));
     j.invencivel = Math.max(0, j.invencivel - DT);
-    j.recarga = Math.max(0, j.recarga - DT);
 
     if (j.bolha) {
       // bolha: flutua até o parceiro (atravessa tudo); o joystick ajuda um pouco
@@ -281,13 +285,9 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
       ev.push(`caiu:${i}`);
     }
 
-    // Lança-Estrelas
-    if (inp.shoot && j.recarga <= 0) {
-      j.recarga = TIRO.cadencia;
-      e.faiscas.push({ id: e.proxFaisca++, dono: i as 0 | 1, x: j.x + j.olhando * 0.35, y: j.y + TIRO.altura, vx: j.olhando * TIRO.vel, t: TIRO.alcance / TIRO.vel });
-      ev.push(`tiro:${i}`);
-    }
   }
+  // armas (L4: src/core/arsenal.ts), depois do movimento dos dois
+  for (let i = 0; i < 2; i++) passoArmas(fase, e, i, entradas[i], ev);
 
   // Fio Vermelho (depois do movimento)
   passoFio(fase, e, entradas, sol, FISICA.largura, FISICA.altura);
@@ -297,23 +297,8 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
   for (const s of e.esporos) { s.x += s.vx * DT; s.y += s.vy * DT; s.t -= DT; }
   e.esporos = e.esporos.filter((s) => s.t > 0 && !sol.some((r) => pontoDentro(r, s.x, s.y)));
 
-  // faíscas: andam, somem na parede, estouram esporos, acertam bichinhos
-  const faiscas: typeof e.faiscas = [];
-  for (const f of e.faiscas) {
-    f.x += f.vx * DT; f.t -= DT;
-    if (f.t <= 0 || sol.some((r) => pontoDentro(r, f.x, f.y))) continue;
-    const ie = e.esporos.findIndex((s) => Math.abs(s.x - f.x) < 0.35 && Math.abs(s.y - f.y) < 0.35);
-    if (ie >= 0) { e.esporos.splice(ie, 1); continue; }
-    let acertou = false;
-    for (let k = 0; k < e.inimigos.length; k++) {
-      const n = e.inimigos[k];
-      if (!n.vivo || !pontoDentro(caixaInimigo(n), f.x, f.y, 0.15)) continue;
-      if (ferir(n, k, 1, ev)) soltarEstrelinha(e, k);
-      acertou = true; break;
-    }
-    if (!acertou) faiscas.push(f);
-  }
-  e.faiscas = faiscas;
+  // projéteis: andam, somem na parede, estouram esporos, tocam sinos, acertam bichinhos (sem fogo amigo)
+  passoProjeteis(fase, e, sol, ev);
 
   // contato com bichinhos: pisão (de cima, caindo) ou dano
   for (let i = 0; i < 2; i++) {
@@ -332,8 +317,8 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
         j.y = topo; j.vy = entradas[i].jump ? PISAO.quiqueSegurando : PISAO.quique; j.noChao = false; j.lancado = true; j.arTicks = 99;
         ev.push(`pisao:${i}:${k}`);
         if (n.tipo === 'espinhudo') machucar(e, i, n.x);
-        else if (n.tipo === 'rei') { if (n.aberto && ferir(n, k, 1, ev)) soltarEstrelinha(e, k); }
-        else if (ferir(n, k, n.vida, ev)) soltarEstrelinha(e, k);
+        else if (n.tipo === 'rei') { if (n.aberto && ferir(n, k, 1, ev)) recompensaDerrota(e, k); }
+        else if (ferir(n, k, n.vida, ev)) recompensaDerrota(e, k);
       } else machucar(e, i, n.x);
       break;
     }
@@ -384,8 +369,13 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
     }
   }
 
+  // baús, sinos, barbantes, miçangas soltas e o baú de munição das lanternas
+  passoElementos(fase, e, sol, ev);
+
   // Placas e portas: porta comum abre com qualquer placa ligada; porta dupla ('todas') só com todas ao mesmo tempo.
+  // Um alvo-sino tocado segura a porta dele aberta por `tempo` s, como uma placa pisada.
   const ligadas: Record<string, boolean[]> = {};
+  for (const porta of fase.portas) { const s = sinosDaPorta(fase, e, porta.id); if (s.length) ligadas[porta.id] = s; }
   for (const p of fase.placas) {
     const pressionada = [a, b].some((j) => !j.bolha && j.noChao && sobrepoe(caixa(j), { ...p, y: p.y - 0.05, h: p.h + 0.1 }));
     if (pressionada !== e.placasPressionadas[p.id]) ev.push(`${pressionada ? 'placa' : 'solta'}:${p.id}`);
@@ -433,15 +423,14 @@ function quinaDosPes(j: EstadoJogador, sol: readonly Retangulo[], xQuer: number,
   j.x = xQuer; j.y = topo + 1e-3; j.vx = vx; j.vy = Math.min(j.vy, -0.01);
 }
 
-function soltarEstrelinha(e: Estado, k: number) {
-  const n = e.inimigos[k];
-  const m = INIMIGO[n.tipo];
-  e.soltas.push({ x: n.x, y: n.y + m.h / 2, t: 0 });
-}
 
 /** Limpa uma entrada recebida pela rede (valores fora do formato viram neutros). */
 export function normalizarInput(i: unknown): Input {
   const o = (i ?? {}) as Record<string, unknown>;
   const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.max(-1, Math.min(1, v)) : 0);
-  return { x: num(o.x), y: num(o.y), jump: o.jump === true, act: o.act === true, shoot: o.shoot === true };
+  const troca = typeof o.troca === 'number' && Number.isInteger(o.troca) && o.troca >= 1 && o.troca <= 6 ? o.troca : 0;
+  return {
+    x: num(o.x), y: num(o.y), jump: o.jump === true, act: o.act === true, shoot: o.shoot === true || o.atk === true,
+    ...(troca ? { troca } : {}), ...(o.dar === true ? { dar: true } : {}),
+  };
 }
