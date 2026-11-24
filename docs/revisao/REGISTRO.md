@@ -235,26 +235,32 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   nenhum capítulo passa da primeira ajuda (22 % a 43 % do comprimento).
 - **Causa (confirmada no código):** `iniciarSessao()` só em `aoMudarEstado('conectado')` (`main.ts:272–273`);
   `INPUT_NEUTRO` no outro assento (`partida.ts:150`).
-- **Correção:** assentos, campanha sem sala e companheiro controlado pelo jogo. Estado: **planejado** (L2b e L6).
-- **Teste que impede a volta:** T1/T2/T3 (o solo fecha os capítulos); `test/e2e/solo.mjs`.
+- **Correção:** assentos, campanha sem sala e companheiro controlado pelo jogo. Estado: **em parte** — L2b
+  (`6191def`, `d7c86a3`): `src/core/assento.ts`, laço da partida com `assentos[i].entrada(...)`, menu com "Jogar
+  sozinho" que abre a campanha sem sala e o `Seguidor` provisório no outro assento (anda atrás, pula degrau e vão; não
+  coopera). Falta o Companheiro do L6 (placa, mãos dadas, fio): sozinho, os capítulos ainda param na 1ª ajuda.
+- **Teste que impede a volta:** `test/assento.test.ts`; `test/e2e/solo.mjs` (modo solo, assentos `['pessoa','ia']`,
+  nenhum pedido ao PeerJS, a Bruna segue). T1/T2/T3 (o solo fecha os capítulos) ficam com o L6.
 - Fonte: ARQUITETURA_MODOS §0–1; AUDITORIA_MOVIMENTO §5.
 
 ### R23 · O progresso fica só no aparelho de quem criou a sala
 - **Sintoma:** se a Bruna criar a sala, a jornada recomeça do zero; o convidado zera os capítulos ao entrar.
 - **Causa (confirmada no código):** só o anfitrião grava (`main.ts:224`); o convidado recebe `capitulos: {}`
   (`main.ts:342`).
-- **Correção:** salvo v2 do casal com fusão por união, máximo e OU, gravado nos dois aparelhos. Estado: **planejado**
-  (L2b).
-- **Teste que impede a volta:** T9 (fusão comutativa e idempotente), T10 (migração do v1), `dupla.mjs` (o convidado
-  grava com o mesmo `id`).
+- **Correção:** salvo v2 do casal com fusão por união, máximo e OU, gravado nos dois aparelhos (`'salvo'` nos dois
+  sentidos; o anfitrião que ainda não jogou nenhuma fase adota a do convidado). Estado: **corrigido** (`9219a50`,
+  `d7c86a3`, `cf75eab`).
+- **Teste que impede a volta:** T9 e T10 em `test/salvo.test.ts`; `dupla.mjs` (o convidado grava com o mesmo `id`);
+  `solo.mjs` parte 4 (a Bruna cria a sala num aparelho novo e os dois ficam com a jornada do Natan).
 - Fonte: ARQUITETURA_MODOS §0.2.
 
 ### R24 · Nada é salvo no meio do capítulo
 - **Sintoma:** fechar o navegador (ou o iOS descartar a aba) volta ao começo do capítulo.
 - **Causa (confirmada):** só se grava na conclusão e no `arena7`.
-- **Correção:** `ResumoLanterna` de ≈ 200 B, gravado também em `pagehide`/`visibilitychange`, e o botão "Continuar".
-  Estado: **planejado** (L2b).
-- **Teste que impede a volta:** T8 (37/37 retomadas no vitest + e2e recarregando no meio).
+- **Correção:** `ResumoLanterna` (≈ 160 B), gravado ao acender a lanterna, ao ir ao mapa e em
+  `pagehide`/`visibilitychange`, e o botão "Continuar" (menu e mapa). Estado: **corrigido** (`9219a50`, `d7c86a3`).
+- **Teste que impede a volta:** T8 em `test/salvo.test.ts` (37/37) e `test/e2e/solo.mjs` (recarrega no meio do
+  cap. 1 → "Continuar" → mesma lanterna, estrelinhas, bichinhos e tick).
 - Fonte: ARQUITETURA_MODOS §2.2.
 
 ### R25 · Se a conexão cai, os dois param
@@ -889,6 +895,31 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
   rodada seguinte passou nos 4 tamanhos; `48d10e6`).
 - **Teste que impede a volta:** `test/e2e/baloes.mjs` (T-U1 jogando, com o diagnóstico na mensagem).
 - Fonte: L8a.
+
+### R83 · O treino mudava o progresso da campanha na memória
+- **Sintoma (risco, achado lendo o código antes do salvo v2):** concluir um capítulo no "Treinar sozinho" registrava o
+  resultado no progresso em memória e o mapa passava a mostrá-lo; só não ia ao `localStorage` porque `guardar()` era
+  do anfitrião. Com a gravação em `pagehide` do L2b, isso iria parar no salvo.
+- **Causa (confirmada no código, `cc913e0`):** `concluirCapitulo`, `fimDaCena` e `vencerArena` (`main.ts`) mudavam
+  `progresso` em qualquer modo.
+- **Correção:** só o solo e o anfitrião mudam a campanha (`gravaCampanha()`); o convidado grava o que chega; o treino
+  nada. Estado: **corrigido** (`d7c86a3`).
+- **Teste que impede a volta:** `test/e2e/solo.mjs` parte 3 (T12: `edm-salvo-v2` idêntico byte a byte depois de 2 min
+  no Quintal, de `pagehide` de mentira e de um capítulo no treino).
+- Fonte: L2b.
+
+### R84 · O convidado não falava nada ao entrar: o primeiro "conectado" dele dispara antes de o fluxo ouvir
+- **Sintoma:** no e2e do L2b, com a Bruna criando a sala num aparelho novo e o Natan entrando com a jornada dele, os
+  dois ficavam com a jornada vazia da Bruna: a oferta da campanha do convidado (mandada no `conectado`) nunca saía.
+- **Causa (confirmada no código):** em `entrarSala` (`src/net/rede.ts:179–183`), `canal.ligar(dc)` chama
+  `aoMudarEstado('conectado')` **antes** do `resolve(con)`; o `main.ts` só liga o seu `aoMudarEstado` depois do
+  `await entrarSala(...)`. Então, no convidado, o ramo de `conectado` só roda nas reconexões. Nada dependia disso antes
+  do L2b.
+- **Correção:** o convidado manda a oferta (`'salvo'` com a campanha dele de antes de entrar) logo depois de
+  `ligarConexao`, e de novo a cada reconexão. Estado: **corrigido** (`cf75eab`).
+- **Teste que impede a volta:** `test/e2e/solo.mjs` parte 4 (os dois aparelhos gravam a jornada do Natan com o mesmo
+  id e o mapa da anfitriã oferece "Continuar · lanterna").
+- Fonte: L2b.
 
 ### R86 · `dupla.mjs` reprova às vezes na 1ª amostra de sincronia depois do `roteiro()`
 - **Sintoma:** "posições em sincronia durante o capítulo" reprovou em 2 de 4 rodadas com o build do L4 (maior desvio

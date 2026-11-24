@@ -9,10 +9,18 @@ Jogar: **https://natan130905-spec.github.io/Jogo-casal/** (no celular, deite o a
 aplicativo pelo menu do navegador, "Adicionar à tela inicial").
 
 ## Como jogar
-1. **Criar sala** (quem cria joga com o Natan/P1 e escolhe os capítulos) → aparece um código de 5 letras e o botão de
-   compartilhar convite. A outra pessoa abre o mesmo endereço, digita o código e toca em **Entrar** (joga com a Bruna/P2).
-   Funciona em redes diferentes. **Treinar sozinho** joga os dois personagens (o botão ⇄ troca), libera todos os
-   capítulos e não salva.
+1. O menu tem três modos:
+   - **Jogar sozinho**: a campanha sem sala; o outro personagem vai com o jogo (por enquanto ele só segue; ⇄ troca de
+     personagem). **Continuar** (aparece depois de jogar) volta à última lanterna acesa.
+   - **Jogar juntos online**: **Criar sala** (quem cria joga com o Natan/P1 e escolhe os capítulos) → código de 5
+     letras e o botão de compartilhar convite. A outra pessoa digita o código e toca em **Entrar** (joga com a Bruna/P2).
+     Funciona em redes diferentes. A jornada é do casal: os dois celulares guardam a mesma e se acertam ao conectar
+     (tanto faz quem cria a sala).
+   - **Treino**: todos os capítulos liberados e o **Quintal de Treino** (oficina de mecânicas com bonecos que voltam);
+     nada do treino conta para a jornada.
+
+   O jogo grava ao acender cada lanterna e ao sair do app (`edm-salvo-v2`; o formato antigo `edm-progresso-v1` é
+   migrado uma vez e não é apagado).
 2. **Prólogo** em quadrinhos (toque avança, "Pular ››" pula) e o **mapa da jornada**: sete ilhas, uma por capítulo.
    Quem criou a sala escolhe e toca em **Jogar ▶**; o outro vê a mesma tela.
 3. Na fase: chegue com os dois ao **pedaço da estrela** no fim e toquem nele juntos. Pelo caminho, pegue
@@ -119,6 +127,7 @@ node test/e2e/capitulos.mjs treino baixa,media,alta   # os 7 capítulos de ponta
 node test/e2e/capitulos.mjs dupla                     # os 7 capítulos em dupla, conferindo a sincronia
 node test/e2e/arena.mjs [treino|dupla]                 # Arena do Coração: controles, HUD, luta inteira, final e créditos
 node test/e2e/interface.mjs [--so treino|dupla]        # L1: botões com o polegar no joystick, confirmações, carga, ?diag, iPhone, segundo plano
+node test/e2e/solo.mjs                                # L2b: campanha sem sala, salvar/recarregar/Continuar, Quintal (T12), quem cria a sala
 ```
 Os testes e2e usam o `dist/` (rode `npm run build` antes). Para jogar um capítulo inteiro no navegador, eles gravam as
 entradas dos bots cooperativos (`test/fases/bot.ts` e `test/fases/planos/`) na simulação em Node e as reproduzem no
