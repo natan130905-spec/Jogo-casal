@@ -66,3 +66,8 @@ Decisões do diretor (entram no L14, depois do companheiro e da conexão):
 - **Armas e habilidades achadas, não dadas**: começa só com o básico; as outras ficam **escondidas** pela campanha
   (segredos, quedas secretas, baús) e na Floresta do Coração antes do Rei; quem achou leva para a luta. Várias armas
   com estilos diferentes (perto, longe, área, apoio). Entra no guia de segredos fora do jogo.
+- **Esclarecimento do jogador**: o som que falta é o **do Rei** — os ataques e habilidades dele não têm som marcante, e
+  quando ele fica bravo (troca de fase) a música não muda. Quer imersão: música do chefe em camadas/variações por fase
+  (calma tensa → brava → desesperada), transição na hora do rugido, som próprio para cada ataque do Rei (aviso + impacto:
+  pancada, onda, esporos, investida, névoa, morcegos), voz/grunhido do Rei ao apanhar e ao mudar de fase, e silêncio
+  dramático + música do final na derrota. Gerar faixas/efeitos por IA de som é permitido (registrar custo).
