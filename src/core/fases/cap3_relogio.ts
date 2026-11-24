@@ -9,7 +9,7 @@
 //           ponteiro do relógio 2                                         lanterna em 97,5
 //   100–128 engrenagens: plataforma móvel, relógio de dois ponteiros, plataformas que caem   lanterna em 131
 //   128–186 portão do tempo (porta dupla com uma placa de cada lado, colada): um sobe no telhado com mãos dadas e
-//           desce do lado de lá                                           lanterna em 168
+//           desce do lado de lá (do lado de lá há degraus até o telhado, para voltar)                                           lanterna em 168
 //   186–214 o relógio grande leva à torre do pedaço da estrela
 import { arco, bloco, chao, fileira, tabua, type FaseCapitulo } from './comum';
 
@@ -40,6 +40,8 @@ export const CAP3_RELOGIO: FaseCapitulo = {
     tabua(118, 121, 1.4),            // 12
     chao(128, 186),                  // 13
     bloco(160, 3.2, 2, 1),           // 14 telhado em cima do portão do tempo
+    tabua(163.2, 164.6, 2.8, 0.3),   // 14b degraus do lado de lá até o telhado (quem passou pode voltar)
+    bloco(165, 0, 1.4, 1.4),         // 14c
     chao(186, 214),                  // 15 praça do relógio grande
     bloco(200, 0, 12, 6),            // 16 torre
     bloco(212, 0, 2, 14),            // 17 fim

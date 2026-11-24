@@ -34,7 +34,7 @@ export const PLANO_CAP3: Etapa[] = [
   andar(157),
   // portão do tempo: Natan dá o impulso, Bruna sobe no telhado, desce do lado de lá e os dois seguram as placas
   { nome: 'portão do tempo', p: [
-    [ir(158.9), darImpulso(), ir(159.6), esperar(aberta('portao-tempo')), ir(165), esperar((c) => c.t > 2)],
+    [ir(158.9), darImpulso(), ir(159.6), esperar(aberta('portao-tempo')), ir(164.3), esperar((c) => c.t > 2)],
     [ir(159.6), superpulo(161, { atraso: 16 }), ir(162.6), esperar((c) => c.outro.x > 163.5)],
   ] },
   andar(194.6, 0.4),

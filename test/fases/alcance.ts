@@ -162,6 +162,8 @@ export function montarGrafo(f: Fase, o: { passoAmostra?: number } = {}): Grafo {
 
   let saltos = 0;
   const voo = (de: number, tipo: TipoLigacao, x: number, y: number, vx: number, vy: number, guia: (c: Corpo, t: number) => number, perto: Retangulo[], espPerto: [number, Retangulo][]) => {
+    // começa dentro de parede (amostra de plataforma especial encostada no chão): não vale
+    if (perto.some((r) => sobrepoe({ x: x - MEIA, y: y + 0.01, w: FISICA.largura, h: ALT - 0.02 }, r))) return;
     saltos++;
     const alvoEstrelas = tipo === 'super' ? estrelasSuper[de] : estrelas[de];
     const c: Corpo = { x, y, vx, vy, noChao: false };

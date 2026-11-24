@@ -347,3 +347,72 @@ export function saltarDaGiratoria(k: number, a0: number, a1: number, alvo: numbe
     },
   };
 }
+
+/** Topo atual da plataforma especial k (e se está ativa). */
+export const topoEsp = (c: Ctx, k: number) => c.e.especiais[k].y + (c.f.especiais![k] as { h: number }).h;
+/** Espera `quando` e pula na plataforma especial k (mirando o meio + dx); termina em pé nela. Se errar, tenta de novo. */
+export function subirEm(k: number, quando: (c: Ctx) => boolean, o: { dx?: number; nome?: string } = {}): Passo {
+  return {
+    nome: o.nome ?? `subir na plataforma ${k}`,
+    fn: (c) => {
+      const { eu, m } = c;
+      if (c.e.eventos.includes(`caiu:${c.i}`)) { m.vai = 0; m.t2 = 0; }
+      if (eu.noChao && eu.plataforma === k) return null;
+      if (!m.vai) {
+        if (eu.noChao && c.e.especiais[k].ativa && quando(c)) { m.vai = 1; m.t2 = 0; }
+        else return { x: 0 };
+      }
+      m.t2++;
+      if (eu.noChao && m.t2 > 8) { m.vai = 0; return { x: 0 }; }
+      const s = c.e.especiais[k], d = c.f.especiais![k] as { w: number };
+      return { x: guiar(eu, s.x + d.w / 2 + (o.dx ?? 0), 5), jump: m.t2 > 1 };
+    },
+  };
+}
+/** Fica na plataforma especial k (no meio + dx) até `quando` e pula em direção a `alvo`. */
+export function saltarDe(k: number, quando: (c: Ctx) => boolean, alvo: number, o: { dx?: number } = {}): Passo {
+  const s = saltar(alvo);
+  return {
+    nome: `saltar da plataforma ${k} para ${alvo}`,
+    fn: (c) => {
+      const { eu, m } = c;
+      if (!m.pula) {
+        if (quando(c) && eu.noChao) { m.pula = 1; m.t0 = c.t; }
+        else {
+          const p = c.e.especiais[k], d = c.f.especiais![k] as { w: number };
+          return { x: eu.plataforma === k ? guiar(eu, p.x + d.w / 2 + (o.dx ?? 0), 2) * 0.6 : 0 };
+        }
+      }
+      return s.fn({ ...c, t: c.t - m.t0 });
+    },
+  };
+}
+
+/** Argola k: da beira, pula e agarra (✋), desce até o raio `raio`, bombeia e solta (pulo) quando a previsão do voo
+ *  passa da beira de lá (`alvo`, pés acima de `yAlvo`); voa até pousar. */
+export function atravessarArgola(k: number, alvo: number, yAlvo: number, o: { raio?: number; folga?: number; de?: number } = {}): Passo {
+  return {
+    nome: `atravessar pela argola ${k}`,
+    fn: (c) => {
+      const { eu, m } = c;
+      const g = c.f.argolas![k];
+      const dir = Math.sign(alvo - g.x) as 1 | -1;
+      if (c.e.eventos.includes(`solta-argola:${c.i}`)) m.solto = 1;
+      if (m.solto) {
+        if (eu.noChao) return null;
+        return { x: dir, jump: true };
+      }
+      if (eu.argola < 0) {
+        // pula em direção à argola e agarra perto dela
+        if (eu.noChao && !m.pulou && o.de !== undefined && (eu.x - o.de) * dir < 0) return { x: dir };
+        if (eu.noChao && !m.pulou) { m.pulou = 1; return { x: o.de !== undefined ? dir : guiar(eu, g.x), jump: false }; }
+        const perto = Math.hypot(g.x - eu.x, g.y - (eu.y + 1)) <= 1.05;
+        if (eu.noChao && m.pulou && c.t > 10) m.pulou = 0;
+        return { x: guiar(eu, g.x, 3), jump: true, act: perto && c.t % 2 === 0 };
+      }
+      if (eu.raioArgola < (o.raio ?? 2.6)) return { y: -1, x: eu.vx >= 0 ? 1 : -1 };
+      const solta = c.t > 60 && eu.vx * dir > 0 && preverVoo(eu.x, eu.y, eu.vx * 1.1, Math.max(eu.vy, 0) + 4, dir, alvo) >= yAlvo + (o.folga ?? 0.15);
+      return { x: eu.vx >= 0 ? 1 : -1, jump: solta };
+    },
+  };
+}
