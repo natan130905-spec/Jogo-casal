@@ -45,3 +45,12 @@ Saldo Higgsfield: 625,38 → (ver `balance`; rodada estimada em ~299 créditos).
 | cristais_espelho | cenário cap. 6 | fraca (veio só o espelho) |
 | ilha_flutuante | cenário cap. 7 | fraca (escura) |
 Lição: no Meshy, texto→3D sai bem pior que imagem→3D; para refazer os fracos, gerar antes a imagem no estilo da arte.
+
+## Arena do Coração (Higgsfield, 2026-11-24): **80,50 créditos** (saldo 330,13 → 249,63)
+| Recurso | Ferramenta | Arquivo |
+|---|---|---|
+| Conceito da arena | gpt_image_2_6 | `docs/arte/arena_conceito.webp` |
+| Espada da Aurora (imagem) | gpt_image_2_6 | `docs/arte/arma_espada.webp` |
+| Lança de Pétala (imagem) | gpt_image_2_6 | `docs/arte/arma_lanca.webp` |
+| Espada da Aurora (3D) | meshy_v7_image_to_3d (job 8d102492) | `public/modelos/espada_aurora.glb`: 2,6 mil tri, textura 512, 245 KB, 1,9 m (escalar no jogo) |
+| Lança de Pétala (3D) | meshy_v7_image_to_3d (job 59d11884) | `public/modelos/lanca_petala.glb`: 2,6 mil tri, textura 512, 261 KB, 1,9 m (escalar no jogo) |
