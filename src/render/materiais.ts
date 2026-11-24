@@ -14,18 +14,59 @@ float edmRuido(vec3 x){
              mix(mix(edmHash(i + vec3(0,0,1)), edmHash(i + vec3(1,0,1)), f.x), mix(edmHash(i + vec3(0,1,1)), edmHash(i + vec3(1,1,1)), f.x), f.y), f.z);
 }`;
 
-export interface OpcoesMundo { vento?: boolean; ruido?: boolean; escalaRuido?: number; forcaRuido?: number }
+export interface OpcoesMundo {
+  vento?: boolean; ruido?: boolean; escalaRuido?: number; forcaRuido?: number;
+  /**
+   * Regras do plano 2.5D (padrão: sim): névoa colorida só ATRÁS da faixa de jogo (z < −2,5, por profundidade e por
+   * altura nos abismos) e primeiro plano (z > +2,3) mais escuro. A arena 3D passa `plano: false` (névoa padrão).
+   */
+  plano?: boolean;
+}
+
+/**
+ * Estilo do capítulo compartilhado por todos os materiais do mundo (definido por `configurarEstilo`, chamado ao
+ * montar o cenário): cor da sombra própria (a rampa de toon tinge o lado sem sol com ela, nunca cinza) e as duas
+ * cores da névoa em gradiente (perto/baixo = tom médio-escuro; longe = cor de atmosfera do capítulo).
+ */
+export const ESTILO = {
+  uSombra: { value: new THREE.Color(0x7080c0) },
+  uNevoaPerto: { value: new THREE.Color(0x4a3a78) },
+  uNevoaLonge: { value: new THREE.Color(0x8a6ab8) },
+  uNevoaForca: { value: 0.85 },
+};
+
+export interface EstiloMundo { sombra: number; nevoaPerto: number; nevoaLonge: number; nevoaForca?: number }
+export function configurarEstilo(e: EstiloMundo) {
+  ESTILO.uSombra.value.setHex(e.sombra);
+  ESTILO.uNevoaPerto.value.setHex(e.nevoaPerto);
+  ESTILO.uNevoaLonge.value.setHex(e.nevoaLonge);
+  ESTILO.uNevoaForca.value = e.nevoaForca ?? 0.85;
+}
+
+/**
+ * Rampa de toon MACIA do cenário (todas as qualidades): 3 faixas com transição suave em vez do cosseno de Lambert.
+ * Lado sem sol = cor de sombra do capítulo × 0,42; face de lado para o sol (frente dos barrancos) = 0,8; face ao sol
+ * = 1. Os personagens têm a rampa dura deles (personagem.ts).
+ */
+const RAMPA_GLSL = /* glsl */ `
+uniform vec3 uSombra;
+vec3 getGradientIrradiance( vec3 normal, vec3 lightDirection ) {
+  float d = dot( normal, lightDirection );
+  vec3 sombra = uSombra * 0.42;
+  vec3 c = mix( sombra, vec3( 0.8 ), smoothstep( -0.04, 0.14, d ) );
+  return mix( c, vec3( 1.0 ), smoothstep( 0.42, 0.62, d ) );
+}`;
 
 export function materialMundo(q: Qualidade, o: OpcoesMundo = {}): THREE.Material {
-  // Lambert (barato por pixel) na baixa e na média; Standard só na alta
-  const mat = q !== 'alta'
-    ? new THREE.MeshLambertMaterial({ vertexColors: true })
-    : new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.88, metalness: 0 });
+  // toon (custo de Lambert) em todas as qualidades; a alta ganha sombras reais (cena.ts), não outro material
+  const mat = new THREE.MeshToonMaterial({ vertexColors: true });
+  const plano = o.plano !== false;
   const ruido = o.ruido !== false;
   const oitavas = q === 'baixa' ? 1 : 2;
   const esc = (o.escalaRuido ?? 1.6).toFixed(3), forca = (o.forcaRuido ?? 0.26).toFixed(3);
   mat.onBeforeCompile = (sh) => {
     sh.uniforms.uTempo = TEMPO;
+    Object.assign(sh.uniforms, ESTILO);
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>\nuniform float uTempo; varying vec3 vMundoP; varying vec3 vMundoN;`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
@@ -51,7 +92,8 @@ ${o.vento ? `{
   vMundoN = normalize(mat3(modelMatrix) * nn);
 }`);
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', `#include <common>\nvarying vec3 vMundoP; varying vec3 vMundoN;\n${RUIDO_GLSL}`)
+      .replace('#include <common>', `#include <common>\nvarying vec3 vMundoP; varying vec3 vMundoN;\nuniform vec3 uNevoaPerto, uNevoaLonge; uniform float uNevoaForca;\n${RUIDO_GLSL}`)
+      .replace('#include <gradientmap_pars_fragment>', RAMPA_GLSL)
       .replace('#include <color_fragment>', `#include <color_fragment>
 ${ruido ? `{
   vec3 pr = vMundoP * ${esc};
@@ -59,18 +101,58 @@ ${ruido ? `{
   diffuseColor.rgb *= 1.0 + ${forca} * (rn * 2.0 - 1.0);
 }` : ''}
 {
-  // luz quente do pôr do sol nas faces voltadas para cima, tom arroxeado nas de baixo (pintura, não física)
+  // tom quente do pôr do sol nas faces voltadas para cima, arroxeado nas de baixo (pintura, não física; ≤ 1)
   float cima = vMundoN.y;
-  diffuseColor.rgb *= mix(vec3(0.86, 0.8, 1.0), vec3(1.1, 1.03, 0.9), smoothstep(-0.6, 0.9, cima));
-}`);
+  diffuseColor.rgb *= mix(vec3(0.84, 0.78, 0.98), vec3(1.02, 0.98, 0.88), smoothstep(-0.6, 0.9, cima));
+}
+${plano ? `// primeiro plano (entre a câmera e a faixa de jogo) mais escuro: moldura, não destaque
+diffuseColor.rgb *= mix(1.0, 0.42, smoothstep(2.3, 5.0, vMundoP.z));` : ''}`)
+      .replace('#include <fog_fragment>', plano ? `{
+  // névoa colorida só atrás da faixa de jogo: por profundidade (z) e por altura nos abismos; nada na frente
+  float fz = pow(clamp((-vMundoP.z - 2.5) / 45.0, 0.0, 1.0), 0.8);
+  float fy = smoothstep(-1.2, -7.5, vMundoP.y) * smoothstep(1.0, -3.0, vMundoP.z) * 0.55;
+  float f = clamp(fz + fy * (1.0 - fz), 0.0, 1.0) * uNevoaForca;
+  vec3 corN = mix(uNevoaPerto, uNevoaLonge, clamp(fz * 1.4, 0.0, 1.0));
+  gl_FragColor.rgb = mix(gl_FragColor.rgb, corN, f);
+}` : '#include <fog_fragment>');
   };
-  mat.customProgramCacheKey = () => `mundo-${q}-${o.vento ? 1 : 0}-${ruido ? 1 : 0}-${esc}-${forca}`;
+  mat.customProgramCacheKey = () => `mundo2-${q}-${o.vento ? 1 : 0}-${ruido ? 1 : 0}-${plano ? 1 : 0}-${esc}-${forca}`;
   return mat;
+}
+
+/**
+ * Marca de brilho seletivo. Fora do render da alta vale 1. Durante o render da alta (pos.ts) vale 3 e os materiais de
+ * brilho gravam esse valor no ALFA do alvo de render (HalfFloat): o filtro do bloom só deixa passar pixels marcados.
+ * A cor não muda (a média e a alta mostram a mesma janela/lanterna; a alta só ganha o halo).
+ */
+export const HDR_BRILHO = { value: 1 };
+
+/** Faz um MeshBasicMaterial opaco entrar no brilho seletivo da alta (janelas, lanternas, cristais, estrelas). */
+export function marcarBrilho<T extends THREE.MeshBasicMaterial>(m: T, chave = 'brilho-marca'): T {
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uHdr = HDR_BRILHO;
+    // peça grande que é "luz" mas não deve espalhar halo (mostrador, espelho, cristal gigante): normal zerada (`semHalo`)
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying float vMarca;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMarca = step(0.5, length(normal));');
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uHdr; varying float vMarca;')
+      .replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor.a = max(gl_FragColor.a, mix(1.0, uHdr, vMarca));');
+  };
+  m.customProgramCacheKey = () => chave;
+  return m;
+}
+
+/** Tira uma peça do lote de brilho do halo da alta (continua sem luz e com a mesma cor): zera as normais. */
+export function semHalo(g: THREE.BufferGeometry): THREE.BufferGeometry {
+  const n = g.getAttribute('normal') as THREE.BufferAttribute | undefined;
+  if (n) { for (let i = 0; i < n.count; i++) n.setXYZ(i, 0, 0, 0); n.needsUpdate = true; }
+  return g;
 }
 
 /** Material sem luz para coisas que brilham (janelas, lanternas, cogumelos mágicos). Cor por vértice. */
 export function materialBrilho(): THREE.MeshBasicMaterial {
-  return new THREE.MeshBasicMaterial({ vertexColors: true, fog: false, toneMapped: false });
+  return marcarBrilho(new THREE.MeshBasicMaterial({ vertexColors: true, fog: false, toneMapped: false }), 'brilho-vc');
 }
 
 /**
@@ -101,7 +183,10 @@ export function materialQuadros(mapa: THREE.Texture, aditivo: boolean): THREE.Sh
       }`,
     transparent: true,
     depthWrite: false,
-    blending: aditivo ? THREE.AdditiveBlending : THREE.NormalBlending,
+    // aditivo: soma só a cor; o alfa do alvo fica como está (halos e raios de sol NÃO entram no brilho da alta)
+    blending: aditivo ? THREE.CustomBlending : THREE.NormalBlending,
+    blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+    blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor,
     toneMapped: false,
   });
 }

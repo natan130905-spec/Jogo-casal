@@ -12,6 +12,7 @@ import { Quadros } from './efeitos';
 import type { Cascata } from './agua';
 import { TEMAS, type Tema } from './tema';
 import { criarKit } from './aderecos';
+import { configurarEstilo } from './materiais';
 
 export const CORES = {
   grama: 0x58a03e, gramaClara: 0x9fcf4a, gramaEscura: 0x2a5f36, gramaSol: 0xd9d45a, terra: 0x4d3126,
@@ -36,11 +37,73 @@ export interface Cenario {
 
 const PROF = 2.0; // meia profundidade da faixa de chão (z de -2 a 2)
 
+/** Semente derivada de um índice (1 … 2³¹−2), para `sorteio`. */
+const semente = (k: number) => 1 + (Math.imul(k + 1, 2654435761) >>> 0) % 2147483646;
+
+/** Espessura do traço escuro na aresta da frente do tapete das plataformas (média e alta), em metros. */
+const TRACO = 0.05;
+
+/**
+ * Oclusão de ambiente ASSADA na cor dos vértices (zero custo por quadro), calculada pelas caixas de colisão da fase:
+ * escurece o pé das paredes e a base dos adereços (até 0,6 m acima do chão), o fundo do tampo junto ao barranco de
+ * trás e o que fica embaixo de plataformas elevadas (até 2,5 m). É uma aproximação analítica (sem traçar raios).
+ */
+export class JuntadorAO extends Juntador {
+  private chaos: Retangulo[];
+  private elevadas: Retangulo[];
+  constructor(faixa: number, plataformas: readonly Retangulo[]) {
+    super(faixa);
+    this.chaos = [...plataformas];
+    this.elevadas = plataformas.filter((r) => {
+      const baixo = this.chaoSob(r.x + r.w / 2, r.y - 0.05);
+      return !Number.isFinite(baixo) || baixo < r.y - 0.3;
+    });
+  }
+  /** topo mais alto de chão em x que fica abaixo (ou na altura) de y */
+  chaoSob(x: number, y: number) {
+    let m = -Infinity;
+    for (const r of this.chaos) { const t = r.y + r.h; if (x >= r.x - 0.15 && x <= r.x + r.w + 0.15 && t <= y + 0.06 && t > m) m = t; }
+    return m;
+  }
+  ao(x: number, y: number, z: number, ny: number) {
+    let k = 1;
+    const chao = this.chaoSob(x, y);
+    if (Number.isFinite(chao)) {
+      const h = y - chao;
+      // contato: pé de parede, base de pedras, blocos e adereços (não o próprio tampo, que olha para cima)
+      if (h > -0.05 && h < 0.6 && ny < 0.75) k *= 1 - 0.42 * (1 - Math.max(0, h) / 0.6);
+      // tampo: escurece no fundo, junto ao barranco de trás
+      if (ny >= 0.6 && Math.abs(h) < 0.15 && z < -1.2 && z > -2.3) k *= 1 - 0.3 * Math.min(1, (-1.2 - z) / 0.7);
+    }
+    // embaixo de plataforma elevada
+    if (z > -2.6 && z < 2.8) for (const r of this.elevadas) {
+      const d = r.y - y;
+      if (d > 0.02 && d < 2.5 && x > r.x - 0.1 && x < r.x + r.w + 0.1) { k *= 1 - 0.45 * (1 - d / 2.5); break; }
+    }
+    return k;
+  }
+  override add(geo: THREE.BufferGeometry) {
+    const pos = geo.getAttribute('position'), nor = geo.getAttribute('normal'), cor = geo.getAttribute('color');
+    if (pos && nor && cor) {
+      for (let i = 0; i < pos.count; i++) {
+        const k = this.ao(pos.getX(i), pos.getY(i), pos.getZ(i), nor.getY(i));
+        if (k < 0.999) cor.setXYZ(i, cor.getX(i) * k, cor.getY(i) * k, cor.getZ(i) * k);
+      }
+    }
+    super.add(geo);
+  }
+}
+
 export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.floresta): Cenario {
-  const rnd = sorteio(7);
+  configurarEstilo(tema.estilo);
+  // Sorteio que NÃO depende da qualidade: cada grupo de peças recomeça de uma semente própria (`semear`), então o que
+  // a baixa tem sai no mesmo lugar na média e na alta; a qualidade só acrescenta (mais grama, mais detalhe).
+  let gerador = sorteio(7);
+  const rnd = () => gerador();
+  const semear = (k: number) => { gerador = sorteio(semente(k)); };
   const C: typeof CORES = { ...CORES, ...tema.chao };
   const r = (a: number, b: number) => a + rnd() * (b - a);
-  const mundo = new Juntador(16), brilho = new Juntador(32);
+  const mundo = new JuntadorAO(16, fase.plataformas), brilho = new Juntador(32);
   const luz = new Quadros(), nevoa = new Quadros();
   const tufos: THREE.Matrix4[] = [], flores: Cenario['flores'] = [], cascatasL: Cascata[] = [];
   const rico = q !== 'baixa', alta = q === 'alta';
@@ -88,6 +151,13 @@ export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.fl
       }
       else misturar(c, C.gramaEscura, C.grama, (p.y - (topo - 0.6)) / 0.6);
     }));
+    // traço escuro de desenho na aresta da frente do tapete (lê a borda da plataforma); custo: 12 triângulos, 0 chamadas
+    if (rico && z1 >= PROF - 0.01 && frenteMusgo) {
+      const t = new THREE.BoxGeometry(w + 0.1, TRACO, TRACO, Math.max(1, Math.ceil(w)), 1, 1);
+      colocar(t, (x0 + x1) / 2, topo - 0.11, z1 + 0.05);
+      deformar(t, 0.015, 2.0, () => new THREE.Vector3(0, 1, 0));
+      mundo.add(pintar(t, misturar(new THREE.Color(), C.gramaEscura, 0x120818, 0.65).getHex()));
+    }
     // trepadeiras/musgo escorrendo na frente
     if (frenteMusgo) {
       for (let x = x0 + r(0.2, 1.2); x < x1 - 0.3; x += r(0.9, 2.2)) {
@@ -306,7 +376,10 @@ export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.fl
   };
 
   const tufo = (x: number, y: number, z: number, s: number) => {
-    tufos.push(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rnd() * 6.28), new THREE.Vector3(s, s * r(0.8, 1.3), s)));
+    const rot = rnd() * 6.28;
+    // borda da frente da faixa de jogo baixa (≤ 0,25 m): com a câmera baixa a grama alta tapava os personagens
+    const sy = z > 0.6 ? Math.min(0.6, s * r(0.8, 1.3)) : s * r(0.8, 1.3);
+    tufos.push(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rot), new THREE.Vector3(s, sy, s)));
   };
   const flor = (x: number, y: number, z: number) => {
     const cores = [0xff8fb8, 0xffe070, 0xffffff, 0xc89bff, 0xff7a5a];
@@ -322,10 +395,11 @@ export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.fl
   // ---------- plataformas da fase ----------
   const chao: Retangulo[] = [];
   const BASE = -8;
-  for (const p of fase.plataformas) {
+  fase.plataformas.forEach((p, ip) => {
     const topo = p.y + p.h, x0 = p.x, x1 = p.x + p.w;
     chao.push(p);
-    if (kit && p.y >= -0.5) { if (p.h >= 0.9) kit.bloco(p); else kit.alta(x0, x1, topo); continue; }
+    semear(100 + ip);
+    if (kit && p.y >= -0.5) { if (p.h >= 0.9) kit.bloco(p); else kit.alta(x0, x1, topo); return; }
     if (p.y > 2) {
       // deque de madeira da casa na árvore (topo exato em `topo`)
       for (let x = x0; x < x1 - 0.01; x += 0.46) {
@@ -348,7 +422,7 @@ export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.fl
       }
       lanterna(x0 + 0.1, topo + 0.75, -1.15, 0.2);
       lanterna(x1 - 0.1, topo + 0.45, 1.32, 0.0);
-      continue;
+      return;
     }
     // chão de terra e rocha
     penhasco(x0, x1, topo, BASE, -PROF, PROF);
@@ -360,6 +434,7 @@ export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.fl
       tufo(x, topo - 0.02, zz, r(0.7, 1.3));
       if (rnd() < 0.18 && tema.flores) flor(x + r(-0.1, 0.1), topo, zz + r(-0.1, 0.1));
     }
+    semear(1000 + ip);
     // pedrinhas e cogumelos no fundo da faixa
     if (rico && p.w > 4) {
       for (let k = 0; k < p.w / 5; k++) pedra(r(x0 + 0.5, x1 - 0.5), topo, r(-1.9, -1.5), r(0.2, 0.45));
@@ -367,30 +442,36 @@ export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.fl
     }
     // margem do fundo: barranco mais alto atrás da faixa de jogo (camadas como na arte)
     if (p.y < -0.5) {
+      semear(2000 + ip);
       const alto = topo + r(1.7, 2.4);
       penhasco(x0 + 0.3, x1 - 0.3, alto, BASE, -6.5, -PROF - 0.15);
+      semear(3000 + ip);
       const nb = Math.round(p.w * dens);
       for (let k = 0; k < nb; k++) tufo(r(x0 + 0.4, x1 - 0.4), alto - 0.02, r(-6.2, -2.3), r(0.8, 1.5));
-      for (let k = 0; k < p.w / 7; k++) (kit ? kit.pequeno : cogumelo)(r(x0 + 0.8, x1 - 0.8), alto - 0.05, r(-4.5, -3.0), r(1.0, 2.6), r(-0.25, 0.25));
-      for (let k = 0; k < p.w / (rico ? 2.2 : 4) * (kit ? 0.5 : 1); k++) (kit ? kit.moita : moita)(r(x0 + 0.6, x1 - 0.6), alto - 0.1, r(-5.8, -3.2), r(0.6, 1.3));
-      for (let k = 0; k < p.w / 8; k++) (kit ? kit.brilho : cogumeloMagico)(r(x0 + 0.5, x1 - 0.5), alto - 0.02, r(-2.6, -2.3), [0x6fe8ff, 0xff8fd8, 0xffd36a][k % 3]);
+      semear(4000 + ip);
+      for (let k = 0; k < p.w / 7; k++) { semear(4100 + ip * 64 + k); (kit ? kit.pequeno : cogumelo)(r(x0 + 0.8, x1 - 0.8), alto - 0.05, r(-4.5, -3.0), r(1.0, 2.6), r(-0.25, 0.25)); }
+      for (let k = 0; k < p.w / (rico ? 2.2 : 4) * (kit ? 0.5 : 1); k++) { semear(5000 + ip * 64 + k); (kit ? kit.moita : moita)(r(x0 + 0.6, x1 - 0.6), alto - 0.1, r(-5.8, -3.2), r(0.6, 1.3)); }
+      for (let k = 0; k < p.w / 8; k++) { semear(6000 + ip * 64 + k); (kit ? kit.brilho : cogumeloMagico)(r(x0 + 0.5, x1 - 0.5), alto - 0.02, r(-2.6, -2.3), [0x6fe8ff, 0xff8fd8, 0xffd36a][k % 3]); }
+      semear(7000 + ip);
       if (rico) for (let k = 0; k < p.w / 6; k++) pedra(r(x0 + 0.5, x1 - 0.5), alto, r(-3, -2.4), r(0.3, 0.6));
     }
-  }
+  });
 
   // bordas da fase: barrancos à esquerda e à direita
+  semear(8000);
   penhasco(-14, fase.plataformas[0].x + 0.05, 2.2, BASE, -6.5, 2.5);
   penhasco(fase.largura - 0.05, fase.largura + 12, 2.8, BASE, -6.5, 2.5);
 
   // ---------- vãos: lábio de rocha atrás + cascata ----------
   const ordenadas = [...fase.plataformas].filter((p) => (kit ? p.y < -0.5 : p.y < 2)).sort((a, b) => a.x - b.x);
   for (let i = 0; i < ordenadas.length - 1; i++) {
+    semear(9000 + i);
     const a = ordenadas[i], b = ordenadas[i + 1];
     const g0 = a.x + a.w, g1 = b.x;
     if (g1 - g0 < 0.5) continue;
     const topo = Math.max(a.y + a.h, b.y + b.h) + 0.6;
     penhasco(g0 - 0.2, g1 + 0.2, topo, BASE, -6.5, -2.6);
-    if (!tema.agua) continue;
+    if (!tema.agua || !tema.cascatas) continue;
     cascatasL.push({ x0: g0 + 0.1, x1: g1 - 0.1, topo: topo - 0.12, base: -4.3, z: -2.55 });
     luz.add('halo', (g0 + g1) / 2, -4.1, -2.2, (g1 - g0) * 2.2, 1.4, 0xd8f0ff, 0.6, rnd());
     nevoa.add('nevoa', (g0 + g1) / 2, -3.6, -1.5, (g1 - g0) * 4, 2.5, 0xffffff, 0.55);
@@ -398,50 +479,56 @@ export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.fl
 
   if (!kit) {
     // ---------- cascata grande ao fundo, com seu penhasco ----------
+    semear(9500);
     penhasco(15.5, 23.5, 8.5, BASE, -12, -8.6);
     cascatasL.push({ x0: 18.2, x1: 20.8, topo: 8.4, base: -4.3, z: -8.5 });
     luz.add('halo', 19.5, -3.8, -8.0, 7, 2.4, 0xe8f6ff, 0.55, 0.3);
-    arvore(22.5, -10.5, 8.3, 7, 0.7, 0.8);
-    arvore(16.5, -11, 8.3, 5, 0.5, 0.7);
+    semear(9501); arvore(22.5, -10.5, 8.3, 7, 0.7, 0.8);
+    semear(9502); arvore(16.5, -11, 8.3, 5, 0.5, 0.7);
+    semear(9503);
     penhasco(44, 49, 6.5, BASE, -15, -12.5);
     cascatasL.push({ x0: 45.8, x1: 47.0, topo: 6.4, base: -4.3, z: -12.4 });
 
   }
   // ---------- árvores gigantes ----------
-  const nArv = q === 'baixa' ? 10 : q === 'media' ? 16 : 22;
+  // 22 lugares fixos; a baixa usa 11 e a média 17 deles (os mesmos, no mesmo lugar), a alta todos
+  const nArv = 22;
   for (let k = 0; k < nArv; k++) {
+    if (q === 'baixa' ? k % 2 === 1 : q === 'media' ? k % 4 === 3 : false) continue;
+    semear(10000 + k);
     const x = -10 + (fase.largura + 20) * (k + rnd() * 0.6) / nArv;
     const z = r(-17, -7.5);
     (kit ? kit.grande : arvore)(x, z, BASE, r(15, 22) + (-z - 7) * 0.3, r(0.8, 1.7));
   }
   if (kit) {
     const n = Math.max(1, Math.round(fase.largura / 70)), L = fase.largura / n;
-    for (let i = 0; i < n; i++) kit.marcos(i * L, L);
+    for (let i = 0; i < n; i++) { semear(11000 + i); kit.marcos(i * L, L); }
   }
   else {
     // árvore da casa (segura o deque) e árvore da esquerda
     const deque = fase.plataformas.find((p) => p.y > 2);
     if (deque) {
       const tx = deque.x + deque.w + 1.2;
-      arvore(tx, -3.4, BASE, 20, 1.6, 1.2);
-      casa(deque.x + deque.w - 0.9, deque.y + deque.h, -2.25, 0.95, false);
+      semear(12000); arvore(tx, -3.4, BASE, 20, 1.6, 1.2);
+      semear(12001); casa(deque.x + deque.w - 0.9, deque.y + deque.h, -2.25, 0.95, false);
       ponte(deque.x - 6, deque.x - 0.2, deque.y + deque.h + 3.0, -4.5, 0.6);
     }
-    arvore(-5, -3.6, BASE, 19, 1.4, 1.1);
+    semear(12002); arvore(-5, -3.6, BASE, 19, 1.4, 1.1);
 
     // casas e pontes ao fundo
-    casa(27.5, 8.0, -11.2, 1.0);
-    arvore(27.5, -12.4, BASE, 16, 1.2, 0.6);
-    ponte(29.5, 38, 8.4, -11.2, 0.8);
+    semear(12003); casa(27.5, 8.0, -11.2, 1.0);
+    semear(12004); arvore(27.5, -12.4, BASE, 16, 1.2, 0.6);
+    semear(12005); ponte(29.5, 38, 8.4, -11.2, 0.8);
     casa(6.5, 7.2, -13.2, 1.1);
-    arvore(6.5, -14.4, BASE, 15, 1.2, 0.6);
-    ponte(-2, 5, 7.4, -13.2, 0.6);
+    semear(12006); arvore(6.5, -14.4, BASE, 15, 1.2, 0.6);
+    semear(12007); ponte(-2, 5, 7.4, -13.2, 0.6);
     for (const [x, y, z] of [[31, 7.4, -11.2], [34, 7.2, -11.2], [1.5, 6.6, -13.2], [36.6, 7.5, -11.2]]) lanterna(x, y, z, 0.3);
 
     // ---------- cogumelos grandes de primeiro plano e beira ----------
-    cogumelo(-2.6, 2.15, -0.8, 2.8, 0.12);
-    cogumelo(-1.2, 2.15, -2.8, 1.6, -0.1);
-    if (rico) { cogumelo(61.2, 2.75, -0.6, 2.2, -0.15); cogumelo(25.6, -3.6, 2.6, 1.6, 0.08); }
+    semear(12008); cogumelo(-2.6, 2.15, -0.8, 2.8, 0.12);
+    semear(12009); cogumelo(-1.2, 2.15, -2.8, 1.6, -0.1);
+    semear(12010); if (rico) { cogumelo(61.2, 2.75, -0.6, 2.2, -0.15); cogumelo(25.6, -3.6, 2.6, 1.6, 0.08); }
+    semear(12011);
     for (const [x, z] of [[12.5, -1.85], [32.4, -1.85], [46.5, -1.85], [57.0, 1.7]]) cogumeloMagico(x, deque && x > deque.x && x < deque.x + deque.w ? deque.y + deque.h : 0, z, 0xffd36a);
 
   }
@@ -473,18 +560,26 @@ export function construirCenario(fase: Fase, q: Qualidade, tema: Tema = TEMAS.fl
   }
 
   // ---------- luz: raios de sol, halos e névoa ----------
-  for (let k = 0; k < (rico ? 9 : 3); k++) {
-    const x = -4 + (fase.largura + 8) * (k + rnd() * 0.5) / (rico ? 9 : 3);
+  // raios: 9 lugares fixos, a baixa usa 3 deles. Mais fracos que antes: são luz de fundo, não um véu sobre a tela
+  for (let k = 0; k < 9; k++) {
+    if (!rico && k % 3 !== 1) continue;
+    semear(13000 + k);
+    const x = -4 + (fase.largura + 8) * (k + rnd() * 0.5) / 9;
     const z = r(-7, -3);
-    luz.add('raio', x, r(12, 15), z, r(3, 6), r(15, 20), 0xffd28a, r(0.55, 0.8), rnd(), r(-0.42, -0.3), 'topo');
+    luz.add('raio', x, r(12, 15), z, r(3, 6), r(15, 20), 0xffd28a, r(0.35, 0.5), rnd(), r(-0.42, -0.3), 'topo');
   }
-  luz.add('raio', pr.x - 1.5, 14, -3.2, 3.5, 13, 0xffe0a0, 0.6, 0.4, -0.35, 'topo');
-  for (let k = 0; k < (rico ? 14 : 7); k++) {
-    const x = -6 + (fase.largura + 12) * (k + rnd()) / (rico ? 14 : 7);
-    nevoa.add('nevoa', x, r(-3.6, -2.6), r(-8, -3), r(10, 18), r(3, 5), [0xf2c4e8, 0xc8a8f0, 0xffd8c0][k % 3], r(0.45, 0.7));
-    nevoa.add('nevoa', x + 4, r(1.5, 5), r(-20, -12), r(14, 24), r(4, 7), [0xe9b8e0, 0xbfa0f0][k % 2], r(0.3, 0.45));
+  luz.add('raio', pr.x - 1.5, 14, -3.2, 3.5, 13, 0xffe0a0, 0.45, 0.4, -0.35, 'topo');
+  const corBruma = [tema.estilo.nevoaLonge, misturar(new THREE.Color(), tema.estilo.nevoaLonge, tema.estilo.nevoaPerto, 0.35).getHex(), misturar(new THREE.Color(), tema.estilo.nevoaLonge, 0xffffff, 0.2).getHex()];
+  for (let k = 0; k < 14; k++) {
+    if (!rico && k % 2 === 1) continue;
+    semear(14000 + k);
+    const x = -6 + (fase.largura + 12) * (k + rnd()) / 14;
+    // bruma com as cores de atmosfera do capítulo (antes: rosa/lilás claros fixos em todos os mundos)
+    nevoa.add('nevoa', x, r(-3.6, -2.6), r(-8, -3), r(10, 18), r(3, 5), corBruma[k % 3], r(0.4, 0.6));
+    nevoa.add('nevoa', x + 4, r(1.5, 5), r(-20, -12), r(14, 24), r(4, 7), corBruma[(k + 1) % 3], r(0.25, 0.4));
   }
-  nevoa.add('nevoa', fase.largura / 2, -4.0, 2.5, fase.largura + 30, 3.5, 0xd8b8f0, 0.5);
+  // bruma baixa na frente dos abismos: escura (tom de perto), nunca um véu claro entre a câmera e o jogo
+  nevoa.add('nevoa', fase.largura / 2, -4.6, 2.5, fase.largura + 30, 3.0, tema.estilo.nevoaPerto, 0.45);
 
   return { mundo, brilho, luz, nevoa, tufos, flores, cascatas: cascatasL, chao };
 }

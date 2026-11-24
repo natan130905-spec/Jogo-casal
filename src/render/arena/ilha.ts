@@ -326,10 +326,10 @@ export function construirIlha(q: Qualidade): Ilha {
     }
     return i;
   };
-  const tufos = new THREE.InstancedMesh(geoTufo({ gramaEscura: 0x1f6a2a, gramaClara: 0x9ad83a }), materialMundo(q, { vento: true, ruido: false }), nTufos);
+  const tufos = new THREE.InstancedMesh(geoTufo({ gramaEscura: 0x1f6a2a, gramaClara: 0x9ad83a }), materialMundo(q, { vento: true, ruido: false, plano: false }), nTufos);
   tufos.count = sortear(nTufos, (m, i) => tufos.setMatrixAt(i, m));
   const coresFlor = [0xff8ac8, 0xffffff, 0xc89aff, 0xffe066, 0xff6fa8, 0xa8c8ff];
-  const flores = new THREE.InstancedMesh(geoFlor(), materialMundo(q, { vento: true, ruido: false }), nFlores);
+  const flores = new THREE.InstancedMesh(geoFlor(), materialMundo(q, { vento: true, ruido: false, plano: false }), nFlores);
   const cf = new THREE.Color();
   flores.count = sortear(nFlores, (m, i) => {
     m.scale(new THREE.Vector3(1.15, 1.1, 1.15));
