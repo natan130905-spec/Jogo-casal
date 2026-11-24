@@ -91,12 +91,18 @@ export class CameraJogador {
     const peso = ou.bolha ? 0 : Math.min(rampa(Math.abs(dx), CAM.pertoX, CAM.longeX), rampa(Math.abs(dy), CAM.pertoY, CAM.longeY));
     if (peso > 0) {
       fx = me.x + this.frente * (1 - 0.5 * peso) + dx * 0.5 * peso;
-      fy = aE + limitar(dy * 0.5, -1.5, 1.5) * peso;
+      let fyDois = aE + limitar(dy * 0.5, -1.5, 1.5);
       // largura que cabe os dois com 1,5 m de folga de cada lado (a tela é simétrica em torno de fx)
       const precisaX = Math.max(Math.abs(fx - me.x), Math.abs(fx - ou.x)) * 2 + 3;
       const baixo = Math.min(aE, aO) - 0.25, cima = Math.max(aE, aO) + CAM.corpo + 0.35;
-      const precisa = Math.max(precisaX / aspecto, (fy - baixo) / pes, (cima - fy) / (1 - pes));
-      V = Vbase + (limitar(precisa, Vbase, Vmax) - Vbase) * peso;
+      const precisa = Math.max(precisaX / aspecto, (fyDois - baixo) / pes, (cima - fyDois) / (1 - pes));
+      const Vdois = limitar(precisa, Vbase, Vmax);
+      // com o afastamento já no teto, desliza o y para a faixa em que os dois cabem (se couberem). Sem isso, com o
+      // parceiro 4–5 m ABAIXO (cap. 6, dois andares), os pés a 30 % da tela deixavam o parceiro fora do quadro.
+      const fyMin = cima - (1 - pes) * Vdois, fyMax = baixo + pes * Vdois;
+      if (fyMin <= fyMax) fyDois = limitar(fyDois, fyMin, fyMax);
+      fy = aE + (fyDois - aE) * peso;
+      V = Vbase + (Vdois - Vbase) * peso;
     }
 
     // estrelinha logo acima e fora do quadro: abaixa os pés na tela e, se ainda faltar, afasta

@@ -142,6 +142,19 @@ describe('câmera por jogador: comportamento', () => {
     }
   });
 
+  it('R66 · parceiro 4,6 m abaixo e 4 m ao lado (cap. 6, dois andares): os dois inteiros no quadro', () => {
+    const f = CAPITULOS[5];
+    for (const asp of ASPECTOS) for (const [dx, dy] of [[4, -4.6], [4, 4.6], [-3, -4.2], [6, -3.5]] as const) {
+      const e = estadoInicial(f), c = new CameraJogador(f), p = projetor(asp);
+      const [a, b] = e.jogadores; a.y = 4.6; a.noChao = true; b.noChao = true; b.x = a.x + dx; b.y = a.y + dy;
+      for (let t = 0; t < 240; t++) aplicarCamera(p.cam, c.atualizar(e, 0, asp, DT));
+      for (const [j, quem] of [[a, 'eu'], [b, 'parceiro']] as const) {
+        const pes = p.ndc(j.x, j.y), cabeca = p.ndc(j.x, j.y + CAM.corpo);
+        expect(pes.y > -1 && cabeca.y < 1 && Math.abs(pes.x) < 1, `${quem} inteiro no quadro (dx ${dx}, dy ${dy}, aspecto ${asp.toFixed(2)})`).toBe(true);
+      }
+    }
+  });
+
   it('nenhuma estrelinha fica acima da tela com o jogador em pé no chão logo abaixo dela (7 capítulos)', () => {
     const fora: string[] = [];
     for (const f of CAPITULOS) {
