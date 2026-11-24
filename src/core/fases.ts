@@ -1,4 +1,7 @@
 import type { Fase } from './types';
+import { CAPITULOS } from './fases/index';
+
+export { CAPITULOS, faseDoCapitulo, type FaseCapitulo, type TemaVisual } from './fases/index';
 
 /** Fábrica de fase com padrões (placas/portas vazias, fundo -6, portal fora de alcance, largura pelas plataformas). */
 export function criarFase(p: Partial<Fase> & Pick<Fase, 'id' | 'plataformas'>): Fase {
@@ -101,4 +104,8 @@ export const EXEMPLO_MECANICAS: Fase = {
   ],
 };
 
-export const FASES: Record<string, Fase> = { [FLORESTA_1.id]: FLORESTA_1, [EXEMPLO_MECANICAS.id]: EXEMPLO_MECANICAS };
+/** Todas as fases por id: a de teste, a oficina de mecânicas e as dos 7 capítulos (src/core/fases/). */
+export const FASES: Record<string, Fase> = {
+  [FLORESTA_1.id]: FLORESTA_1, [EXEMPLO_MECANICAS.id]: EXEMPLO_MECANICAS,
+  ...Object.fromEntries(CAPITULOS.map((f) => [f.id, f])),
+};
