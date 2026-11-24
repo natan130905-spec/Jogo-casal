@@ -227,7 +227,7 @@ export const puxar = (): Passo[] => [darImpulso(), esperar((c) => c.outro.noChao
 /** Carona na plataforma especial k: espera em `espera`; quando o canto esquerdo dela está em `xEmbarque`, sobe
  *  (pulando, se `pular`), fica em pé (a `dx` do meio) até o canto chegar em `xDesce` (ou `desce(c)`), e anda até
  *  `saida`. Se cair, volta a esperar. */
-export function carona(k: number, espera: number, xEmbarque: number | ((c: Ctx) => boolean), xDesce: number | ((c: Ctx) => boolean), saida: number, o: { dx?: number; pular?: boolean; tol?: number } = {}): Passo {
+export function carona(k: number, espera: number, xEmbarque: number | ((c: Ctx) => boolean), xDesce: number | ((c: Ctx) => boolean), saida: number, o: { dx?: number; pular?: boolean; tol?: number; parceiro?: number } = {}): Passo {
   const andarEspera = ir(espera), andarSaida = ir(saida);
   return {
     nome: `carona(${k})`,
@@ -246,8 +246,12 @@ export function carona(k: number, espera: number, xEmbarque: number | ((c: Ctx) 
           if (r !== null) return r;
           m.fase = 1; continue;
         }
-        if (fase === 1) { // esperar a plataforma
-          const pode = typeof xEmbarque === 'number' ? Math.abs(s.x - xEmbarque) <= (o.tol ?? 0.25) : xEmbarque(c);
+        if (fase === 1) { // esperar a plataforma (indo embora não: quem está mais atrás não a alcança e cai no vão)
+          const vem = m.sxAnt !== undefined && (s.x - m.sxAnt) * (s.x + d.w / 2 - c.eu.x) <= 1e-6;
+          m.sxAnt = s.x;
+          // `parceiro`: só embarca com o parceiro já no ponto de espera dele (o fio não deixa um ficar para trás)
+          const pronto = o.parceiro === undefined || typeof xEmbarque !== 'number' || (c.outro.noChao && Math.abs(c.outro.x - o.parceiro) < 0.2);
+          const pode = (typeof xEmbarque === 'number' ? Math.abs(s.x - xEmbarque) <= (o.tol ?? 0.25) && vem : xEmbarque(c)) && pronto;
           if (pode && s.ativa) { m.fase = 2; m.t2 = 0; continue; }
           return { x: guiar(c.eu, espera) };
         }
