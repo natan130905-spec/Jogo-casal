@@ -54,7 +54,7 @@ export function vagalumes(n: number, largura: number, rnd: () => number, mapa: T
   g.setAttribute('semente', new THREE.BufferAttribute(sem, 3));
   const [u0, v0, u1, v1] = uvCelula('estrela');
   const mat = new THREE.ShaderMaterial({
-    uniforms: { uTempo: TEMPO, uAltura: { value: 800 }, uCorA: { value: new THREE.Color().setHex(cores[0], THREE.LinearSRGBColorSpace) }, uCorB: { value: new THREE.Color().setHex(cores[1], THREE.LinearSRGBColorSpace) }, uMapa: { value: mapa }, uCel: { value: new THREE.Vector4(u0, v0, u1 - u0, v1 - v0) } },
+    uniforms: { uTempo: TEMPO, uAltura: { value: 800 }, uCorA: { value: new THREE.Color().setHex(cores[0]) }, uCorB: { value: new THREE.Color().setHex(cores[1]) }, uMapa: { value: mapa }, uCel: { value: new THREE.Vector4(u0, v0, u1 - u0, v1 - v0) } },
     vertexShader: /* glsl */ `
       attribute vec3 semente; uniform float uTempo; uniform float uAltura; uniform vec3 uCorA, uCorB; varying float vBrilho; varying vec3 vCor;
       void main(){

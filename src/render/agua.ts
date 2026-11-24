@@ -48,13 +48,14 @@ export function cascatas(lista: Cascata[]): THREE.Mesh {
         float a1 = aRuido(vec2(vP.x * 7.0, corre)), a2 = aRuido(vec2(vP.x * 15.0 + 3.0, corre * 1.7 + 5.0));
         float listra = smoothstep(0.45, 0.9, a1 * 0.6 + a2 * 0.4);
         vec3 fundo = mix(vec3(0.20, 0.55, 0.95), vec3(0.55, 0.85, 1.0), a1);
-        vec3 c = mix(fundo, vec3(1.0, 0.98, 0.95), listra * 0.85);
+        vec3 c = mix(fundo, vec3(0.92, 0.94, 0.95), listra * 0.75);
         float borda = smoothstep(0.0, 0.18, vUv.x) * smoothstep(1.0, 0.82, vUv.x);
         float espuma = smoothstep(0.12, 0.0, vUv.y);
-        c = mix(c, vec3(1.0), espuma * 0.8);
+        c = mix(c, vec3(0.93), espuma * 0.8);
         c += vec3(1.0, 0.85, 0.6) * 0.25 * smoothstep(0.9, 1.0, vUv.y); // luz do sol na borda de cima
         float alfa = borda * (0.72 + 0.28 * listra) * smoothstep(1.0, 0.97, vUv.y);
         gl_FragColor = vec4(c, alfa);
+        #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
     transparent: true, depthWrite: false, side: THREE.DoubleSide,
@@ -71,7 +72,7 @@ export function lago(y: number, x0: number, x1: number, corNevoa: THREE.Color, c
   g.rotateX(-Math.PI / 2);
   g.translate((x0 + x1) / 2, y, -14);
   const mat = new THREE.ShaderMaterial({
-    uniforms: { uTempo: TEMPO, uNevoa: { value: corNevoa }, uPerto: { value: new THREE.Color().setHex(cores[0], THREE.LinearSRGBColorSpace) }, uLonge: { value: new THREE.Color().setHex(cores[1], THREE.LinearSRGBColorSpace) } },
+    uniforms: { uTempo: TEMPO, uNevoa: { value: corNevoa }, uPerto: { value: new THREE.Color().setHex(cores[0]) }, uLonge: { value: new THREE.Color().setHex(cores[1]) } },
     vertexShader: /* glsl */ `varying vec3 vP; varying float vDist;
       void main(){ vP = (modelMatrix * vec4(position,1.0)).xyz; vec4 mv = viewMatrix * vec4(vP,1.0); vDist = -mv.z; gl_Position = projectionMatrix * mv; }`,
     fragmentShader: /* glsl */ `uniform float uTempo; uniform vec3 uNevoa, uPerto, uLonge; varying vec3 vP; varying float vDist; ${RUIDO2}
@@ -85,6 +86,7 @@ export function lago(y: number, x0: number, x1: number, corNevoa: THREE.Color, c
         c += vec3(1.0, 0.82, 0.45) * faisca * 1.2;
         c = mix(c, uNevoa, smoothstep(14.0, 60.0, vDist) * 0.85);
         gl_FragColor = vec4(c, 1.0);
+        #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
   });
