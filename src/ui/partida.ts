@@ -29,12 +29,13 @@ export interface OpcoesPartida {
   aoSumir?: (on: boolean) => void;
 }
 
-/** anfitrião: a última entrada do convidado vale no máximo este número de ticks sem entrada nova (250 ms); depois
- *  vira neutra (a página dele congelou, o app foi para segundo plano sem avisar). Contado em ticks de jogo, e não em
- *  ms reais, para não soltar o joystick à toa num aparelho lento que manda as entradas em lotes. */
-export const TICKS_ENTRADA_VALIDA = 15;
+/** anfitrião: a última entrada do convidado vale no máximo este número de ticks sem entrada nova (100 ms); depois
+ *  vira neutra (a página dele congelou, o app foi para segundo plano sem avisar). Com a fila de até 6 entradas
+ *  (MAX_FILA) e os 6 ticks que a Bruna leva para frear de 5,2 m/s, ela para em ≤ 18 ticks (0,3 s) depois da última
+ *  mensagem. Contado em ticks de jogo, e não em ms reais: num aparelho lento os dois lados andam no mesmo ritmo. */
+export const TICKS_ENTRADA_VALIDA = 6;
 /** sem nada do outro aparelho por este tempo, com o jogo rodando: pausa com "… saiu do jogo" */
-export const SUMIDO_MS = 2000;
+export const SUMIDO_MS = 1500;
 
 const DEPURAR = new URLSearchParams(location.search).has('debug');
 
@@ -71,6 +72,8 @@ export class Partida {
   private diag: Diag | null = null;
   /** dupla: quando chegou a última mensagem de jogo do outro aparelho ('in' no anfitrião, 'st' no convidado) */
   private ultimaDoOutro = 0;
+  /** dupla: intervalo típico (média móvel, ms) entre as mensagens de jogo do outro aparelho */
+  private intervaloDoOutro = 50;
   /** anfitrião: ticks seguidos sem entrada nova do convidado */
   private semEntrada = 0;
   private sumido = false;
@@ -133,6 +136,8 @@ export class Partida {
         return true;
       },
       contagem: () => ({ ...this.contagem }),
+      /** dupla: intervalo típico (ms) entre as mensagens do outro aparelho e o prazo para "saiu do jogo" (R26) */
+      sumico: () => ({ intervalo: this.intervaloDoOutro, prazo: Math.max(SUMIDO_MS, 8 * this.intervaloDoOutro) }),
       /** ?diag=1: custo do painel por quadro (ms) e o relatório que o botão "Copiar" manda */
       diag: () => (this.diag ? { ...this.diag.custo(), gpu: this.diag.gpu, relatorio: this.diag.relatorio() } : null),
       /** programas de shader vivos (nome e começo da chave): para achar compilação no meio do jogo (R38) */
@@ -167,7 +172,9 @@ export class Partida {
 
   /** chegou mensagem de jogo do outro aparelho */
   private voltou() {
-    this.ultimaDoOutro = performance.now();
+    const t = performance.now();
+    if (this.ultimaDoOutro && !this.pausada) this.intervaloDoOutro += (Math.min(5000, t - this.ultimaDoOutro) - this.intervaloDoOutro) * 0.1;
+    this.ultimaDoOutro = t;
     if (this.sumido) { this.sumido = false; this.o.aoSumir?.(false); }
   }
 
@@ -260,7 +267,9 @@ export class Partida {
     }
 
     // dupla: o outro aparelho sumiu (página congelada, app em segundo plano sem aviso, sinal ruim)?
-    if (o.modo !== 'treino' && !this.pausada && !this.sumido && this.ultimaDoOutro && agora - this.ultimaDoOutro > SUMIDO_MS) {
+    // o prazo cresce se o outro aparelho já vinha mandando devagar (aparelho muito lento, máquina de teste sem GPU):
+    // assim só a parada de verdade pausa; acima de 7 s a rede declara a conexão caída
+    if (o.modo !== 'treino' && !this.pausada && !this.sumido && this.ultimaDoOutro && agora - this.ultimaDoOutro > Math.max(SUMIDO_MS, 8 * this.intervaloDoOutro)) {
       this.sumido = true;
       o.aoSumir?.(true);
     }
