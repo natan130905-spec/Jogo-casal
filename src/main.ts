@@ -15,6 +15,7 @@ import {
   carregarProgresso, concluido, estrelinhasTotais, liberado, limparProgresso, pedacos, proximoCapitulo, registrar,
   salvarProgresso, TOTAL_CAPITULOS, type Progresso,
 } from './ui/progresso';
+import { deveAvisarTelaDeInicio, infoDoNavegador } from './ui/plataforma';
 import { som } from './ui/som';
 import { $, Hud, Mapa, mostrarCaiu, mostrarConcluido, mostrarCreditos, mostrarPausa, mostrarTela, Quadrinhos, comConfirmacao, tocavel } from './ui/telas';
 
@@ -419,6 +420,20 @@ addEventListener('keydown', (e) => {
     acao('avancar');
   }
 });
+// iPhone no Safari: sem tela cheia (não há Fullscreen API); uma vez, ensina a abrir pelo ícone da Tela de Início (R31)
+{
+  const CHAVE_IOS = 'edm-aviso-ios';
+  let jaViu = false;
+  try { jaViu = localStorage.getItem(CHAVE_IOS) === '1'; } catch { /* sem armazenamento */ }
+  if (deveAvisarTelaDeInicio(infoDoNavegador(), jaViu)) {
+    $('#aviso-ios').hidden = false;
+    tocavel($('#bt-aviso-ios'));
+    $('#bt-aviso-ios').onclick = () => {
+      $('#aviso-ios').hidden = true;
+      try { localStorage.setItem(CHAVE_IOS, '1'); } catch { /* sem armazenamento */ }
+    };
+  }
+}
 const salaUrl = params.get('sala');
 if (salaUrl) $<HTMLInputElement>('#codigo').value = normalizarCodigo(salaUrl);
 

@@ -168,11 +168,11 @@ body.jogando #ceu { display: none; }
 .hud-cap.some { opacity: 0; }
 body:not(.depurar) .hud-info { display: none; }
 #controles { position: absolute; inset: 0; pointer-events: none; }
-#joystick { position: absolute; left: max(4vw, env(safe-area-inset-left)); bottom: 6vh; width: min(36vh, 170px); aspect-ratio: 1; border-radius: 50%;
+#joystick { position: absolute; left: max(4vw, env(safe-area-inset-left)); bottom: calc(6vh + env(safe-area-inset-bottom)); width: min(36vh, 170px); aspect-ratio: 1; border-radius: 50%;
   background: #1a124038; border: 2px solid #ffffff66; pointer-events: auto; display: grid; place-items: center; touch-action: none; }
 #joystick .bola { width: 42%; aspect-ratio: 1; border-radius: 50%; background: #ffffffcc; transition: transform 0.05s; }
 /* ⬆ grande no canto; ✨ à esquerda dele; ✋ acima dele (como no conceito) */
-#botoes { position: absolute; right: max(3vw, env(safe-area-inset-right)); bottom: 5vh; width: min(52vh, 250px); aspect-ratio: 1.1; pointer-events: none; }
+#botoes { position: absolute; right: max(3vw, env(safe-area-inset-right)); bottom: calc(5vh + env(safe-area-inset-bottom)); width: min(52vh, 250px); aspect-ratio: 1.1; pointer-events: none; }
 #botoes button { position: absolute; aspect-ratio: 1; border-radius: 50%; padding: 0; background: #1a12404d; color: #fff; pointer-events: auto; text-shadow: 0 1px 3px #0009;
   border: 2px solid #ffffff77; box-shadow: none; touch-action: none; display: grid; place-items: center; }
 #bt-pulo { right: 0; bottom: 0; width: 46%; font-size: min(9vh, 40px); }
@@ -210,6 +210,11 @@ button.confirmar { background: #ff8fb8 !important; color: #3a0f22 !important; bo
 #pausa { pointer-events: none; }
 #pausa .cartao { pointer-events: auto; }
 .dica-teclas { margin: 0; font-size: 11px; opacity: .6; }
+
+/* ---------- aviso do iPhone (R31) ---------- */
+#aviso-ios { z-index: 40; }
+.aviso-ios-passos { margin: 0; font-size: 16px; line-height: 1.4; }
+.ic-compartilhar { width: 1.25em; height: 1.25em; vertical-align: -0.25em; color: #7fc4ff; }
 
 /* ---------- carregamento da fase (R33) ---------- */
 #carregando { z-index: 30; background: radial-gradient(circle at 50% 40%, #3a2770, #150e30); backdrop-filter: none; }
@@ -259,12 +264,12 @@ button.confirmar { background: #ff8fb8 !important; color: #3a0f22 !important; bo
 #controles-arena { position: absolute; inset: 0; pointer-events: none; }
 /* joystick: a área de toque é a metade esquerda de baixo; a base aparece no canto e vai até o polegar */
 #controles-arena .joy { position: absolute; left: 0; bottom: 0; width: 42vw; height: 62vh; pointer-events: auto; touch-action: none; }
-#controles-arena .base { position: absolute; left: max(5vw, env(safe-area-inset-left)); bottom: 7vh; width: min(36vh, 170px); aspect-ratio: 1; border-radius: 50%;
+#controles-arena .base { position: absolute; left: max(5vw, env(safe-area-inset-left)); bottom: calc(7vh + env(safe-area-inset-bottom)); width: min(36vh, 170px); aspect-ratio: 1; border-radius: 50%;
   background: #1a124048; border: 2px solid #ffffff77; display: grid; place-items: center; }
 #controles-arena .joy.ativo .base { background: #1a124070; }
 #controles-arena .bola { width: 42%; aspect-ratio: 1; border-radius: 50%; background: #ffffffcc; box-shadow: 0 2px 6px #0006; transition: transform 0.04s; }
 /* ⚔ grande sob o polegar; ✨ à esquerda; ⬆ em cima; ↻ na diagonal; ★ mais acima à esquerda (com a barra em volta) */
-#controles-arena .acoes { position: absolute; right: max(2.5vw, env(safe-area-inset-right)); bottom: 4vh; width: min(66vh, 320px); aspect-ratio: 1; pointer-events: none; }
+#controles-arena .acoes { position: absolute; right: max(2.5vw, env(safe-area-inset-right)); bottom: calc(4vh + env(safe-area-inset-bottom)); width: min(66vh, 320px); aspect-ratio: 1; pointer-events: none; }
 #controles-arena .acoes button { position: absolute; aspect-ratio: 1; border-radius: 50%; padding: 0; color: #fff; pointer-events: auto; touch-action: none;
   background: #1a12405a; border: 2px solid #ffffff88; box-shadow: none; text-shadow: 0 1px 3px #0009; display: grid; place-items: center; line-height: 1; }
 #controles-arena .acoes button.ativo { background: #ffcf6b88; transform: scale(.93); }
