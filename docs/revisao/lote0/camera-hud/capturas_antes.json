@@ -1,0 +1,320 @@
+{
+ "raiz": "/tmp/claude-0/-home-user/4df67907-61d5-56a8-8a1b-9b2931d26ee1/scratchpad/wt-antes",
+ "rotulo": "antes",
+ "quando": "2026-11-24T05:03:23.702Z",
+ "pontos": [
+  0.12,
+  0.5
+ ],
+ "arquivos": [
+  {
+   "arquivo": "cap1_media_844x390@1_p012.png",
+   "cap": 1,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.12,
+   "tick": 581,
+   "j": [
+    [
+     31.41,
+     0
+    ],
+    [
+     30.01,
+     0
+    ]
+   ],
+   "info": {
+    "chamadas": 29,
+    "triangulos": 49819
+   }
+  },
+  {
+   "arquivo": "cap1_media_844x390@1_p05.png",
+   "cap": 1,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.5,
+   "tick": 2107,
+   "j": [
+    [
+     85.08,
+     2
+    ],
+    [
+     84.16,
+     3
+    ]
+   ],
+   "info": {
+    "chamadas": 28,
+    "triangulos": 51689
+   }
+  },
+  {
+   "arquivo": "cap2_media_844x390@1_p012.png",
+   "cap": 2,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.12,
+   "tick": 610,
+   "j": [
+    [
+     35.39,
+     0
+    ],
+    [
+     34,
+     0.8
+    ]
+   ],
+   "info": {
+    "chamadas": 33,
+    "triangulos": 205617
+   }
+  },
+  {
+   "arquivo": "cap2_media_844x390@1_p05.png",
+   "cap": 2,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.5,
+   "tick": 2194,
+   "j": [
+    [
+     93.81,
+     0
+    ],
+    [
+     92.85,
+     0
+    ]
+   ],
+   "info": {
+    "chamadas": 29,
+    "triangulos": 166883
+   }
+  },
+  {
+   "arquivo": "cap3_media_844x390@1_p012.png",
+   "cap": 3,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.12,
+   "tick": 984,
+   "j": [
+    [
+     37.4,
+     0
+    ],
+    [
+     36.91,
+     0
+    ]
+   ],
+   "info": {
+    "chamadas": 33,
+    "triangulos": 91598
+   }
+  },
+  {
+   "arquivo": "cap3_media_844x390@1_p05.png",
+   "cap": 3,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.5,
+   "tick": 3777,
+   "j": [
+    [
+     110.1,
+     0.6
+    ],
+    [
+     109.61,
+     0.6
+    ]
+   ],
+   "info": {
+    "chamadas": 35,
+    "triangulos": 100862
+   }
+  },
+  {
+   "arquivo": "cap4_media_844x390@1_p012.png",
+   "cap": 4,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.12,
+   "tick": 783,
+   "j": [
+    [
+     39.41,
+     0
+    ],
+    [
+     38.9,
+     0
+    ]
+   ],
+   "info": {
+    "chamadas": 29,
+    "triangulos": 77356
+   }
+  },
+  {
+   "arquivo": "cap4_media_844x390@1_p05.png",
+   "cap": 4,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.5,
+   "tick": 2913,
+   "j": [
+    [
+     103.31,
+     0
+    ],
+    [
+     102.71,
+     0
+    ]
+   ],
+   "info": {
+    "chamadas": 28,
+    "triangulos": 76834
+   }
+  },
+  {
+   "arquivo": "cap5_media_844x390@1_p012.png",
+   "cap": 5,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.12,
+   "tick": 638,
+   "j": [
+    [
+     37.11,
+     0
+    ],
+    [
+     35.72,
+     0
+    ]
+   ],
+   "info": {
+    "chamadas": 31,
+    "triangulos": 84830
+   }
+  },
+  {
+   "arquivo": "cap5_media_844x390@1_p05.png",
+   "cap": 5,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.5,
+   "tick": 2309,
+   "j": [
+    [
+     116.8,
+     2.5
+    ],
+    [
+     103.5,
+     2.5
+    ]
+   ],
+   "info": {
+    "chamadas": 37,
+    "triangulos": 95270
+   }
+  },
+  {
+   "arquivo": "cap6_media_844x390@1_p012.png",
+   "cap": 6,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.12,
+   "tick": 495,
+   "j": [
+    [
+     28.49,
+     4.6
+    ],
+    [
+     32.36,
+     0
+    ]
+   ],
+   "info": {
+    "chamadas": 34,
+    "triangulos": 68538
+   }
+  },
+  {
+   "arquivo": "cap6_media_844x390@1_p05.png",
+   "cap": 6,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.5,
+   "tick": 1733,
+   "j": [
+    [
+     100.31,
+     0
+    ],
+    [
+     97.39,
+     5
+    ]
+   ],
+   "info": {
+    "chamadas": 33,
+    "triangulos": 68568
+   }
+  },
+  {
+   "arquivo": "cap7_media_844x390@1_p012.png",
+   "cap": 7,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.12,
+   "tick": 754,
+   "j": [
+    [
+     38.26,
+     0.95
+    ],
+    [
+     37.36,
+     0.95
+    ]
+   ],
+   "info": {
+    "chamadas": 31,
+    "triangulos": 69799
+   }
+  },
+  {
+   "arquivo": "cap7_media_844x390@1_p05.png",
+   "cap": 7,
+   "q": "media",
+   "tam": "844x390@1",
+   "ponto": 0.5,
+   "tick": 2770,
+   "j": [
+    [
+     123.16,
+     4.4
+    ],
+    [
+     122.42,
+     4.4
+    ]
+   ],
+   "info": {
+    "chamadas": 32,
+    "triangulos": 79829
+   }
+  }
+ ],
+ "erros": []
+}
