@@ -83,10 +83,15 @@ await A.screenshot({ path: saida + 'A_inicio.png' }); await B.screenshot({ path:
 
 // B (P2) anda para a direita pelo teclado; A deve ver o P2 andar
 const xP2 = async (p) => p.evaluate(() => window.__edm?.estado().jogadores[1].x);
-const antes = await xP2(A);
-await B.keyboard.down('ArrowRight'); await pausa(1200); await B.keyboard.up('ArrowRight'); await pausa(400);
+const tickA = async () => A.evaluate(() => window.__edm?.estado().tick);
+const antes = await xP2(A), t0P2 = await tickA();
+await B.keyboard.down('ArrowRight'); await pausa(1200);
+const t1P2 = await tickA(); await B.keyboard.up('ArrowRight'); await pausa(400);
 const depois = await xP2(A);
-checar(depois - antes > 3, `P2 andou no anfitrião: ${antes?.toFixed(2)} → ${depois?.toFixed(2)}`);
+// em ticks de jogo, não em ms reais: sem GPU e com a máquina carregada o anfitrião roda a 3–4 fps e cada quadro anda
+// no máximo 0,1 s de jogo, então 1,2 s reais podem ser só 0,5 s de jogo (5,2 m/s × 0,5 s = 2,6 m)
+const esperado = 5.2 * ((t1P2 - t0P2) / 60);
+checar(depois - antes > Math.min(3, 0.6 * esperado) && depois - antes > 1, `P2 andou no anfitrião: ${antes?.toFixed(2)} → ${depois?.toFixed(2)} (${t1P2 - t0P2} ticks com a tecla, esperado ≥ ${Math.min(3, 0.6 * esperado).toFixed(2)} m)`);
 // o convidado mostra o passado recente (interpolação de 100 ms + rede): espera assentar até 3 s
 let xEmB = NaN, xEmA = depois;
 for (let k = 0; k < 15; k++) {
