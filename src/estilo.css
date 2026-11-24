@@ -212,8 +212,11 @@ button.confirmar { background: #ff8fb8 !important; color: #3a0f22 !important; bo
 .dica-teclas { margin: 0; font-size: 11px; opacity: .6; }
 
 /* ---------- aviso do iPhone (R31) ---------- */
-#aviso-ios { z-index: 40; }
-.aviso-ios-passos { margin: 0; font-size: 16px; line-height: 1.4; }
+#aviso-ios { position: fixed; z-index: 40; bottom: max(6px, env(safe-area-inset-bottom)); left: max(8px, env(safe-area-inset-left)); width: min(44vw, 400px); }
+#aviso-ios[hidden] { display: none; }
+#aviso-ios .cartao { width: 100%; gap: 4px; padding: 8px 12px; border-radius: 14px; }
+#aviso-ios .cartao button { align-self: center; }
+.aviso-ios-passos { margin: 0; font-size: 13px; line-height: 1.3; }
 .ic-compartilhar { width: 1.25em; height: 1.25em; vertical-align: -0.25em; color: #7fc4ff; }
 
 /* ---------- carregamento da fase (R33) ---------- */

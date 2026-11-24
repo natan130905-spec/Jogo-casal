@@ -426,12 +426,12 @@ addEventListener('keydown', (e) => {
   let jaViu = false;
   try { jaViu = localStorage.getItem(CHAVE_IOS) === '1'; } catch { /* sem armazenamento */ }
   if (deveAvisarTelaDeInicio(infoDoNavegador(), jaViu)) {
+    // faixa no alto do menu (não bloqueia os botões); conta como vista já ao aparecer e some ao sair do menu
     $('#aviso-ios').hidden = false;
+    try { localStorage.setItem(CHAVE_IOS, '1'); } catch { /* sem armazenamento */ }
     tocavel($('#bt-aviso-ios'));
-    $('#bt-aviso-ios').onclick = () => {
-      $('#aviso-ios').hidden = true;
-      try { localStorage.setItem(CHAVE_IOS, '1'); } catch { /* sem armazenamento */ }
-    };
+    $('#bt-aviso-ios').onclick = () => { $('#aviso-ios').hidden = true; };
+    for (const id of ['#bt-criar', '#bt-entrar', '#bt-treino']) $(id).addEventListener('click', () => { $('#aviso-ios').hidden = true; });
   }
 }
 const salaUrl = params.get('sala');
