@@ -166,10 +166,11 @@ export class Efeitos {
       if (hs.length && hs[0].p.distanceTo(h.ponta) > 1.2) hs.length = 0;
       if (h.rastro > 0.05) hs.unshift({ b: h.base.clone(), p: h.ponta.clone(), a: Math.min(1, h.rastro) });
       else if (hs.length) hs.pop();
-      while (hs.length > 8) hs.pop();
+      while (hs.length > 12) hs.pop();
       const cor = e.jogadores[i].acao === 'poder' ? (i === 0 ? 0xffd040 : 0xff9ad8) : COR_HEROI[i];
       hs.forEach((s, k) => {
-        const a = s.a * (1 - k / hs.length) * 0.5;
+        // mais forte e mais longo que antes (0,5 e 8 seções): com a câmera atrás, o golpe se lia mal
+        const a = s.a * (1 - k / hs.length) * 0.95;
         r.secao(s.b.x, s.b.y, s.b.z, s.p.x, s.p.y, s.p.z, cor, a);
       });
       r.terminar();
@@ -280,9 +281,11 @@ export class Efeitos {
         fx.numero(dano, c.x + (Math.random() - 0.5) * 0.8, c.y + 0.6 + Math.random() * 0.5, c.z + (Math.random() - 0.5) * 0.8, origem === 'fio' ? 0xff5a6a : COR_HEROI[i], forte ? 0.95 : origem === 'tiro' ? 0.4 : 0.6);
         const h = herois[i];
         const ponto = origem === 'golpe' ? h.ponta : origem === 'tiro' ? c : c;
-        fx.explosao(ponto.x, Math.max(0.6, ponto.y), ponto.z, origem === 'tiro' ? 4 : forte ? 18 : 10, origem === 'tiro' ? 0xfff0c0 : COR_HEROI[i], forte ? 7 : 4, forte ? 0.35 : 0.28, 0.5, C.brilho, 3);
-        if (origem !== 'tiro') fx.emitir({ x: ponto.x, y: Math.max(0.6, ponto.y), z: ponto.z, vida: 0.22, tam: 0.6, tamFim: forte ? 4 : 2.2, cor: 0xffffff, alfa: 0.9, cel: C.anel });
-        if (forte) this.tremor = Math.max(this.tremor, 0.5);
+        fx.explosao(ponto.x, Math.max(0.6, ponto.y), ponto.z, origem === 'tiro' ? 4 : forte ? 12 : 10, origem === 'tiro' ? 0xfff0c0 : COR_HEROI[i], forte ? 6 : 4, forte ? 0.28 : 0.26, 0.45, C.brilho, 3);
+        // anel do impacto na cor de quem acertou, menor e mais transparente (antes: branco, 0,9 e até 4 m, que perto do
+        // Rei tapava a tela num clarão de ~0,3 s)
+        if (origem !== 'tiro') fx.emitir({ x: ponto.x, y: Math.max(0.6, ponto.y), z: ponto.z, vida: 0.18, tam: 0.5, tamFim: forte ? 2.4 : 1.5, cor: origem === 'fio' ? 0xff5a6a : COR_HEROI[i], alfa: forte ? 0.45 : 0.55, cel: C.anel });
+        if (forte) this.tremor = Math.max(this.tremor, 0.35);
         break;
       }
       case 'defendeu': {
@@ -320,12 +323,14 @@ export class Efeitos {
         break;
       }
       case 'fio-vermelho': {
+        // suave: vermelho e corações, sem véu claro na tela. Antes: 2 anéis aditivos de 5–7 m (um quase branco) e
+        // 24 brilhos grandes no peito do Rei; com a câmera perto, a tela clareava ~0,3 s.
         this.tFio = 0;
-        this.tremor = 1;
+        this.tremor = Math.max(this.tremor, 0.6);
         const c = rei.peito;
-        fx.explosao(c.x, c.y, c.z, 24, 0xff3a4a, 8, 0.4, 0.9, C.brilho, 3);
+        fx.explosao(c.x, c.y, c.z, 14, 0xff3a4a, 6, 0.3, 0.7, C.brilho, 3);
         fx.explosao(c.x, c.y, c.z, 14, 0xff6a8a, 5, 0.4, 1.1, C.coracao, 2);
-        for (let k = 0; k < 2; k++) fx.emitir({ x: c.x, y: c.y, z: c.z, vida: 0.5 + k * 0.15, tam: 1, tamFim: 5 + k * 2, cor: k === 1 ? 0xffc0c8 : 0xff3a4a, alfa: 0.5, cel: C.anel });
+        fx.emitir({ x: c.x, y: c.y, z: c.z, vida: 0.45, tam: 1, tamFim: 3.2, cor: 0xff3a4a, alfa: 0.35, cel: C.anel });
         break;
       }
       case 'dano': {

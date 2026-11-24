@@ -75,7 +75,7 @@ export interface OpcoesToon {
 export const BALANCO_GLSL = 'transformed.y += step(0.5, balanco) * sin(uTempo * 0.55 + balanco * 1.9) * 0.45;';
 
 /** Uniforms que a cena muda por objeto: clarão de acerto (0…1) e a cor de borda. */
-export interface UniformsToon { uProprio: { value: number }; uClarao: { value: number }; uBorda: { value: THREE.Color }; uTinta: { value: THREE.Color } }
+export interface UniformsToon { uProprio: { value: number }; uClarao: { value: number }; uCorClarao: { value: THREE.Color }; uBorda: { value: THREE.Color }; uTinta: { value: THREE.Color } }
 
 export function materialToon(o: OpcoesToon = {}): THREE.MeshToonMaterial & { userData: { u: UniformsToon } } {
   const mat = new THREE.MeshToonMaterial({
@@ -88,6 +88,7 @@ export function materialToon(o: OpcoesToon = {}): THREE.MeshToonMaterial & { use
   const u: UniformsToon = {
     uProprio: { value: o.proprio ?? 0 },
     uClarao: { value: 0 },
+    uCorClarao: { value: new THREE.Color(1, 0.97, 0.9) },
     uBorda: { value: new THREE.Color(o.borda ?? 0xffd9a0).multiplyScalar(o.forcaBorda ?? 0.35) },
     uTinta: { value: new THREE.Color(1, 1, 1) },
   };
@@ -101,7 +102,7 @@ export function materialToon(o: OpcoesToon = {}): THREE.MeshToonMaterial & { use
         .replace('#include <begin_vertex>', `#include <begin_vertex>\n${BALANCO_GLSL}`);
     }
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform float uClarao, uProprio; uniform vec3 uBorda; uniform vec3 uTinta;')
+      .replace('#include <common>', '#include <common>\nuniform float uClarao, uProprio; uniform vec3 uBorda; uniform vec3 uTinta; uniform vec3 uCorClarao;')
       // luz própria = a própria cor (textura × vértice), sem lavar de branco
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += diffuseColor.rgb * uProprio;')
       .replace('#include <opaque_fragment>', `{
@@ -109,7 +110,7 @@ export function materialToon(o: OpcoesToon = {}): THREE.MeshToonMaterial & { use
   float fr = 1.0 - clamp(dot(normal, vd), 0.0, 1.0);
   outgoingLight += uBorda * smoothstep(0.55, 0.62, fr);
   outgoingLight *= uTinta;
-  outgoingLight = mix(outgoingLight, vec3(1.0, 0.97, 0.9), uClarao);
+  outgoingLight = mix(outgoingLight, uCorClarao, uClarao);
 }
 #include <opaque_fragment>`);
     if (o.recorte) comRecorte(sh);

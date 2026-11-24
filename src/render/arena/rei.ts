@@ -1,6 +1,6 @@
 // O Rei-Pesadelo na arena: rei.glb (toon + contorno) com animação procedural — respira, inclina para quem mira,
 // cresce no rugido de troca de fase, ergue-se e bate na pancada, estufa nos esporos, abaixa e dispara na
-// investida, cambaleia atordoado (estrelinhas), pisca branco ao levar dano. Névoa em volta (partículas), escudo de
+// investida, cambaleia atordoado (estrelinhas), pisca rápido na cor de quem acertou ao levar dano. Névoa em volta (partículas), escudo de
 // névoa na fase 2 (bolha com redemoinho que estilhaça), estrela do peito acesa quando vulnerável, e no fim encolhe e
 // vira vaga-lume. Chamadas: corpo (1) + contorno (1) + estrela (1) + escudo (1, fase 2).
 import * as THREE from 'three';
@@ -12,6 +12,9 @@ import { contornoDe, materialContorno, materialToon, type UniformsToon } from '.
 import { geometriaAssentada, primeiraMalha, texturaDe } from './modelos';
 import type { Particulas3D } from './particulas';
 import { C } from './atlas';
+
+/** cor do clarão do Rei por quem acertou (as mesmas de COR_HEROI em herois.ts: Natan dourado, Bruna rosa) */
+const COR_CLARAO = [0xffc24a, 0xff8ad0];
 
 const ALT = 3.7;
 const lim = (t: number) => Math.max(0, Math.min(1, t));
@@ -26,6 +29,7 @@ export class ReiVisual {
   private yaw = 0;
   private iniciou = false;
   private clarao = 0;
+  private corClarao = new THREE.Color(0xffb0d0);
   private tremor = 0;
   private escala = 1;
   private inclina = 0;
@@ -103,8 +107,12 @@ export class ReiVisual {
     const r = e.rei;
     for (const ev of e.eventos) {
       if (ev.startsWith('acerto-rei')) {
-        const o = ev.split(':')[2];
-        this.clarao = Math.max(this.clarao, o === 'tiro' ? 0.18 : o === 'golpe' ? 0.4 : 0.6);
+        // clarão curto (≈ 60–90 ms) e colorido: a cor de quem acertou, sem lavar o Rei de branco. Antes: branco até
+        // 0,48 e 7/s de queda; com tiros a cada 1/3 s o Rei ficava pálido, piscando o tempo todo.
+        const [, quem, o] = ev.split(':');
+        const forca = o === 'tiro' ? 0.14 : o === 'golpe' ? 0.26 : 0.34;
+        if (forca >= this.clarao) this.corClarao.setHex(o === 'fio' ? 0xff5a6a : COR_CLARAO[Number(quem)] ?? 0xffb0d0);
+        this.clarao = Math.max(this.clarao, forca);
       }
       else if (ev.startsWith('defendeu')) { this.uEscudo.uOnda.value = 1; }
       else if (ev === 'escudo-quebra') {
@@ -117,7 +125,7 @@ export class ReiVisual {
       } else if (ev === 'chefe-golpe:pancada') this.tremor = 0.6;
       else if (ev === 'atordoado') fx.explosao(r.x, ALT, r.z, 12, 0xfff0a0, 3, 0.25, 0.6, C.estrela, 4);
     }
-    this.clarao = Math.max(0, this.clarao - dt * 7);
+    this.clarao = Math.max(0, this.clarao * Math.exp(-dt * 28) - dt * 0.5);
     this.tremor = Math.max(0, this.tremor - dt * 1.5);
     this.uEscudo.uOnda.value = Math.max(0, this.uEscudo.uOnda.value - dt * 4);
 
@@ -163,10 +171,11 @@ export class ReiVisual {
     this.corpo.scale.set(this.escala * (1 - resp * 0.012) * some, this.escala * (1 + resp * 0.03) * some, this.escala * (1 - resp * 0.012) * some);
     this.raiz.visible = some > 0.01;
 
-    // cor: fase 2 mais enevoada, fase 3 mais escura; clarão branco ao levar dano
+    // cor: fase 2 mais enevoada, fase 3 mais escura; clarão curto e colorido ao levar dano
     // a estrela do peito acende quando o Rei fica exposto: escudo quebrado (fase 2) ou parede caída (fase 3)
     const vul = reiVulneravel(e) && r.fase !== 1 && r.vulneravel > 0;
-    this.u.uClarao.value = this.clarao * 0.8;
+    this.u.uClarao.value = this.clarao;
+    this.u.uCorClarao.value.copy(this.corClarao);
     if (r.fase === 3 && e.parede !== 0) this.u.uTinta.value.setRGB(0.78, 0.7, 0.92);
     else if (r.fase === 2 && r.escudo) this.u.uTinta.value.setRGB(0.92, 0.88, 1.05);
     else this.u.uTinta.value.setRGB(1, 1, 1);

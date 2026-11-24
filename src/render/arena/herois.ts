@@ -403,7 +403,7 @@ export class Heroi {
     if (this.armaMat?.userData.u) {
       const u = this.armaMat.userData.u;
       const cheio = j.poder >= PODER.max;
-      u.uClarao.value = j.acao === 'poder' ? 0.55 : cheio ? 0.15 + 0.15 * Math.sin(t * 8) : this.rastro > 0.5 ? 0.15 : 0;
+      u.uClarao.value = j.acao === 'poder' ? 0.3 : cheio ? 0.15 + 0.15 * Math.sin(t * 8) : this.rastro > 0.5 ? 0.15 : 0;
     }
     void fx;
   }
