@@ -10,6 +10,7 @@ import { Cena, type Qualidade } from '../render/cena';
 import { DIAG, criarDiag, type Diag } from './diag';
 import { faseDoCap } from './historia';
 import { IndicadorParceiro } from './indicador';
+import { Baloes } from './baloes';
 import { som } from './som';
 import { Limitador, metaDeFps } from './ritmo';
 import { $, Hud, mostrarCarregando, mostrarTela, quadroPintado, type Carga } from './telas';
@@ -68,6 +69,8 @@ export class Partida {
   /** gancho de teste (anfitrião/treino): posições [x0, y0, x1, y1] dos últimos 512 ticks, para conferir a sincronia */
   private historico = new Float32Array(512 * 4);
   private indicador: IndicadorParceiro;
+  /** balões de fala e dicas (src/ui/baloes.ts; L8a) */
+  private baloes: Baloes | null = null;
   /** painel ?diag=1 (src/ui/diag.ts) */
   private diag: Diag | null = null;
   /** dupla: quando chegou a última mensagem de jogo do outro aparelho ('in' no anfitrião, 'st' no convidado) */
@@ -76,6 +79,9 @@ export class Partida {
   private intervaloDoOutro = 50;
   /** gancho de teste: tick do anfitrião quando chegou a última mensagem do outro */
   private tickUltimaDoOutro = 0;
+  /** mensagens de jogo recebidas do outro: o prazo de "saiu" só vale depois de 10 (o intervalo típico começando a ser aprendido;
+   *  o começo da fase tem quadros longos de carga e compilação) */
+  private recebidas = 0;
   /** anfitrião: ticks seguidos sem entrada nova do convidado */
   private semEntrada = 0;
   private sumido = false;
@@ -119,6 +125,7 @@ export class Partida {
     if (!ok || !this.vivo) return;
     this.controles = new Controles($('#controles'));
     if (DIAG) this.diag = criarDiag(cena.renderer);
+    this.baloes = new Baloes(this.fase, o.cap);
     // cada celular segue o próprio personagem; no treino, o controlado (⇄ troca a câmera junto)
     const seguir = () => { cena.seguir(this.euControlo); this.indicador.configurar(this.euControlo); };
     seguir();
@@ -154,6 +161,9 @@ export class Partida {
         const k = (t % 512) * 4, h = this.historico;
         return [[h[k], h[k + 1]], [h[k + 2], h[k + 3]]];
       },
+      /** balões: opção, os que estão na tela (retângulos), os que já saíram e os obstáculos medidos */
+      baloes: () => this.baloes?.medidas() ?? null,
+      baloesLugares: (a: Parameters<Baloes['testarLugares']>[0]) => this.baloes?.testarLugares(a) ?? null,
       acelerar: (k: number) => { this.aceleracao = Math.max(1, Math.min(60, Math.round(k) || 1)); },
     };
     this.carga.terminar();
@@ -180,6 +190,7 @@ export class Partida {
     if (this.ultimaDoOutro && !this.pausada) this.intervaloDoOutro += (Math.min(5000, t - this.ultimaDoOutro) - this.intervaloDoOutro) * 0.1;
     this.ultimaDoOutro = t;
     this.tickUltimaDoOutro = this.estado.tick;
+    this.recebidas++;
     if (this.sumido) { this.sumido = false; this.o.aoSumir?.(false); }
   }
 
@@ -202,6 +213,7 @@ export class Partida {
     this.vivo = false;
     removeEventListener('resize', this.ajustar);
     this.indicador.esconder();
+    this.baloes?.destruir();
     this.carga.esconder();
     this.diag?.destruir();
     this.controles?.destruir();
@@ -278,7 +290,7 @@ export class Partida {
     // dupla: o outro aparelho sumiu (página congelada, app em segundo plano sem aviso, sinal ruim)?
     // o prazo cresce se o outro aparelho já vinha mandando devagar (aparelho muito lento, máquina de teste sem GPU):
     // assim só a parada de verdade pausa; acima de 7 s a rede declara a conexão caída
-    if (o.modo !== 'treino' && !this.pausada && !this.sumido && this.ultimaDoOutro && agora - this.ultimaDoOutro > Math.max(SUMIDO_MS, 8 * this.intervaloDoOutro)) {
+    if (o.modo !== 'treino' && !this.pausada && !this.sumido && this.recebidas >= 10 && agora - this.ultimaDoOutro > Math.max(SUMIDO_MS, 8 * this.intervaloDoOutro)) {
       this.sumido = true;
       o.aoSumir?.(true);
     }
@@ -290,6 +302,7 @@ export class Partida {
       this.diag.quadro(agora, tDes - tSim, fim - tDes, { qualidade: o.qualidade, ping: o.con?.ping, cargaMs: this.carga.pronta - this.carga.inicio });
     }
     this.indicador.atualizar(mostrar, eventos, cena, this.pausada ? 0 : dt);
+    this.baloes?.atualizar(mostrar, eventos, cena, this.pausada ? 0 : dt);
     this.ultimo = mostrar;
     o.hud.atualizar(mostrar, eventos);
     for (const ev of eventos) { const tipo = ev.split(':')[0]; this.contagem[tipo] = (this.contagem[tipo] ?? 0) + 1; }

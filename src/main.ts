@@ -71,7 +71,7 @@ function aplicar(t: Tela) {
   atual = t;
   if (t.t !== 'fase' && partida) { partida.destruir(); partida = null; }
   if (t.t !== 'arena' && arena) { arena.destruir(); arena = null; }
-  if (!emJogo(t)) { pausado = false; anfitriaoAusente = false; mostrarPausa(false); }
+  if (!emJogo(t)) { pausado = false; anfitriaoAusente = false; mostrarPausa(false); $('#aviso').hidden = true; }
   switch (t.t) {
     case 'menu': mostrarTela('menu'); break;
     case 'cena': {
@@ -238,9 +238,14 @@ function outroSumiu(on: boolean) {
     if (on) definirPausa(true, `${quem} saiu do jogo. Esperando ${ele} voltar…`);
     else if (pausado) { quemPausou = `${quem} voltou! Toquem em Continuar.`; mostrarPausa(true, quemPausou); }
   } else if (modo === 'convidado') {
+    // o convidado não pausa sozinho (se ele parasse de mandar as entradas, o anfitrião acharia que foi ELE quem saiu):
+    // com a pausa do anfitrião, troca o texto dela; sem ela (anfitrião travado), só um aviso por cima do jogo
     anfitriaoAusente = on;
-    jogo()?.pausar(on || pausado);
-    mostrarPausa(on || pausado, on ? `${quem} saiu do jogo. Esperando ${ele} voltar…` : 'Pausado.');
+    const texto = `${quem} saiu do jogo. Esperando ${ele} voltar…`;
+    if (pausado) mostrarPausa(true, on ? texto : 'Pausado.');
+    const av = $('#aviso');
+    av.hidden = !on || pausado;
+    if (on) av.textContent = texto;
   }
 }
 
@@ -277,7 +282,11 @@ function receber(m: Mensagem) {
       else if (m.t === 'mapa') { progresso = limparProgresso(m.p); aplicar({ t: 'mapa', sel: capValido(m.sel) }); }
       else if (m.t === 'fase') aplicar({ t: 'fase', cap: capValido(m.cap) });
       else if (m.t === 'arena') aplicar({ t: 'arena' });
-      else if (m.t === 'pausa') { pausado = !!m.on; jogo()?.pausar(pausado || anfitriaoAusente); mostrarPausa((pausado || anfitriaoAusente) && emJogo(atual), 'Pausado.'); }
+      else if (m.t === 'pausa') {
+        pausado = !!m.on; jogo()?.pausar(pausado);
+        mostrarPausa(pausado && emJogo(atual), anfitriaoAusente ? 'Natan saiu do jogo. Esperando ele voltar…' : 'Pausado.');
+        if (pausado) $('#aviso').hidden = true;
+      }
       else if (m.t === 'cena') {
         const cap = capValido(m.cap), q = Math.max(0, Math.round(Number(m.quadro) || 0));
         if (m.cena === 'concluido') aplicar({ t: 'concluido', cap, est: Math.max(0, Number(m.est) || 0), total: Math.max(0, Number(m.total) || 0) });
