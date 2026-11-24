@@ -7,6 +7,7 @@ import { Controles } from '../input/controles';
 import type { Conexao, Mensagem } from '../net/rede';
 import { EntradasDoConvidado, Preditor } from '../net/predicao';
 import { Cena, type Qualidade } from '../render/cena';
+import { DIAG, criarDiag, type Diag } from './diag';
 import { faseDoCap } from './historia';
 import { IndicadorParceiro } from './indicador';
 import { som } from './som';
@@ -66,6 +67,8 @@ export class Partida {
   /** gancho de teste (anfitrião/treino): posições [x0, y0, x1, y1] dos últimos 512 ticks, para conferir a sincronia */
   private historico = new Float32Array(512 * 4);
   private indicador: IndicadorParceiro;
+  /** painel ?diag=1 (src/ui/diag.ts) */
+  private diag: Diag | null = null;
   /** dupla: quando chegou a última mensagem de jogo do outro aparelho ('in' no anfitrião, 'st' no convidado) */
   private ultimaDoOutro = 0;
   /** anfitrião: ticks seguidos sem entrada nova do convidado */
@@ -108,6 +111,7 @@ export class Partida {
     const ok = await cena.montar(this.estado, (f, etapa) => this.carga.progresso(f, etapa), () => this.vivo);
     if (!ok || !this.vivo) return;
     this.controles = new Controles($('#controles'));
+    if (DIAG) this.diag = criarDiag(cena.renderer);
     // cada celular segue o próprio personagem; no treino, o controlado (⇄ troca a câmera junto)
     const seguir = () => { cena.seguir(this.euControlo); this.indicador.configurar(this.euControlo); };
     seguir();
@@ -129,6 +133,8 @@ export class Partida {
         return true;
       },
       contagem: () => ({ ...this.contagem }),
+      /** ?diag=1: custo do painel por quadro (ms) e o relatório que o botão "Copiar" manda */
+      diag: () => (this.diag ? { ...this.diag.custo(), gpu: this.diag.gpu, relatorio: this.diag.relatorio() } : null),
       /** programas de shader vivos (nome e começo da chave): para achar compilação no meio do jogo (R38) */
       programas: (cheia = false) => (cena.renderer.info.programs ?? []).map((p) => (cheia ? `${p.name}|${p.cacheKey}` : `${p.name} ${String(p.cacheKey).slice(0, 60)}`)),
       /** convidado: medidas da predição (reconciliações, maior erro em m, saltos, entradas sem confirmação) */
@@ -183,6 +189,7 @@ export class Partida {
     removeEventListener('resize', this.ajustar);
     this.indicador.esconder();
     this.carga.esconder();
+    this.diag?.destruir();
     this.controles?.destruir();
     this.cena?.renderer.dispose();
     this.cena?.renderer.forceContextLoss();
@@ -213,6 +220,7 @@ export class Partida {
     const local = this.pausada || o.modo === 'convidado' ? INPUT_NEUTRO : controles.ler();
     let mostrar: Estado = this.estado;
     let eventos: string[] = [];
+    const tSim = this.diag ? performance.now() : 0;
 
     if (o.modo === 'convidado') {
       const proprios = this.pausada ? [] : this.preditor!.quadro(dt, () => controles.ler());
@@ -256,7 +264,12 @@ export class Partida {
       o.aoSumir?.(true);
     }
 
+    const tDes = this.diag ? performance.now() : 0;
     cena.desenhar(mostrar, this.pausada ? 0 : dt);
+    if (this.diag) {
+      const fim = performance.now();
+      this.diag.quadro(agora, tDes - tSim, fim - tDes, { qualidade: o.qualidade, ping: o.con?.ping, cargaMs: this.carga.pronta - this.carga.inicio });
+    }
     this.indicador.atualizar(mostrar, eventos, cena, this.pausada ? 0 : dt);
     this.ultimo = mostrar;
     o.hud.atualizar(mostrar, eventos);
