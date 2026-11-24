@@ -8,6 +8,8 @@ self.addEventListener('activate', (e) => e.waitUntil(caches.keys().then((ks) => 
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
+  // a configuração da rede (servidores TURN, src/net/ice.ts) sempre da rede: trocar a chave vale na hora
+  if (url.pathname.endsWith('/rede.json')) return;
   // pedidos parciais (áudio em pedaços) vão direto à rede: o cache não guarda respostas 206
   if (e.request.headers.has('range')) return;
   if (e.request.mode === 'navigate') {

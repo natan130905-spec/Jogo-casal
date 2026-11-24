@@ -1,0 +1,5 @@
+{
+  "_leia": "Servidores TURN próprios do jogo (src/net/ice.ts). Ponha em turnApi o endereço de credenciais da Metered (https://<app>.metered.live/api/v1/turn/credentials?apiKey=<chave>) ou liste em iceServers: [{\"urls\": \"turn:...\", \"username\": \"...\", \"credential\": \"...\"}]. Vazio = só STUN público.",
+  "iceServers": [],
+  "turnApi": ""
+}
