@@ -176,9 +176,10 @@ export class Partida {
 
   pausar(on: boolean) {
     this.pausada = on;
-    // ao pausar, solta tudo; ao continuar, NÃO: o polegar que voltou ao joystick durante a pausa (a sobreposta deixa
-    // o toque passar fora do cartão) já vale sem precisar levantar e tocar de novo
-    if (on) { this.controles?.limpar(); this.remota.limpar(); }
+    // ao pausar, solta os botões, mas o joystick que continua segurado segue valendo; ao continuar, nada é solto: o
+    // polegar no joystick (ou que voltou a ele durante a pausa: a sobreposta deixa o toque passar fora do cartão) já
+    // vale sem levantar e tocar de novo (R27). Pausada, a entrada local é ignorada de qualquer jeito.
+    if (on) { this.controles?.limpar({ manterJoystick: true }); this.remota.limpar(); }
     // o prazo de "sumiu" só conta com o jogo rodando e depois da primeira mensagem do outro
     if (!on && this.ultimaDoOutro) this.ultimaDoOutro = performance.now();
     this.preditor?.limpar();

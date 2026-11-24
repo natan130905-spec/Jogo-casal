@@ -51,7 +51,9 @@ export class Toque {
   }
   async baixar(id, x, y) { this.dedos.set(id, { x, y }); await this.enviar('touchStart'); }
   async mover(id, x, y) { this.dedos.set(id, { x, y }); await this.enviar('touchMove'); }
-  async soltar(id) { this.dedos.delete(id); await this.enviar('touchEnd'); }
+  // touchEnd leva SÓ o dedo que sai: mandando os que ficam, o CDP solta os que ficam e o que saiu nunca recebe
+  // pointerup (REGISTRO R71; antes daqui, "Continuar com o dedo no joystick" media o dedo errado)
+  async soltar(id) { const p = this.dedos.get(id); this.dedos.delete(id); if (p) await this.cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [{ x: p.x, y: p.y, id, radiusX: 11, radiusY: 11, force: 1 }] }); }
   async soltarTudo() { this.dedos.clear(); await this.enviar('touchEnd'); }
   async tocar(x, y, ms = 60, page = null) { await this.baixar(99, x, y); if (page) await page.waitForTimeout(ms); await this.soltar(99); }
 }

@@ -81,10 +81,14 @@ export class Controles {
   }
 
   /** Solta tudo (ao pausar ou trocar de tela) para nenhum botão ficar "preso". */
-  limpar() {
-    this.x = this.y = 0; this.pulo = this.mao = this.tiro = false; this.teclas.clear();
+  limpar(o: { manterJoystick?: boolean } = {}) {
+    this.pulo = this.mao = this.tiro = false; this.teclas.clear();
     this.bordas = { jump: false, act: false, shoot: false };
     for (const b of this.raiz.querySelectorAll('.ativo')) b.classList.remove('ativo');
+    // pausa: o polegar que continua no joystick segue valendo ao continuar (R27); se ele sair durante a pausa, o
+    // pointerup (capturado pelo joystick) zera do mesmo jeito
+    if (o.manterJoystick && this.toqueJoy !== null) return;
+    this.x = this.y = 0;
     const bola = this.raiz.querySelector<HTMLElement>('#joystick .bola');
     if (bola) bola.style.transform = '';
   }
