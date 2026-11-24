@@ -29,6 +29,7 @@ export const CAP1_BRINQUEDOS: FaseCapitulo = {
     chao(28, 64),                    // 3  corredor da caixa de brinquedos
     bloco(39.6, 3.2, 1.3, 5),        // 4  batente em cima da tampa (não dá para pular por cima)
     bloco(52, 0, 6, 2.8),            // 5  caixa alta (mãos dadas)
+    bloco(58, 0, 1.2, 1.4),          // 5b degrau do lado de lá (quem passou volta para ajudar)
     chao(72, 104),                   // 6  depois do trenzinho
     bloco(78, 0, 2, 1),              // 7  pirâmide de blocos
     bloco(80, 0, 2, 2),              // 8
@@ -49,8 +50,8 @@ export const CAP1_BRINQUEDOS: FaseCapitulo = {
     bloco(182, 0, 2, 8),             // 23 parede do fim
   ],
   placas: [
-    { id: 'placa-tampa-a', x: 37.6, y: 0, w: 1.4, h: 0.15, abre: 'tampa' },
-    { id: 'placa-tampa-b', x: 41, y: 0, w: 1.4, h: 0.15, abre: 'tampa' },
+    { id: 'placa-tampa-a', x: 35, y: 0, w: 1.4, h: 0.15, abre: 'tampa' },
+    { id: 'placa-tampa-b', x: 43.6, y: 0, w: 1.4, h: 0.15, abre: 'tampa' },
     { id: 'placa-prateleira', x: 142.5, y: 3.2, w: 1.4, h: 0.15, abre: 'portao' },
     { id: 'placa-portao', x: 151.2, y: 0, w: 1.4, h: 0.15, abre: 'portao' },
   ],
@@ -70,7 +71,7 @@ export const CAP1_BRINQUEDOS: FaseCapitulo = {
     ...arco(7.2, 10, 1.4, 1.2, 3),       // por cima do cubo
     ...fileira(13.3, 14.3, 2.3, 2),      // em cima do cubo maior
     ...arco(25.6, 28.4, 0.6, 1.4, 3),    // o primeiro vão
-    ...fileira(43.5, 45.5, 0.6, 3),      // depois da tampa
+    ...fileira(45.5, 47.5, 0.6, 3),      // depois da tampa
     ...fileira(53, 57, 3.4, 3),          // em cima da caixa alta
     ...fileira(65, 69, 1.4, 3),          // no caminho do trenzinho
     ...fileira(78.5, 86.5, 4, 5),        // por cima da pirâmide

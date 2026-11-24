@@ -9,7 +9,7 @@ import { instantaneo, restaurar } from '../src/core/instantaneo';
 import type { Fase, Input, Ponto } from '../src/core/types';
 import { criarFase, FASES } from '../src/core/fases';
 import { chao } from '../src/core/fases/comum';
-import { alcancaveis, chegamA, montarGrafo, noSob, nosQueTocam, type Grafo } from './fases/alcance';
+import { alcancaveis, descreverNo, montarGrafo, noSob, nosQueTocam, pares, type Grafo } from './fases/alcance';
 import { jogar, NEUTRO } from './fases/bot';
 import { PLANOS } from './fases/planos';
 
@@ -72,82 +72,65 @@ describe('fases dos capítulos: dados', () => {
 });
 
 // ---------- alcançabilidade ----------
-const grafos = new Map<string, { coop: Grafo; solo: Grafo }>();
-const grafosDe = (f: Fase) => {
-  let g = grafos.get(f.id);
-  if (!g) { g = { coop: montarGrafo(f, { portasFechadas: false, coop: true }), solo: montarGrafo(f, { portasFechadas: true, coop: false }) }; grafos.set(f.id, g); }
-  return g;
+const grafos = new Map<string, Grafo>();
+const grafoDe = (f: Fase) => { let g = grafos.get(f.id); if (!g) grafos.set(f.id, (g = montarGrafo(f))); return g; };
+const analise = new Map<string, ReturnType<typeof pares>>();
+const analisar = (f: Fase) => {
+  let r = analise.get(f.id);
+  if (!r) {
+    const g = grafoDe(f);
+    r = pares(g, [noSob(g, f.inicio[0]), noSob(g, f.inicio[1])], nosQueTocam(g, f.portal));
+    analise.set(f.id, r);
+  }
+  return r;
 };
-const desc = (g: Grafo, id: number) => { const n = g.nos[id]; return `${n.tipo} y=${n.y.toFixed(2)} x=${n.x0.toFixed(1)}…${n.x1.toFixed(1)}`; };
 
 describe('fases dos capítulos: alcançabilidade por saltos', () => {
-  it('o verificador acha poço sem saída, beco e porta que prende (controle)', () => {
-    const base = { id: 'armadilha', largura: 60, fundo: -10, inicio: [{ x: 1, y: 0 }, { x: 2, y: 0 }] as [Ponto, Ponto] };
-    // poço de 3 m de fundo acima do limite de queda: quem cai não sai sozinho
-    const poco = criarFase({ ...base, plataformas: [chao(-2, 20), chao(20, 23, -3), chao(23, 60)], lanternas: [{ x: 10, y: 0 }], portal: { x: 50, y: 0, w: 2, h: 2 } });
-    const gp = { coop: montarGrafo(poco, { portasFechadas: false, coop: true }), solo: montarGrafo(poco, { portasFechadas: true, coop: false }) };
-    const fundoPoco = noSob(gp.solo, { x: 21.5, y: -3 });
-    const voltam = chegamA(gp.solo, [noSob(gp.solo, { x: 10, y: 0 }), ...nosQueTocam(gp.solo, poco.portal)]);
-    expect(voltam.has(fundoPoco)).toBe(false);
-    expect(chegamA(gp.coop, nosQueTocam(gp.coop, poco.portal)).has(noSob(gp.coop, { x: 21.5, y: -3 }))).toBe(true); // com ajuda, sai
+  it('o verificador acha poço sem saída, beco e degrau só de mãos dadas (controle)', () => {
+    const base = { largura: 60, fundo: -10, inicio: [{ x: 1, y: 0 }, { x: 2, y: 0 }] as [Ponto, Ponto] };
+    const ver = (f: Fase) => { const g = montarGrafo(f); return { g, r: pares(g, [noSob(g, f.inicio[0]), noSob(g, f.inicio[1])], nosQueTocam(g, f.portal)) }; };
+    // poço de 3 m acima do limite de queda: sozinho não se sai, mas o outro desce, dá o impulso e é puxado: sem armadilha
+    const poco = ver(criarFase({ ...base, id: 'poco', plataformas: [chao(-2, 20), chao(20, 23, -3, 6), chao(23, 60)], portal: { x: 50, y: 0, w: 2, h: 2 } }));
+    expect(poco.r.chegaAoFim).toBe(true);
+    expect(poco.r.presos).toEqual([]);
+    expect(alcancaveis(poco.g, [noSob(poco.g, { x: 21.5, y: -3 })], ['solo']).has(noSob(poco.g, { x: 50, y: 0 }))).toBe(false);
+    // poço de 5 m: quem cai fica preso (e o par todo)
+    const fundo = ver(criarFase({ ...base, id: 'fundo', plataformas: [chao(-2, 20), chao(20, 23, -5, 6), chao(23, 60)], portal: { x: 50, y: 0, w: 2, h: 2 } }));
+    const noPoco = noSob(fundo.g, { x: 21.5, y: -5 });
+    expect(fundo.r.presos.some(([a, b]) => a === noPoco && b !== noPoco)).toBe(true);
     // beco: um degrau de 6 m não se sobe nem com mãos dadas
-    const beco = criarFase({ ...base, plataformas: [chao(-2, 20), chao(20, 60, 6)], portal: { x: 50, y: 6, w: 2, h: 2 } });
-    const gb = montarGrafo(beco, { portasFechadas: false, coop: true });
-    expect(alcancaveis(gb, [noSob(gb, { x: 1, y: 0 })]).has(noSob(gb, { x: 50, y: 6 }))).toBe(false);
-    // 4 m sobe com mãos dadas (e o de cima puxa o outro), 1,9 m sozinho não
-    const degrau = criarFase({ ...base, plataformas: [chao(-2, 20), chao(20, 60, 3.4)], portal: { x: 50, y: 3.4, w: 2, h: 2 } });
-    const gd = { coop: montarGrafo(degrau, { portasFechadas: false, coop: true }), solo: montarGrafo(degrau, { portasFechadas: true, coop: false }) };
-    expect(alcancaveis(gd.coop, [noSob(gd.coop, { x: 1, y: 0 })]).has(noSob(gd.coop, { x: 50, y: 3.4 }))).toBe(true);
-    expect(alcancaveis(gd.solo, [noSob(gd.solo, { x: 1, y: 0 })]).has(noSob(gd.solo, { x: 50, y: 3.4 }))).toBe(false);
+    const beco = ver(criarFase({ ...base, id: 'beco', plataformas: [chao(-2, 20), chao(20, 60, 6)], portal: { x: 50, y: 6, w: 2, h: 2 } }));
+    expect(beco.r.chegaAoFim).toBe(false);
+    // 3,4 m sobe com mãos dadas (e o de cima puxa o outro), sozinho não
+    const degrau = ver(criarFase({ ...base, id: 'degrau', plataformas: [chao(-2, 20), chao(20, 60, 3.4)], portal: { x: 50, y: 3.4, w: 2, h: 2 } }));
+    expect(degrau.r.chegaAoFim).toBe(true);
+    expect(degrau.r.presos).toEqual([]);
+    expect(alcancaveis(degrau.g, [noSob(degrau.g, { x: 1, y: 0 })], ['solo']).has(noSob(degrau.g, { x: 50, y: 3.4 }))).toBe(false);
+    // porta com placa só do lado de cá: quem passou fica preso do outro lado se o outro não vier
+    const porta = ver(criarFase({ ...base, id: 'porta', plataformas: [chao(-2, 60), { x: 19.6, y: 3.2, w: 1.3, h: 5 }], placas: [{ id: 'p', x: 10, y: 0, w: 1.4, h: 0.15, abre: 'd' }],
+      portas: [{ id: 'd', x: 20, y: 0, w: 0.5, h: 3.2 }, ], portal: { x: 50, y: 0, w: 2, h: 2 } }));
+    expect(porta.r.chegaAoFim).toBe(false); // o segundo nunca passa
   });
 
   for (const f of CAPITULOS) {
     describe(`${f.capitulo}. ${f.nome}`, () => {
-      it('do início se chega ao pedaço da estrela; todo lugar alcançável ainda chega lá (sem beco sem saída)', () => {
-        const { coop } = grafosDe(f);
-        const ini = f.inicio.map((p) => noSob(coop, p));
-        const R = alcancaveis(coop, ini);
-        const fim = nosQueTocam(coop, f.portal);
-        expect(fim.some((n) => R.has(n)), 'pedaço da estrela alcançável').toBe(true);
-        const chega = chegamA(coop, fim);
-        const presos = [...R].filter((n) => !chega.has(n)).map((n) => desc(coop, n));
-        expect(presos, 'lugares de onde não se chega mais ao fim').toEqual([]);
-      });
-
-      it('sozinho e com as portas fechadas, de todo lugar se volta a uma lanterna, placa, início ou fim', () => {
-        const { coop, solo } = grafosDe(f);
-        const R = alcancaveis(coop, f.inicio.map((p) => noSob(coop, p)));
-        const encontros = [
-          ...f.inicio.map((p) => noSob(solo, p)),
-          ...(f.lanternas ?? []).map((l) => noSob(solo, l)),
-          ...f.placas.flatMap((p) => nosQueTocam(solo, { ...p, y: p.y - 0.05, h: p.h + 0.1 })),
-          ...nosQueTocam(solo, f.portal),
-        ];
-        const voltam = chegamA(solo, encontros);
-        const presos: string[] = [];
-        for (const id of R) {
-          const n = coop.nos[id];
-          let m: number;
-          if (n.tipo === 'fixo') {
-            // o mesmo lugar no grafo de portas fechadas (o meio da superfície; se ali houver porta, ignora)
-            const meio = (n.x0 + n.x1) / 2;
-            if (f.portas.some((d) => meio > d.x - 0.3 && meio < d.x + d.w + 0.3 && n.y >= d.y - 0.01 && n.y < d.y + d.h)) continue;
-            m = noSob(solo, { x: meio, y: n.y });
-          } else m = solo.nos.findIndex((s) => s.chave === n.chave);
-          if (m < 0 || !voltam.has(m)) presos.push(desc(coop, id));
-        }
-        expect(presos, 'lugares onde um jogador sozinho fica preso').toEqual([]);
+      it('os dois chegam juntos ao pedaço da estrela e nenhum par de posições fica sem saída', () => {
+        const g = grafoDe(f);
+        const r = analisar(f);
+        expect(r.chegaAoFim, 'pedaço da estrela alcançável pelos dois').toBe(true);
+        const amostra = r.presos.slice(0, 6).map(([a, b]) => `Natan ${descreverNo(g, a)} | Bruna ${descreverNo(g, b)}`);
+        expect(amostra, `${r.presos.length} de ${r.alcancados} pares sem saída`).toEqual([]);
       });
 
       it('todas as estrelinhas, lanternas e placas estão ao alcance', () => {
-        const { coop } = grafosDe(f);
-        const R = alcancaveis(coop, f.inicio.map((p) => noSob(coop, p)));
+        const g = grafoDe(f);
+        const { nosAlcancados } = analisar(f);
         const pegas = new Set<number>();
-        for (const id of R) for (const k of coop.estrelas[id]) pegas.add(k);
+        for (const id of nosAlcancados) { for (const k of g.estrelas[id]) pegas.add(k); for (const k of g.estrelasSuper[id]) pegas.add(k); }
         const faltam = (f.estrelinhas ?? []).map((p, k) => (pegas.has(k) ? null : `${p.x},${p.y}`)).filter(Boolean);
         expect(faltam, 'estrelinhas fora de alcance').toEqual([]);
-        for (const l of f.lanternas ?? []) expect(R.has(noSob(coop, l)), `lanterna em ${l.x}`).toBe(true);
-        for (const p of f.placas) expect(nosQueTocam(coop, { ...p, y: p.y - 0.05, h: p.h + 0.1 }).some((n) => R.has(n)), `placa ${p.id}`).toBe(true);
+        for (const l of f.lanternas ?? []) expect(nosAlcancados.has(noSob(g, l)), `lanterna em ${l.x}`).toBe(true);
+        for (const p of f.placas) expect(nosQueTocam(g, { ...p, y: p.y - 0.05, h: p.h + 0.1 }).some((n) => nosAlcancados.has(n)), `placa ${p.id}`).toBe(true);
       });
     });
   }

@@ -8,8 +8,8 @@ export const PLANO_CAP1: Etapa[] = [
   saltarJuntos(25.8, 29.5),
   // tampa: Natan segura a placa de cá, Bruna passa e segura a de lá
   { nome: 'tampa da caixa', p: [
-    [ir(38.3), esperar((c) => c.outro.x > 41.3 && c.outro.noChao), ir(44.5)],
-    [ir(36.5), esperar(aberta('tampa')), ir(41.7), esperar((c) => c.outro.x > 43.5)],
+    [ir(35.7), esperar((c) => c.outro.x > 43.9 && c.outro.noChao), ir(46.5)],
+    [ir(36.9), esperar(aberta('tampa')), ir(44.3), esperar((c) => c.outro.x > 45.5)],
   ] },
   andar(49.5),
   subirComMaos(51.2, 53.5, 52.4, 0, 51.6),
