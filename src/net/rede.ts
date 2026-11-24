@@ -3,7 +3,7 @@
 // Funciona entre redes diferentes: sinalização pelo servidor público do PeerJS e, quando a conexão direta não
 // passa (NAT), retransmissão pelos servidores TURN públicos que o PeerJS já configura.
 //
-// Mensagens de fluxo (anfitrião → convidado): 'progresso', 'mapa', 'cena', 'fase', 'arena', 'pausa'.
+// Mensagens de fluxo (anfitrião → convidado): 'salvo' (nos dois sentidos), 'mapa', 'cena', 'fase', 'arena', 'pausa'.
 // Jogo 2.5D: 'in' (convidado → anfitrião) e 'st'; Arena do Coração (3D): 'ina' e 'sta', no mesmo esquema.
 // Pedidos (convidado → anfitrião): 'pedido' (avançar quadrinho, pular, pausar, continuar, voltar ao mapa).
 // Segundo plano (nos dois sentidos): 'ausente' (saiu do app / voltou).
@@ -12,7 +12,7 @@ import Peer, { type DataConnection, type PeerOptions } from 'peerjs';
 import type { Input } from '../core/types';
 import type { Instantaneo } from '../core/instantaneo';
 import type { EntradaArena, InstantaneoArena } from '../core/arena';
-import type { Progresso } from '../ui/progresso';
+import type { Campanha } from '../ui/salvo';
 
 const ALFABETO = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const PREFIXO = 'entre-dois-mundos-v1-';
@@ -39,10 +39,11 @@ export type Mensagem =
   | { t: 'st'; s: Instantaneo }
   | { t: 'ping'; at: number }
   | { t: 'pong'; at: number }
-  /** progresso da campanha do anfitrião (enviado ao entrar e a cada mudança) */
-  | { t: 'progresso'; p: Progresso }
-  /** tela do mapa da jornada; `sel` = capítulo destacado */
-  | { t: 'mapa'; p: Progresso; sel: number }
+  /** a campanha do casal (src/ui/salvo.ts): anfitrião → convidado a cada gravação (o convidado grava e funde);
+   *  convidado → anfitrião ao conectar (a cópia dele) e quando a fusão dele achou algo novo. Validar com limparCampanha. */
+  | { t: 'salvo'; c: Campanha }
+  /** tela do mapa da jornada; `sel` = capítulo destacado; `c` = a campanha (como em 'salvo') */
+  | { t: 'mapa'; c: Campanha; sel: number }
   /** cena em quadrinhos ou tela de capítulo concluído; `quadro` = quadro atual */
   | { t: 'cena'; cena: NomeCena; quadro: number; cap?: number; est?: number; total?: number }
   /** começa (ou retoma) a fase do capítulo */

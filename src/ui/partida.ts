@@ -3,6 +3,10 @@
 import { DT, estadoInicial, passo } from '../core/sim';
 import { instantaneo, interpolar, restaurar } from '../core/instantaneo';
 import { INPUT_NEUTRO, type Estado, type Fase, type Input } from '../core/types';
+import { AssentoEntrada, AssentoParado, Seguidor, type ControladorAssento, type TipoAssento } from '../core/assento';
+import { inimigosIniciais } from '../core/inimigos';
+import { ID_QUINTAL, VOLTA_BONECO } from '../core/fases/treino_quintal';
+import { retomar, type ResumoLanterna } from './salvo';
 import { Controles } from '../input/controles';
 import type { Conexao, Mensagem } from '../net/rede';
 import { EntradasDoConvidado, Preditor } from '../net/predicao';
@@ -15,12 +19,23 @@ import { som } from './som';
 import { Limitador, metaDeFps } from './ritmo';
 import { $, Hud, mostrarCarregando, mostrarTela, quadroPintado, type Carga } from './telas';
 
-export type Modo = 'treino' | 'anfitriao' | 'convidado';
+/** treino: tudo liberado, nada grava, o outro personagem parado. solo: campanha sem sala, o outro com o companheiro
+ *  do jogo. anfitriao/convidado: campanha em dupla (quem simula / quem só mostra). */
+export type Modo = 'treino' | 'solo' | 'anfitriao' | 'convidado';
 
 export interface OpcoesPartida {
   modo: Modo;
   con: Conexao | null;
   cap: number;
+  /** outra fase no lugar da do capítulo (o Quintal de Treino); `cap` continua valendo para o tema, a música e o HUD */
+  fase?: Fase;
+  /** título no HUD e na tela de carregamento no lugar de "Capítulo N" */
+  titulo?: string;
+  /** começar da lanterna guardada (botão "Continuar"; L2b) */
+  retomada?: ResumoLanterna;
+  /** solo: quem controla o personagem do outro assento. Padrão: o Seguidor provisório (src/core/assento.ts); o
+   *  Companheiro do L6 entra por aqui. */
+  companheiro?: (f: Fase) => ControladorAssento;
   qualidade: Qualidade;
   hud: Hud;
   /** anfitrião/treino: chamado uma vez, um pouco depois de os dois tocarem o pedaço da estrela */
@@ -28,6 +43,8 @@ export interface OpcoesPartida {
   /** dupla: o outro aparelho parou de mandar (entradas, no anfitrião; instantâneos, no convidado) por
    *  SUMIDO_MS com o jogo rodando (on), ou voltou (off). O fluxo pausa com aviso (R26). */
   aoSumir?: (on: boolean) => void;
+  /** campanha (solo/anfitrião): uma lanterna nova acendeu (estado depois do passo). O fluxo grava a retomada. */
+  aoLanterna?: (e: Estado) => void;
 }
 
 /** anfitrião: a última entrada do convidado vale no máximo este número de ticks sem entrada nova (100 ms); depois
@@ -39,6 +56,8 @@ export const TICKS_ENTRADA_VALIDA = 6;
 export const SUMIDO_MS = 1500;
 
 const DEPURAR = new URLSearchParams(location.search).has('debug');
+/** ⇄ existe no treino e no solo (em dupla cada um tem o seu personagem) */
+export const podeTrocar = (m: Modo) => m === 'treino' || m === 'solo';
 
 export class Partida {
   readonly fase: Fase;
@@ -68,6 +87,14 @@ export class Partida {
   private contagem: Record<string, number> = {};
   /** gancho de teste (anfitrião/treino): posições [x0, y0, x1, y1] dos últimos 512 ticks, para conferir a sincronia */
   private historico = new Float32Array(512 * 4);
+  /** quem controla cada personagem (pessoa neste aparelho, pessoa remota ou o jogo); o laço só pede a entrada */
+  private assentos: [ControladorAssento, ControladorAssento];
+  /** entrada lida dos controles neste quadro (o assento da pessoa devolve esta) */
+  private local: Input = INPUT_NEUTRO;
+  /** última lanterna vista (para avisar aoLanterna uma vez por lanterna) */
+  private lanternaVista: number;
+  /** Quintal: tick em que cada boneco foi derrotado (0 = vivo) */
+  private bonecos: number[] = [];
   private indicador: IndicadorParceiro;
   /** balões de fala e dicas (src/ui/baloes.ts; L8a) */
   private baloes: Baloes | null = null;
@@ -91,18 +118,20 @@ export class Partida {
 
   constructor(private o: OpcoesPartida) {
     this.cap = o.cap;
-    this.fase = faseDoCap(o.cap);
-    this.estado = estadoInicial(this.fase);
+    this.fase = o.fase ?? faseDoCap(o.cap);
+    this.estado = o.retomada && o.retomada.cap === o.cap ? retomar(this.fase, o.retomada) : estadoInicial(this.fase);
+    this.lanternaVista = this.estado.checkpoint;
     this.ultimo = this.estado;
     this.euControlo = o.modo === 'convidado' ? 1 : 0;
+    this.assentos = this.montarAssentos();
     if (o.modo === 'convidado') this.preditor = new Preditor(this.fase, 1, (m) => o.con?.enviar({ t: 'in', i: m.i as Input, seq: m.seq, l: m.l as Input[] }));
     this.indicador = new IndicadorParceiro($('#indicador'), this.fase);
     // o gancho da partida anterior sai já (não prende a fase velha na memória, R54; os testes esperam o novo)
     delete (window as unknown as { __edm?: unknown }).__edm;
     // R33: a tela de carregamento é pintada ANTES de montar a fase; a montagem vem depois, em etapas
     mostrarTela('jogo');
-    $('#bt-trocar').hidden = o.modo !== 'treino';
-    this.carga = mostrarCarregando(o.cap);
+    $('#bt-trocar').hidden = !podeTrocar(o.modo);
+    this.carga = mostrarCarregando(o.cap, o.titulo);
     void this.montar();
   }
 
@@ -129,14 +158,19 @@ export class Partida {
     // cada celular segue o próprio personagem; no treino, o controlado (⇄ troca a câmera junto)
     const seguir = () => { cena.seguir(this.euControlo); this.indicador.configurar(this.euControlo); };
     seguir();
-    $('#bt-trocar').onclick = () => { this.euControlo = 1 - this.euControlo; o.hud.eu(this.euControlo); seguir(); };
-    o.hud.configurar(o.cap, this.euControlo);
+    $('#bt-trocar').onclick = () => this.trocar(this.euControlo === 0 ? 1 : 0);
+    this.seguirCamera = seguir;
+    o.hud.configurar(o.cap, this.euControlo, o.titulo);
     som.tocarMusica(o.cap);
     // gancho de teste e depuração. roteiro/acelerar só valem no anfitrião e no treino (o convidado não simula):
     // roteiro(lista) recomeça a fase e joga as entradas gravadas (uma [P1, P2] por tick); acelerar(k) roda k passos
     // por passo de tempo, para o teste não demorar o tempo real da fase.
     (window as unknown as { __edm: unknown }).__edm = {
-      estado: () => this.ultimo, modo: o.modo, cap: o.cap, info: () => cena.info(),
+      estado: () => this.ultimo, modo: o.modo, cap: o.cap, fase: this.fase.id, info: () => cena.info(),
+      /** quem controla cada personagem: 'pessoa' (este aparelho), 'remoto' (o outro aparelho) ou 'ia' (o jogo) */
+      assentos: () => this.tipos(),
+      /** personagem que este aparelho controla */
+      eu: () => this.euControlo,
       /** carga desta fase: tocou, pintada, pronta (ms) e a duração de cada etapa */
       carga: () => this.carga.resumo(),
       /** câmera deste aparelho: quem segue, fração da tela de cada personagem (projetada), enquadramento e indicador */
@@ -144,6 +178,7 @@ export class Partida {
       roteiro: (lista: [Input, Input][]) => {
         if (o.modo === 'convidado') return false;
         this.estado = estadoInicial(this.fase); this.roteiro = lista; this.acumulado = 0; this.concluiuEm = 0; this.avisou = false;
+        this.lanternaVista = this.estado.checkpoint;
         return true;
       },
       contagem: () => ({ ...this.contagem }),
@@ -194,6 +229,13 @@ export class Partida {
     if (this.sumido) { this.sumido = false; this.o.aoSumir?.(false); }
   }
 
+  /** Estado simulado agora (solo/anfitrião/treino) para gravar a retomada ao sair do app; null no convidado, antes
+   *  da fase montar e depois do pedaço da estrela. */
+  estadoParaGravar(): Estado | null {
+    if (this.o.modo === 'convidado' || !this.cena || this.estado.concluida) return null;
+    return this.estado;
+  }
+
   /** Este aparelho vai para segundo plano: solta os controles (o fluxo pausa e avisa o outro). */
   soltar() { this.controles?.limpar(); }
 
@@ -219,6 +261,52 @@ export class Partida {
     this.controles?.destruir();
     this.cena?.renderer.dispose();
     this.cena?.renderer.forceContextLoss();
+  }
+
+  /** assentos pelo modo: treino [pessoa, parado], solo [pessoa, companheiro], anfitrião [pessoa, remoto] (⇄ troca
+   *  quem é a pessoa no treino e no solo). O convidado não simula (os assentos dele não são usados). */
+  private montarAssentos(): [ControladorAssento, ControladorAssento] {
+    const o = this.o;
+    const pessoa = new AssentoEntrada('pessoa', () => this.local);
+    if (o.modo === 'anfitriao') return [pessoa, new AssentoEntrada('remoto', () => this.entradaDoConvidado())];
+    const outro = o.modo === 'solo' ? (o.companheiro ?? (() => new Seguidor()))(this.fase) : new AssentoParado();
+    return this.euControlo === 0 ? [pessoa, outro] : [outro, pessoa];
+  }
+
+  private tipos(): [TipoAssento, TipoAssento] {
+    if (this.o.modo === 'convidado') return ['remoto', 'pessoa'];
+    return [this.assentos[0].tipo, this.assentos[1].tipo];
+  }
+
+  private seguirCamera: (() => void) | null = null;
+
+  /** ⇄ (treino e solo): este aparelho passa a controlar o personagem `eu`; o jogo assume o outro no estado em que
+   *  ele está (a memória do companheiro é limpa). No solo, bloqueado com alguém no fio, na argola ou no ar. */
+  trocar(eu: 0 | 1): boolean {
+    if (!podeTrocar(this.o.modo) || eu === this.euControlo) return false;
+    if (this.o.modo === 'solo' && this.estado.jogadores.some((j) => j.pendurado || j.segurando || j.argola >= 0 || !j.noChao)) return false;
+    const [a, b] = this.assentos;
+    this.assentos = [b, a];
+    this.euControlo = eu;
+    for (const s of this.assentos) s.reiniciar?.();
+    this.o.hud.eu(eu);
+    this.seguirCamera?.();
+    return true;
+  }
+
+  /** Quintal: bonecos derrotados voltam ao lugar depois de VOLTA_BONECO s */
+  private voltarBonecos() {
+    const e = this.estado;
+    let novos: ReturnType<typeof inimigosIniciais> | null = null;
+    e.inimigos.forEach((n, k) => {
+      if (n.vivo) { this.bonecos[k] = 0; return; }
+      if (!this.bonecos[k]) { this.bonecos[k] = e.tick; return; }
+      if (e.tick - this.bonecos[k] >= VOLTA_BONECO * 60) {
+        novos ??= inimigosIniciais(this.fase);
+        e.inimigos[k] = novos[k];
+        this.bonecos[k] = 0;
+      }
+    });
   }
 
   /** anfitrião: a entrada do convidado para este tick; repetir a última só vale por TICKS_ENTRADA_VALIDA ticks */
@@ -267,10 +355,16 @@ export class Partida {
     } else if (!this.pausada) {
       this.acumulado += dt * this.aceleracao;
       while (this.acumulado >= DT) {
-        const ent: [Input, Input] = this.roteiro ? (this.roteiro[this.estado.tick] ?? [INPUT_NEUTRO, INPUT_NEUTRO]) : o.modo === 'treino'
-          ? (this.euControlo === 0 ? [local, INPUT_NEUTRO] : [INPUT_NEUTRO, local])
-          : [local, this.entradaDoConvidado()];
+        this.local = local;
+        const ent: [Input, Input] = this.roteiro ? (this.roteiro[this.estado.tick] ?? [INPUT_NEUTRO, INPUT_NEUTRO])
+          : [this.assentos[0].entrada(this.fase, this.estado, 0), this.assentos[1].entrada(this.fase, this.estado, 1)];
         passo(this.fase, this.estado, ent);
+        if (this.estado.checkpoint !== this.lanternaVista) {
+          const nova = this.estado.checkpoint > this.lanternaVista;
+          this.lanternaVista = this.estado.checkpoint;
+          if (nova) o.aoLanterna?.(this.estado);
+        }
+        if (this.fase.id === ID_QUINTAL) this.voltarBonecos();
         { const k = (this.estado.tick % 512) * 4, [j0, j1] = this.estado.jogadores; this.historico.set([j0.x, j0.y, j1.x, j1.y], k); }
         eventos.push(...this.estado.eventos);
         this.eventosParaEnviar.push(...this.estado.eventos);
@@ -290,7 +384,7 @@ export class Partida {
     // dupla: o outro aparelho sumiu (página congelada, app em segundo plano sem aviso, sinal ruim)?
     // o prazo cresce se o outro aparelho já vinha mandando devagar (aparelho muito lento, máquina de teste sem GPU):
     // assim só a parada de verdade pausa; acima de 7 s a rede declara a conexão caída
-    if (o.modo !== 'treino' && !this.pausada && !this.sumido && this.recebidas >= 10 && agora - this.ultimaDoOutro > Math.max(SUMIDO_MS, 8 * this.intervaloDoOutro)) {
+    if ((o.modo === 'anfitriao' || o.modo === 'convidado') && !this.pausada && !this.sumido && this.recebidas >= 10 && agora - this.ultimaDoOutro > Math.max(SUMIDO_MS, 8 * this.intervaloDoOutro)) {
       this.sumido = true;
       o.aoSumir?.(true);
     }

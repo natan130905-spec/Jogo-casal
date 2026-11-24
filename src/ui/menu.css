@@ -1,0 +1,19 @@
+/* Menu com os três modos e o mapa do treino (L2b). Arquivo próprio para não disputar src/estilo.css com outros lotes. */
+#menu .botoes { gap: 7px; }
+#bt-continuar-jornada { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+#bt-continuar-jornada[hidden] { display: none; }
+#bt-continuar-jornada small { font-size: 13px; font-weight: 600; opacity: 0.85; margin-top: 2px; }
+/* com "Continuar" à mostra, "Jogar sozinho" desce um degrau */
+#bt-continuar-jornada:not([hidden]) + #bt-solo { font-size: 17px; padding: 9px 14px; }
+.modo-online { display: flex; flex-direction: column; gap: 6px; padding: 6px 8px 8px; border: 2px solid #ffffff33; border-radius: 16px; }
+.modo-online .titulo-modo { font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.8; text-align: center; }
+.modo-online #codigo { flex: 1; min-width: 0; }
+#menu .botoes > .linha > * { flex: 1; }
+/* mapa do treino: selo e moldura de outra cor (nada aqui conta para a campanha) */
+#mapa.treino .mapa-topo h2::after { content: ' · TREINO'; color: #9fe8c8; }
+#mapa.treino .mapa-caixa { outline: 3px dashed #9fe8c866; outline-offset: 6px; border-radius: 18px; }
+#bt-retomar[hidden], #bt-quintal[hidden] { display: none; }
+@media (max-height: 420px) {
+  #menu button.grande { font-size: 19px; padding: 9px 14px; }
+  #menu .botoes button:not(.grande) { padding-top: 7px; padding-bottom: 7px; }
+}

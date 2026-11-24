@@ -28,16 +28,24 @@
       <h1>Entre <span>Dois</span> Mundos</h1>
       <p class="sub">Uma jornada para dois</p>
     </div>
+    <!-- três modos (L2b): campanha sozinho (sem sala), campanha a dois pela sala, e o treino (nada conta) -->
     <div class="botoes">
-      <button id="bt-criar" class="grande">Criar sala</button>
-      <div class="linha">
-        <input id="codigo" maxlength="5" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código da sala" />
-        <button id="bt-entrar">Entrar</button>
+      <button id="bt-continuar-jornada" class="grande" hidden>Continuar<small id="continuar-onde"></small></button>
+      <button id="bt-solo" class="grande">Jogar sozinho</button>
+      <div class="modo-online" role="group" aria-labelledby="titulo-online">
+        <span class="titulo-modo" id="titulo-online">Jogar juntos online</span>
+        <button id="bt-criar">Criar sala</button>
+        <div class="linha">
+          <input id="codigo" maxlength="5" placeholder="CÓDIGO" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código da sala" />
+          <button id="bt-entrar">Entrar</button>
+        </div>
       </div>
-      <button id="bt-treino" class="leve">Treinar sozinho</button>
-      <label class="leve">Gráficos
-        <select id="qualidade"><option value="baixa">Leve</option><option value="media">Normal</option><option value="alta">Bonito</option></select>
-      </label>
+      <div class="linha">
+        <button id="bt-treino" class="leve">Treino</button>
+        <label class="leve">Gráficos
+          <select id="qualidade"><option value="baixa">Leve</option><option value="media">Normal</option><option value="alta">Bonito</option></select>
+        </label>
+      </div>
     </div>
     <p id="menu-erro" class="erro" role="status"></p>
     <p id="menu-progresso" class="progresso-menu"></p>
@@ -74,6 +82,8 @@
     <footer class="mapa-info">
       <div class="mapa-texto"><strong id="mapa-nome"></strong><span id="mapa-desc"></span></div>
       <button id="bt-arena" class="grande arena" hidden>Arena do Coração ⚔</button>
+      <button id="bt-quintal" class="leve" hidden>Quintal de Treino ⛺</button>
+      <button id="bt-retomar" class="grande" hidden>Continuar ▶</button>
       <button id="bt-jogar" class="grande">Jogar ▶</button>
       <span id="mapa-espera" class="mapa-espera" hidden>Esperando quem criou a sala escolher…</span>
     </footer>

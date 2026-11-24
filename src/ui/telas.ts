@@ -4,8 +4,14 @@
 import type { Estado } from '../core/types';
 import { CAPITULOS_INFO, info, type Quadro } from './historia';
 import { ESTRELA_SVG, ilustracao } from './ilustracoes';
-import { concluido, estrelinhasTotais, liberado, pedacos, TOTAL_CAPITULOS, type Progresso } from './progresso';
+import { TOTAL_CAPITULOS, type Progresso, type ResultadoCapitulo } from './salvo';
 import { HudArmas } from './hudArmas';
+
+// consultas sobre a vista v1 do salvo (src/ui/salvo.ts › vista)
+const concluido = (p: Progresso, n: number) => !!p.capitulos[n];
+const liberado = (p: Progresso, n: number) => n === 1 || concluido(p, n - 1);
+const pedacos = (p: Progresso) => Object.keys(p.capitulos).length;
+const estrelinhasTotais = (p: Progresso) => Object.values(p.capitulos).reduce((s: number, c: ResultadoCapitulo) => s + c.estrelinhas, 0);
 
 export const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s)!;
 
@@ -58,7 +64,13 @@ export class Quadrinhos {
 const POS: readonly [number, number][] = [[8, 64], [21, 38], [34, 64], [47, 37], [60, 63], [73, 37], [86, 60]];
 const POS_ESTRELA: [number, number] = [96, 26];
 
-export interface OpcoesMapa { livre: boolean; controla: boolean }
+export interface OpcoesMapa {
+  livre: boolean; controla: boolean;
+  /** lanterna guardada no capítulo escolhido (mostra "Continuar da lanterna") */
+  retomada?: { cap: number; lanterna: number } | null;
+  /** treino: o botão do Quintal de Treino */
+  quintal?: boolean;
+}
 
 export class Mapa {
   aoSelecionar: (n: number) => void = () => {};
@@ -100,7 +112,13 @@ export class Mapa {
     caixa.appendChild(this.estrela);
     $('#bt-jogar').addEventListener('click', () => this.aoJogar(this.sel));
     $('#bt-arena').addEventListener('click', () => this.aoArena());
+    $('#bt-retomar').addEventListener('click', () => this.aoRetomar(this.sel));
+    $('#bt-quintal').addEventListener('click', () => this.aoQuintal());
   }
+  /** "Continuar da lanterna" do capítulo escolhido */
+  aoRetomar: (n: number) => void = () => {};
+  /** treino: ir ao Quintal de Treino */
+  aoQuintal: () => void = () => {};
 
   mostrar(p: Progresso, sel: number, o: OpcoesMapa) {
     mostrarTela('mapa');
@@ -141,6 +159,12 @@ export class Mapa {
     bj.hidden = !o.controla;
     bj.disabled = !livre;
     bj.textContent = concluido(p, sel) ? 'Jogar de novo ▶' : 'Jogar ▶';
+    const br = $<HTMLButtonElement>('#bt-retomar');
+    const r = o.retomada && o.retomada.cap === sel && livre ? o.retomada : null;
+    br.hidden = !o.controla || !r;
+    if (r) { br.textContent = r.lanterna >= 0 ? `Continuar · lanterna ${r.lanterna + 1} ▶` : 'Continuar ▶'; bj.textContent = 'Do começo ▶'; }
+    $('#bt-quintal').hidden = !o.controla || !o.quintal;
+    $('#mapa').classList.toggle('treino', o.livre);
     $('#mapa-espera').hidden = o.controla;
   }
 }
@@ -180,8 +204,8 @@ export class Hud {
     for (const i of [0, 1]) $(`#cor-${i}`).innerHTML = '<i>❤</i><i>❤</i><i>❤</i>';
   }
   private some: ReturnType<typeof setTimeout> | null = null;
-  configurar(cap: number, eu: number) {
-    $('#hud-cap').textContent = `Capítulo ${cap} · ${info(cap).nome}`;
+  configurar(cap: number, eu: number, titulo?: string) {
+    $('#hud-cap').textContent = titulo ?? `Capítulo ${cap} · ${info(cap).nome}`;
     // o nome do capítulo aparece ao entrar e some depois de 3 s (ficava em cima das estrelinhas altas; R34)
     const el = $('#hud-cap');
     el.classList.remove('some');
@@ -324,11 +348,11 @@ const ETAPAS: Record<string, string> = {
 };
 
 /** Mostra a tela de carregamento do capítulo `cap` (título, barra e etapa) e devolve o controle dela. */
-export function mostrarCarregando(cap: number): Carga {
+export function mostrarCarregando(cap: number, titulo?: string): Carga {
   const el = $('#carregando');
   const c = info(cap);
-  $('#carr-cap').textContent = `Capítulo ${cap}`;
-  $('#carr-nome').textContent = c.nome;
+  $('#carr-cap').textContent = titulo ? 'Treino' : `Capítulo ${cap}`;
+  $('#carr-nome').textContent = titulo ?? c.nome;
   $('#carr-arte').style.backgroundImage = `url('${c.arte}')`;
   const barra = $('#carr-barra');
   barra.style.width = '4%';
