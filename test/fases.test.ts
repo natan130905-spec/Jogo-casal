@@ -124,6 +124,24 @@ describe('fases dos capítulos: alcançabilidade por saltos', () => {
         expect(amostra, `${r.presos.length} de ${r.alcancados} pares sem saída`).toEqual([]);
       });
 
+      it('sozinho não se vence: há momentos em que um precisa do outro', () => {
+        const g = grafoDe(f);
+        const solo = alcancaveis(g, [noSob(g, f.inicio[0])], ['solo']);
+        expect(nosQueTocam(g, f.portal).some((n) => solo.has(n))).toBe(false);
+        const tipos = new Set(g.lig.flat().map((l) => (l.tipo === 'porta' ? `porta` : l.tipo)));
+        expect([...tipos].filter((t) => t !== 'solo').length, 'tipos de ajuda na fase').toBeGreaterThan(0);
+      });
+
+      it('voltar a qualquer lanterna (os dois viraram bolha) nunca prende: dali ainda se chega ao fim', () => {
+        const g = grafoDe(f);
+        const fim = nosQueTocam(g, f.portal);
+        for (const l of f.lanternas ?? []) {
+          const r = pares(g, [noSob(g, { x: l.x - 0.5, y: l.y + 0.05 }), noSob(g, { x: l.x + 0.5, y: l.y + 0.05 })], fim);
+          expect(r.chegaAoFim, `lanterna em ${l.x}`).toBe(true);
+          expect(r.presos.length, `lanterna em ${l.x}: pares sem saída`).toBe(0);
+        }
+      });
+
       it('todas as estrelinhas, lanternas e placas estão ao alcance', () => {
         const g = grafoDe(f);
         const { nosAlcancados } = analisar(f);
@@ -159,6 +177,9 @@ describe('fases dos capítulos: dois bots cooperativos vencem', () => {
       expect(r.concluida).toBe(true);
       expect(r.voltas, 'os dois viraram bolha').toBe(0);
       expect(presoDentro, 'ticks com alguém dentro de parede').toBe(0);
+      // os bots não erram e não exploram: um casal de verdade leva de 2 a 3 vezes mais (2–4 minutos)
+      expect(r.segundos).toBeGreaterThan(45);
+      expect(r.segundos).toBeLessThan(150);
     });
   }
 });
