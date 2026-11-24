@@ -965,3 +965,27 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
   reescrever o R83, o R84 e a atualização do R22** (os títulos estão acima; o texto não foi recuperado).
 - **Teste que impede a volta:** nenhum automático (é processo). Fica a regra.
 - Fonte: L4.
+
+## QA da fatia 1 (L1, L2a, L2b, L4, L8a; integração, 2026-11-24)
+
+### R89 · `arena.mjs treino` reprovava: esperava que a vitória no treino contasse na jornada
+- **Sintoma:** `node test/e2e/arena.mjs treino` reprovou em "capítulo 7 conta como concluído (★ undefined/undefined)"
+  e "final marcado como visto". A luta, a lembrança, o final e os créditos estavam certos.
+- **Causa (confirmada no código):** o L2b separou o treino da jornada (R83, T12: o treino só grava `edm-treino-v1`),
+  mas o e2e da arena, escrito antes, conferia a jornada também na parte do treino. O jogo está certo; o teste ficou
+  velho. Nenhum lote rodou `arena.mjs` depois do L2b.
+- **Correção:** na parte do treino, o `arena.mjs` agora confere o contrário (o capítulo 7 e o final **não** entram na
+  jornada); na dupla continua conferindo que contam. Estado: **corrigido** (QA da fatia 1). Mudança mínima num
+  arquivo da equipe da Arena.
+- **Teste que impede a volta:** o próprio `arena.mjs` (treino APROVADO, dupla APROVADO no HEAD do QA).
+- Fonte: QA da fatia 1.
+
+### R90 · No Quintal de Treino, o chão da frente cobre os dois personagens (só as plaquinhas aparecem)
+- **Sintoma:** nas capturas do toque (`tools/revisao/qa/fatia1_toque.mjs`, 844×390 e 915×412, x ≈ 11 do Quintal),
+  o degrau vermelho da frente tapa o Natan e a Bruna; só os nomes e o efeito do golpe aparecem.
+- **Causa (hipótese):** o Quintal (`EXEMPLO_MECANICAS` + bonecos) tem um piso mais alto perto da câmera e a câmera
+  baixa do 2.5D passa por ele (é o caso C9 de oclusão do L3a). Não medido com o raio câmera → cabeça.
+- **Correção:** nenhuma ainda. Estado: **planejado** (L3a, critério 6 de oclusão, incluir o Quintal nas 100
+  posições; ou o L2b/L7 baixar a borda da frente do Quintal).
+- **Teste que impede a volta:** o critério 6 do L3a, com o Quintal na lista.
+- Fonte: QA da fatia 1 (`test-out/qa-fatia1/*_9_quintal.png`).

@@ -157,7 +157,9 @@ async function historiaFinal(A, B, nome) {
   const viu = await Promise.all(ps.map((p) => p.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false)));
   checar(viu.every(Boolean), `${nome}: "Capítulo concluído" depois da arena${B ? ' nos dois' : ''}`);
   const prog = await Promise.all(ps.map((p) => p.evaluate(() => window.__edmFluxo.progresso())));
-  checar(prog.every((p) => p.capitulos[7] && !p.arena7), `${nome}: capítulo 7 conta como concluído (★ ${prog[0].capitulos[7]?.estrelinhas}/${prog[0].capitulos[7]?.total})`);
+  // o treino não conta para a jornada (L2b, R83/T12: só a chave edm-treino-v1); na dupla o capítulo 7 conta
+  if (B) checar(prog.every((p) => p.capitulos[7] && !p.arena7), `${nome}: capítulo 7 conta como concluído (★ ${prog[0].capitulos[7]?.estrelinhas}/${prog[0].capitulos[7]?.total})`);
+  else checar(prog.every((p) => !p.capitulos[7] && !p.finalVisto), `${nome}: a vitória no treino não entra na jornada (capítulo 7 ${prog[0].capitulos[7] ? 'contou' : 'não contou'})`);
   await A.screenshot({ path: `${saida}${nome}_concluido_A.png` });
   await A.click('#bt-conc-continuar');
   for (const p of ps) await p.waitForFunction(() => window.__edmFluxo.tela().cena === 'lembranca', null, { timeout: 10000 });
@@ -177,7 +179,8 @@ async function historiaFinal(A, B, nome) {
   const mapa = await Promise.all(ps.map((p) => p.waitForSelector('#mapa:not([hidden])', { timeout: 10000 }).then(() => true).catch(() => false)));
   checar(mapa.every(Boolean), `${nome}: toque nos créditos volta ao mapa${B ? ' (pedido do convidado)' : ''}`);
   const fim = await A.evaluate(() => window.__edmFluxo.progresso().finalVisto);
-  checar(fim, `${nome}: final marcado como visto`);
+  if (B) checar(fim, `${nome}: final marcado como visto`);
+  else checar(!fim, `${nome}: o final visto no treino não marca a jornada`);
 }
 
 // ---------- 1. treino ----------
