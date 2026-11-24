@@ -129,6 +129,10 @@ export class Cena {
     if (this.pos) this.renderer.setRenderTarget(this.pos.alvoCena);
     try { await this.renderer.compileAsync(this.scene, this.camera); } catch { /* compila no 1º quadro */ }
     finally { this.renderer.setRenderTarget(antes); }
+    // um quadro de aquecimento atrás da tela de carregamento: compila o que o compileAsync não alcança (programas de
+    // profundidade da sombra, com a câmera de sombra cobrindo a fase inteira, e os passes do compositor da alta)
+    this.sombraLarga = true;
+    try { this.desenhar(e, 0); } finally { this.sombraLarga = false; }
     progresso(1, 'pronto');
     return vivo();
   }
@@ -373,8 +377,13 @@ export class Cena {
    */
   private ajustarSombra(q: Quadro) {
     const V = q.V, W = V * this.camera.aspect, folga = 2;
-    const y0 = q.yPes - q.pes * V - folga, y1 = q.yPes + (1 - q.pes) * V + folga;
-    const x0 = q.x - W / 2 - folga, x1 = q.x + W / 2 + folga;
+    let y0 = q.yPes - q.pes * V - folga, y1 = q.yPes + (1 - q.pes) * V + folga;
+    let x0 = q.x - W / 2 - folga, x1 = q.x + W / 2 + folga;
+    if (this.sombraLarga) {
+      // aquecimento: a fase inteira (todo objeto que projeta sombra passa pelo mapa e tem o programa compilado)
+      x0 = -10; x1 = this.fase.largura + 10;
+      for (const r of this.chao) { y0 = Math.min(y0, r.y - 4); y1 = Math.max(y1, r.y + r.h + 8); }
+    }
     const cy = (y0 + y1) / 2;
     this.sol.target.position.set(q.x, cy, 0);
     this.sol.position.set(q.x - 8, cy + 20, 7);
@@ -396,6 +405,7 @@ export class Cena {
     cs.updateProjectionMatrix();
   }
   private vetorSombra = { p: new THREE.Vector3(), inv: new THREE.Matrix4() };
+  private sombraLarga = false;
 
   /** Pedaço da estrela: gira e pulsa; apagado enquanto o Rei vive; brilha mais com os dois tocando. */
   private animarPedaco(e: Estado, dt: number) {
