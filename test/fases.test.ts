@@ -60,8 +60,10 @@ describe('fases dos capítulos: dados', () => {
 
       it('a simulação roda a fase vazia sem erro e o instantâneo de rede vai e volta', () => {
         const e = estadoInicial(f);
-        for (let t = 0; t < 600; t++) passo(f, e, [NEUTRO, NEUTRO]);
-        expect(e.jogadores.every((j) => j.noChao)).toBe(true);
+        for (let t = 0; t < 60; t++) passo(f, e, [NEUTRO, NEUTRO]);
+        expect(e.jogadores.every((j) => j.noChao), 'os dois começam em pé no chão').toBe(true);
+        for (let t = 0; t < 540; t++) passo(f, e, [NEUTRO, NEUTRO]);
+        expect(e.jogadores.every((j) => Number.isFinite(j.x + j.y) && j.y > f.fundo)).toBe(true);
         const s = JSON.parse(JSON.stringify(instantaneo(f, e, [])));
         const r = restaurar(f, s);
         expect(r.inimigos.length).toBe(e.inimigos.length);
