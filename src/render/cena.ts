@@ -70,7 +70,7 @@ export class Cena {
     this.bichos = new Bichinhos(fase, qualidade);
     this.elementos = new Elementos(fase, qualidade, this.tema);
     this.scene.add(this.bichos.raiz, this.elementos.raiz, this.fx.raiz);
-    if (qualidade === 'alta') this.pos = new Pos(this.renderer, this.scene, this.camera);
+    if (qualidade === 'alta') this.pos = new Pos(this.renderer, this.scene, this.camera, ['oceano', 'doces', 'espelhos'].includes(this.tema.chave));
   }
 
   private razaoPixel() { return Math.min(devicePixelRatio, this.qualidade === 'alta' ? 2 : this.qualidade === 'media' ? 1.5 : 1); }
