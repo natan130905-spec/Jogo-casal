@@ -1,5 +1,8 @@
-// E2E: dois "celulares" em paisagem; A cria a sala, B entra pelo código; os dois veem o prólogo e o mapa juntos,
-// A escolhe o capítulo 1; confere sincronização, o pulo, o tiro (✨/J), a pausa sincronizada e a conexão perdida.
+// E2E: dois "celulares" em paisagem (Pixel 7 e iPhone 14); A cria a sala, B entra pelo código; os dois veem o prólogo
+// e o mapa juntos, A escolhe o capítulo 1; confere sincronização, o pulo, o tiro (✨/J), a pausa sincronizada; depois
+// o anfitrião joga o capítulo 1 inteiro com as entradas gravadas dos bots (window.__edm.roteiro): o convidado tem de
+// ver bichinho derrotado por faísca, estrelinha pega, o mesmo placar e o "capítulo concluído"; por fim, a conexão perdida.
+// Os 7 capítulos inteiros (treino e dupla): test/e2e/capitulos.mjs.
 // Uso: node test/e2e/dupla.mjs [--publico]   (sem --publico usa um servidor PeerJS local)
 // Portas: PORTA (vite preview, padrão 4719) e PORTA_SINAL (PeerJS, padrão 9137; 0 = qualquer livre).
 import { createRequire } from 'node:module';
@@ -7,6 +10,7 @@ const { chromium, devices } = createRequire(import.meta.url)('/opt/node-tools/no
 import { PeerServer } from 'peer';
 import { preview } from 'vite';
 import { mkdirSync } from 'node:fs';
+import { gravarRoteiros } from './roteiros.mjs';
 
 const publico = process.argv.includes('--publico');
 const saida = new URL('../../test-out/', import.meta.url).pathname; mkdirSync(saida, { recursive: true });
@@ -20,13 +24,29 @@ if (!publico) {
 const srv = await preview({ preview: { port: porta, host: '127.0.0.1', strictPort: true }, logLevel: 'error' });
 const base = `http://127.0.0.1:${porta}/?q=media${publico ? '' : `&sinal=127.0.0.1:${portaSinal}`}`;
 const navegador = await chromium.launch({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] });
-const cel = { ...devices['Pixel 7 landscape'] };
-const A = await (await navegador.newContext(cel)).newPage();
-const B = await (await navegador.newContext(cel)).newPage();
+const roteiro1 = (await gravarRoteiros([1]))[1];
+const A = await (await navegador.newContext({ ...devices['Pixel 7 landscape'] })).newPage();
+const B = await (await navegador.newContext({ ...devices['iPhone 14 landscape'] })).newPage();
 const log = [];
 for (const [n, p] of [['A', A], ['B', B]]) p.on('console', (m) => { if (m.type() === 'error') log.push(`${n}: ${m.text()}`); });
 const pausa = (ms) => new Promise((r) => setTimeout(r, ms));
 let ok = true; const checar = (c, msg) => { console.log(`${c ? 'OK ' : 'FALHOU'} ${msg}`); ok &&= c; };
+
+/** Sincronia: o que o convidado mostra (posições, tick) bate com o que o anfitrião simulou perto daquele tick?
+ *  Devolve a menor diferença (m) entre o convidado e o anfitrião nos ticks [t-24, t+3], ou null. */
+async function desvioDoConvidado(A, B) {
+  const g = await B.evaluate(() => { const e = window.__edm?.estado(); return e && { tick: e.tick, p: e.jogadores.map((j) => [j.x, j.y]) }; }).catch(() => null);
+  if (!g) return null;
+  return A.evaluate((g) => {
+    let melhor = null;
+    for (let t = g.tick - 24; t <= g.tick + 3; t++) {
+      const h = window.__edm?.posicoes?.(t); if (!h) continue;
+      const d = Math.max(...h.map((p, i) => Math.hypot(p[0] - g.p[i][0], p[1] - g.p[i][1])));
+      if (melhor === null || d < melhor) melhor = d;
+    }
+    return melhor;
+  }, g).catch(() => null);
+}
 
 await A.goto(base); await B.goto(base);
 await A.click('#bt-criar');
@@ -66,8 +86,14 @@ const antes = await xP2(A);
 await B.keyboard.down('ArrowRight'); await pausa(1200); await B.keyboard.up('ArrowRight'); await pausa(400);
 const depois = await xP2(A);
 checar(depois - antes > 3, `P2 andou no anfitrião: ${antes?.toFixed(2)} → ${depois?.toFixed(2)}`);
-const xEmB = await B.evaluate(() => window.__edm?.estado().jogadores[1].x);
-checar(Math.abs(xEmB - depois) < 0.6, `convidado vê a mesma posição (${xEmB?.toFixed(2)})`);
+// o convidado mostra o passado recente (interpolação de 100 ms + rede): espera assentar até 3 s
+let xEmB = NaN, xEmA = depois;
+for (let k = 0; k < 15; k++) {
+  xEmA = await xP2(A); xEmB = await B.evaluate(() => window.__edm?.estado().jogadores[1].x);
+  if (Math.abs(xEmB - xEmA) < 0.6) break;
+  await pausa(200);
+}
+checar(Math.abs(xEmB - xEmA) < 0.6, `convidado vê a mesma posição (${xEmB?.toFixed(2)} × ${xEmA?.toFixed(2)})`);
 // A (P1) pula; B deve ver
 await A.keyboard.down('Space');
 let yP1emB = 0;
@@ -99,6 +125,31 @@ await B.waitForSelector('#pausa', { state: 'hidden', timeout: 5000 }).catch(() =
 checar(await B.isHidden('#pausa'), 'continuar tira a pausa nos dois');
 const info = await A.textContent('#hud-info');
 console.log('HUD A:', info);
+// capítulo 1 inteiro: o anfitrião reproduz as entradas dos bots (Natan e Bruna) e o convidado acompanha
+checar(await A.evaluate((l) => { window.__edm.acelerar(3); return window.__edm.roteiro(l); }, roteiro1.lista), 'anfitrião começa o capítulo 1 com as entradas gravadas');
+const contB0 = await B.evaluate(() => window.__edm.contagem());
+let maxDesvio = 0, amostras = 0;
+for (let k = 0; k < 900; k++) {
+  const h = await A.evaluate(() => window.__edm?.estado().concluida).catch(() => null);
+  if (h !== false) break;
+  const d = await desvioDoConvidado(A, B);
+  if (d !== null) { maxDesvio = Math.max(maxDesvio, d); amostras++; }
+  if (k === 60) { await A.screenshot({ path: saida + 'A_cap1_meio.png' }); await B.screenshot({ path: saida + 'B_cap1_meio.png' }); }
+  await pausa(100);
+}
+const fimB = await B.evaluate(() => { const e = window.__edm.estado(); return { casal: e.estrelinhasCasal, mortos: e.inimigos.filter((n) => !n.vivo).length, c: e.concluida, cont: window.__edm.contagem() }; });
+const fimA = await A.evaluate(() => { const e = window.__edm.estado(); return { casal: e.estrelinhasCasal, mortos: e.inimigos.filter((n) => !n.vivo).length, cont: window.__edm.contagem() }; });
+const delta = (t) => (fimB.cont[t] ?? 0) - (contB0[t] ?? 0);
+checar(delta('tiro') > 0 && delta('acerto') > 0 && delta('derrota') > 0 && fimB.mortos > 0, `convidado vê tiros (${delta('tiro')}), acertos (${delta('acerto')}) e bichinhos estourando (${fimB.mortos})`);
+checar(delta('estrelinha') > 0 && fimB.casal > 0, `convidado vê estrelinhas pegas (★ ${fimB.casal})`);
+checar(fimB.casal === fimA.casal && fimB.mortos === fimA.mortos, `placar igual nos dois (★ ${fimA.casal}/${fimB.casal}, bichinhos ${fimA.mortos}/${fimB.mortos})`);
+checar(amostras > 20 && maxDesvio < 0.75, `posições em sincronia durante o capítulo (${amostras} amostras, maior desvio ${maxDesvio.toFixed(2)} m)`);
+const concA = await A.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false);
+const concB = await B.waitForSelector('#concluido:not([hidden])', { timeout: 20000 }).then(() => true).catch(() => false);
+checar(concA && concB, 'capítulo 1 concluído aparece nos dois');
+await A.screenshot({ path: saida + 'A_concluido.png' }); await B.screenshot({ path: saida + 'B_concluido.png' });
+const [pA, pB] = await Promise.all([A, B].map((p) => p.evaluate(() => window.__edmFluxo.progresso().capitulos[1])));
+checar(pA?.estrelinhas === fimA.casal && pB?.estrelinhas === pA?.estrelinhas, `progresso salvo e enviado ao convidado (★ ${pA?.estrelinhas}/${pA?.total})`);
 checar(log.length === 0, `sem erros no console${log.length ? ': ' + log.slice(0, 3).join(' | ') : ''}`);
 // conexão perdida: B fecha; A mostra a tela de conexão perdida (e fica esperando a volta)
 await B.close();

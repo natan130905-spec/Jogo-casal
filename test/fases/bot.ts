@@ -161,7 +161,7 @@ const autoTiro = (e: Estado, eu: EstadoJogador) =>
   }) || e.esporos.some((s) => { const d = (s.x - eu.x) * eu.olhando; return d > 0 && d < 8 && Math.abs(s.y - eu.y - 0.6) < 0.4; });
 
 /** Roda o plano na fase (ou a partir de `e`). `cada` é chamado a cada tick (para medir). */
-export function jogar(f: Fase, plano: Etapa[], o: { e?: Estado; limite?: number; cada?: (e: Estado) => void; log?: boolean } = {}): Relatorio & { e: Estado } {
+export function jogar(f: Fase, plano: Etapa[], o: { e?: Estado; limite?: number; cada?: (e: Estado) => void; log?: boolean; /** recebe as entradas de cada tick (para reproduzir no navegador) */ entradas?: (ents: [Input, Input]) => void } = {}): Relatorio & { e: Estado } {
   const e = o.e ?? estadoInicial(f);
   const r: Relatorio = { concluida: false, segundos: 0, etapa: '', quedas: [0, 0], danos: [0, 0], bolhas: 0, voltas: 0, estrelinhas: 0, derrotados: 0, eventos: {} };
   const limiteTotal = (o.limite ?? 600) * 60;
@@ -196,6 +196,7 @@ export function jogar(f: Fase, plano: Etapa[], o: { e?: Estado; limite?: number;
         break;
       }
     }
+    o.entradas?.(ents);
     passo(f, e, ents);
     for (const ev of e.eventos) {
       const tipo = ev.split(':')[0];
