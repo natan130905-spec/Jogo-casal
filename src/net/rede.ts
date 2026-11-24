@@ -31,7 +31,9 @@ export type Pedido = 'avancar' | 'pular' | 'pausa' | 'continuar' | 'mapa';
 
 export type Mensagem =
   | { t: 'oi'; versao: string }
-  | { t: 'in'; i: Input; seq: number }
+  /** entrada do convidado número `seq`; `l` = as entradas novas desde o envio anterior, uma por tick, terminando em
+   *  `i` (predição: o anfitrião aplica uma por tick, na ordem; ver src/net/predicao.ts) */
+  | { t: 'in'; i: Input; seq: number; l?: Input[] }
   /** instantâneo compacto do estado (anfitrião → convidado) */
   | { t: 'st'; s: Instantaneo }
   | { t: 'ping'; at: number }

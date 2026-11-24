@@ -21,7 +21,8 @@ if (!publico) {
   const pronto = new Promise((r) => { sinal = PeerServer({ port: portaSinal, path: '/', host: '127.0.0.1' }, (s) => r(s.address().port)); });
   portaSinal = await pronto;
 }
-const srv = await preview({ preview: { port: porta, host: '127.0.0.1', strictPort: true }, logLevel: 'error' });
+// DIST=pasta usa outro build (padrão: dist)
+const srv = await preview({ ...(process.env.DIST ? { build: { outDir: process.env.DIST } } : {}), preview: { port: porta, host: '127.0.0.1', strictPort: true }, logLevel: 'error' });
 const base = `http://127.0.0.1:${porta}/?q=media${publico ? '' : `&sinal=127.0.0.1:${portaSinal}`}`;
 const navegador = await chromium.launch({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] });
 const roteiro1 = (await gravarRoteiros([1]))[1];
@@ -100,6 +101,32 @@ let yP1emB = 0;
 for (let k = 0; k < 10; k++) { await pausa(120); yP1emB = Math.max(yP1emB, await B.evaluate(() => window.__edm?.estado().jogadores[0].y)); }
 await A.keyboard.up('Space');
 checar(yP1emB > 0.5, `pulo do P1 aparece no convidado (y=${yP1emB?.toFixed(2)})`);
+// predição do convidado (src/net/predicao.ts): o próprio pulo aparece no quadro seguinte, não ~220 ms depois
+const latB = await B.evaluate(async () => {
+  const est = () => window.__edm.estado().jogadores[1];
+  const quadro = () => new Promise((r) => requestAnimationFrame(r));
+  for (let k = 0; k < 200 && !(est().noChao && Math.abs(est().vy) < 1e-6); k++) await quadro();
+  const y0 = est().y; let n = 0;
+  window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space' }));
+  while (n < 60) { await quadro(); n++; if (est().y > y0 + 0.02) break; }
+  window.dispatchEvent(new KeyboardEvent('keyup', { code: 'Space' }));
+  return n;
+});
+checar(latB <= 2, `convidado vê o próprio pulo em ${latB} quadro(s) (predição local; antes ≈ 220 ms)`);
+await pausa(1200);
+// toque curto no convidado (apertou e soltou no mesmo quadro) não se perde: vira pulo no anfitrião
+{
+  let pulos = 0;
+  for (let k = 0; k < 3; k++) {
+    const c0 = await A.evaluate(() => window.__edm.contagem().pulo ?? 0);
+    await B.evaluate(() => { window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Space' })); window.dispatchEvent(new KeyboardEvent('keyup', { code: 'Space' })); });
+    await pausa(1100);
+    if ((await A.evaluate(() => window.__edm.contagem().pulo ?? 0)) > c0) pulos++;
+  }
+  checar(pulos === 3, `toque curto do convidado vira pulo no anfitrião (${pulos}/3)`);
+  const pr = await B.evaluate(() => window.__edm.predicao());
+  checar(pr && pr.reconciliacoes > 0 && pr.saltos === 0 && pr.maiorErro < 0.5, `predição reconcilia sem salto (${pr?.reconciliacoes} vezes, maior erro ${pr?.maiorErro?.toFixed(3)} m, médio ${pr?.erroMedio?.toFixed(4)} m)`);
+}
 // o instantâneo novo traz vida, bichinhos e estrelinhas
 const extra = await B.evaluate(() => { const e = window.__edm?.estado(); return { cor: e.jogadores.map((j) => j.coracoes), bichos: e.inimigos.length, casal: e.estrelinhasCasal }; });
 checar(extra.cor.every((c) => c >= 1 && c <= 3) && extra.bichos > 0 && extra.casal >= 0, `convidado recebe corações ${extra.cor} e ${extra.bichos} bichinhos`);

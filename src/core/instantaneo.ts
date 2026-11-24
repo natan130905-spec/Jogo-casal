@@ -9,9 +9,15 @@ export interface Instantaneo {
   v: 1;
   /** tick */
   k: number;
-  /** jogadores: [x, y, vx, vy, bits, corações, invencível, estrelinhas, impulso, argola]
-   *  bits: 1 noChao, 2 olhando para a direita, 4 bolha, 8 pendurado, 16 segurando o fio, 32 soltou o fio */
+  /** jogadores: [x, y, vx, vy, bits, corações, invencível, estrelinhas, impulso, argola,
+   *               arTicks, puloGuardado, semCorte, recarga, plataforma, raioArgola, esperaArgola, seguroX, seguroY]
+   *  bits: 1 noChao, 2 olhando para a direita, 4 bolha, 8 pendurado, 16 segurando o fio, 32 soltou o fio,
+   *        64 lançado, 128 pulo segurado no último tick, 256 mão segurada.
+   *  Os campos depois de `argola` são o estado interno do pulo (coyote, buffer, pulo mínimo) e da argola: sem eles,
+   *  a predição do convidado (src/net/predicao.ts) rebobinaria de um estado diferente do anfitrião. */
   j: number[][];
+  /** última entrada do convidado já aplicada pelo anfitrião (o `seq` dela); -1 = nenhuma. Opcional. */
+  sq?: number;
   /** portas (0…1), na ordem de fase.portas */
   p: number[];
   /** placas pressionadas (0/1), na ordem de fase.placas */
@@ -39,14 +45,20 @@ export interface Instantaneo {
 const r2 = (v: number) => Math.round(v * 100) / 100;
 const r1 = (v: number) => Math.round(v * 10) / 10;
 
-export function instantaneo(fase: Fase, e: Estado, eventos: string[] = e.eventos): Instantaneo {
+const r3 = (v: number) => Math.round(v * 1000) / 1000;
+
+export function instantaneo(fase: Fase, e: Estado, eventos: string[] = e.eventos, sq?: number): Instantaneo {
   const defs = fase.especiais ?? [];
   return {
-    v: 1, k: e.tick,
+    v: 1, k: e.tick, ...(sq === undefined ? {} : { sq }),
+    // posição e velocidade com 1 mm e 1 mm/s: a predição do convidado rebobina daqui (com 1 cm o erro somaria a cada
+    // instantâneo e o próprio personagem tremeria)
     j: e.jogadores.map((j) => [
-      r2(j.x), r2(j.y), r1(j.vx), r1(j.vy),
-      (j.noChao ? 1 : 0) | (j.olhando > 0 ? 2 : 0) | (j.bolha ? 4 : 0) | (j.pendurado ? 8 : 0) | (j.segurando ? 16 : 0) | (j.soltouFio ? 32 : 0),
-      j.coracoes, r1(j.invencivel), j.estrelinhas, r2(j.impulso), j.argola,
+      r3(j.x), r3(j.y), r3(j.vx), r3(j.vy),
+      (j.noChao ? 1 : 0) | (j.olhando > 0 ? 2 : 0) | (j.bolha ? 4 : 0) | (j.pendurado ? 8 : 0) | (j.segurando ? 16 : 0) | (j.soltouFio ? 32 : 0)
+        | (j.lancado ? 64 : 0) | (j.pulouSegurado ? 128 : 0) | (j.maoSegurada ? 256 : 0),
+      j.coracoes, r1(j.invencivel), j.estrelinhas, r3(j.impulso), j.argola,
+      j.arTicks, j.puloGuardado, j.semCorte, r3(j.recarga), j.plataforma, r3(j.raioArgola), r3(j.esperaArgola), r2(j.seguroX), r2(j.seguroY),
     ]),
     p: fase.portas.map((p) => r2(e.portas[p.id] ?? 0)),
     pl: fase.placas.map((p) => (e.placasPressionadas[p.id] ? 1 : 0)),
@@ -74,8 +86,11 @@ export function restaurar(fase: Fase, s: Instantaneo): Estado {
       noChao: !!(bits & 1), olhando: bits & 2 ? 1 : -1, bolha: !!(bits & 4), pendurado: !!(bits & 8),
       segurando: !!(bits & 16), soltouFio: !!(bits & 32),
       coracoes: v[5], invencivel: v[6], estrelinhas: v[7], impulso: v[8], argola: v[9],
-      seguroX: v[0], seguroY: v[1],
+      seguroX: v[17] ?? v[0], seguroY: v[18] ?? v[1],
+      lancado: !!(bits & 64), pulouSegurado: !!(bits & 128), maoSegurada: !!(bits & 256),
     });
+    // estado interno do pulo e da argola (instantâneos antigos não têm: fica o padrão de novoJogador)
+    if (v.length > 10) Object.assign(j, { arTicks: v[10], puloGuardado: v[11], semCorte: v[12], recarga: v[13], plataforma: v[14], raioArgola: v[15], esperaArgola: v[16] });
   });
   fase.portas.forEach((p, k) => { e.portas[p.id] = s.p[k] ?? 0; });
   fase.placas.forEach((p, k) => { e.placasPressionadas[p.id] = s.pl[k] === 1; });

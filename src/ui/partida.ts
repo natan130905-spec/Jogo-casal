@@ -1,10 +1,11 @@
 // Uma partida = uma fase em andamento: laço de quadros, simulação (anfitrião/treino) ou interpolação (convidado),
 // cena 3D, controles e HUD. O fluxo cria uma Partida por capítulo e a destrói ao sair da fase.
-import { DT, estadoInicial, normalizarInput, passo } from '../core/sim';
+import { DT, estadoInicial, passo } from '../core/sim';
 import { instantaneo, interpolar, restaurar } from '../core/instantaneo';
 import { INPUT_NEUTRO, type Estado, type Fase, type Input } from '../core/types';
 import { Controles } from '../input/controles';
 import type { Conexao, Mensagem } from '../net/rede';
+import { EntradasDoConvidado, Preditor } from '../net/predicao';
 import { Cena, type Qualidade } from '../render/cena';
 import { faseDoCap } from './historia';
 import { IndicadorParceiro } from './indicador';
@@ -32,7 +33,10 @@ export class Partida {
   private controles: Controles;
   private estado: Estado;
   private ultimo: Estado;
-  private entradaRemota: Input = INPUT_NEUTRO;
+  /** anfitrião: entradas do convidado, uma por tick (src/net/predicao.ts) */
+  private remota = new EntradasDoConvidado();
+  /** convidado: predição do próprio personagem */
+  private preditor: Preditor | null = null;
   private euControlo: number;
   private buffer: { t: number; s: Estado }[] = [];
   private eventosPendentes: string[] = [];
@@ -41,7 +45,6 @@ export class Partida {
   private vivo = true;
   private concluiuEm = 0;
   private avisou = false;
-  private seq = 0;
   /** gancho de teste: entradas gravadas dos dois jogadores, uma por tick (anfitrião/treino) */
   private roteiro: [Input, Input][] | null = null;
   /** gancho de teste: passos de simulação por passo de tempo (1 = tempo real) */
@@ -69,6 +72,7 @@ export class Partida {
     this.estado = estadoInicial(this.fase);
     this.ultimo = this.estado;
     this.euControlo = o.modo === 'convidado' ? 1 : 0;
+    if (o.modo === 'convidado') this.preditor = new Preditor(this.fase, 1, (m) => o.con?.enviar({ t: 'in', i: m.i as Input, seq: m.seq, l: m.l as Input[] }));
     const bTrocar = $('#bt-trocar');
     bTrocar.hidden = o.modo !== 'treino';
     // cada celular segue o próprio personagem; no treino, o controlado (⇄ troca a câmera junto)
@@ -90,6 +94,8 @@ export class Partida {
         return true;
       },
       contagem: () => ({ ...this.contagem }),
+      /** convidado: medidas da predição (reconciliações, maior erro em m, saltos, entradas sem confirmação) */
+      predicao: () => (this.preditor ? { ...this.preditor.medidas } : null),
       /** posições dos dois no tick t (anfitrião/treino; só os últimos 512 ticks) */
       posicoes: (t: number) => {
         if (o.modo === 'convidado' || t < 0 || t > this.estado.tick || this.estado.tick - t >= 512) return null;
@@ -103,11 +109,12 @@ export class Partida {
 
   /** Mensagens de jogo vindas da rede ('in' no anfitrião, 'st' no convidado). */
   receber(m: Mensagem) {
-    if (m.t === 'in') this.entradaRemota = normalizarInput(m.i);
+    if (m.t === 'in') this.remota.receber(m);
     else if (m.t === 'st') {
       const s = restaurar(this.fase, m.s);
       this.buffer.push({ t: performance.now(), s });
       this.eventosPendentes.push(...s.eventos);
+      this.preditor?.receber(s, m.s.sq);
       while (this.buffer.length > 8) this.buffer.shift();
     }
   }
@@ -115,7 +122,8 @@ export class Partida {
   pausar(on: boolean) {
     this.pausada = on;
     this.controles.limpar();
-    if (on) this.entradaRemota = INPUT_NEUTRO;
+    if (on) this.remota.limpar();
+    this.preditor?.limpar();
   }
 
   destruir() {
@@ -136,12 +144,13 @@ export class Partida {
     const o = this.o;
     const dt = Math.min(0.1, Math.max(0, (agora - this.anterior) / 1000));
     this.anterior = agora;
-    const local = this.pausada ? INPUT_NEUTRO : this.controles.ler();
+    // o convidado lê a entrada uma vez por tick, dentro da predição
+    const local = this.pausada || o.modo === 'convidado' ? INPUT_NEUTRO : this.controles.ler();
     let mostrar: Estado = this.estado;
     let eventos: string[] = [];
 
     if (o.modo === 'convidado') {
-      o.con?.enviar({ t: 'in', i: local, seq: this.seq++ });
+      const proprios = this.pausada ? [] : this.preditor!.quadro(dt, () => this.controles.ler());
       const alvo = agora - 100;
       const buf = this.buffer;
       let a = buf[0], b = buf[buf.length - 1];
@@ -149,7 +158,8 @@ export class Partida {
       if (a && b) {
         const k = b.t === a.t ? 1 : Math.max(0, Math.min(1, (alvo - a.t) / (b.t - a.t)));
         mostrar = interpolar(this.fase, a.s, b.s, k);
-        eventos = this.eventosPendentes; this.eventosPendentes = [];
+        eventos = [...this.preditor!.filtrarEventos(this.eventosPendentes), ...proprios]; this.eventosPendentes = [];
+        this.preditor!.aplicar(mostrar, this.pausada ? 0 : dt);
         mostrar.eventos = eventos;
       } else mostrar = this.ultimo;
     } else if (!this.pausada) {
@@ -157,14 +167,15 @@ export class Partida {
       while (this.acumulado >= DT) {
         const ent: [Input, Input] = this.roteiro ? (this.roteiro[this.estado.tick] ?? [INPUT_NEUTRO, INPUT_NEUTRO]) : o.modo === 'treino'
           ? (this.euControlo === 0 ? [local, INPUT_NEUTRO] : [INPUT_NEUTRO, local])
-          : [local, this.entradaRemota];
+          : [local, this.remota.consumir()];
         passo(this.fase, this.estado, ent);
         { const k = (this.estado.tick % 512) * 4, [j0, j1] = this.estado.jogadores; this.historico.set([j0.x, j0.y, j1.x, j1.y], k); }
         eventos.push(...this.estado.eventos);
         this.eventosParaEnviar.push(...this.estado.eventos);
         this.acumulado -= DT;
         if (o.modo === 'anfitriao' && this.estado.tick % 3 === 0) {
-          o.con?.enviar({ t: 'st', s: instantaneo(this.fase, this.estado, this.eventosParaEnviar) });
+          // sq: a última entrada do convidado aplicada (sem ela no roteiro de teste, que ignora o convidado)
+          o.con?.enviar({ t: 'st', s: instantaneo(this.fase, this.estado, this.eventosParaEnviar, this.roteiro ? undefined : this.remota.aplicada) });
           this.eventosParaEnviar = [];
         }
       }
