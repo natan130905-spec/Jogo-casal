@@ -64,8 +64,8 @@ export function posicionarBalao(ax: number, ay: number, w: number, h: number, W:
   const tentar = (cx: number, cy: number) => {
     const [x, y] = lim(cx, cy);
     if (!ok(x, y)) return;
-    // descer o balão para baixo da ponta tapa a plaquinha do nome e a cabeça: custa 4× (prefere ir para o lado)
-    const d = Math.abs(x - x0) + 1.5 * Math.abs(y - y0) + 4 * Math.max(0, y + h - Math.max(ay - 10, y0 + h));
+    // descer o balão para baixo da ponta tapa a plaquinha do nome e a cabeça: custa 8× (prefere ir para o lado)
+    const d = Math.abs(x - x0) + 1.5 * Math.abs(y - y0) + 8 * Math.max(0, y + h - Math.max(ay - 10, y0 + h));
     if (d < dm) { dm = d; melhor = [x, y]; }
   };
   for (const [cx, cy] of cand) tentar(cx, cy);

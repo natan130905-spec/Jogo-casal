@@ -57,6 +57,15 @@ describe('posicionarBalao', () => {
     expect(cruza(ra, { l: b.x, t: b.y, r: b.x + 160, b: b.y + 40 })).toBe(false);
   });
 
+  it('R81: com outro balão logo acima, desvia para o lado em vez de descer sobre a plaquinha do nome', () => {
+    const obs = obstaculos(844, 390);
+    // balão da Dona Lume no alto, no meio; Natan com a cabeça logo abaixo dele (como na captura do e2e)
+    const lume = { l: 310, t: 66, r: 535, b: 120 };
+    const p = posicionarBalao(510, 150, 170, 34, 844, 390, [...obs, lume])!;
+    expect(p.y + 34, 'a base do balão fica acima da ponta (não tapa o nome)').toBeLessThanOrEqual(150 - 10 + 1e-6);
+    expect(cruza({ l: p.x, t: p.y, r: p.x + 170, b: p.y + 34 }, lume)).toBe(false);
+  });
+
   it('opções: todos mostra tudo; só história mostra história e dicas; desligados não mostra nada', () => {
     expect(aparece('todos', 'ocioso')).toBe(true);
     expect(aparece('historia', 'historia')).toBe(true);
@@ -65,5 +74,16 @@ describe('posicionarBalao', () => {
     expect(aparece('historia', 'ocioso')).toBe(false);
     expect(aparece('desligados', 'historia')).toBe(false);
     expect(aparece('desligados', 'dica')).toBe(false);
+  });
+});
+
+describe('T-P1 (parte estática): balões e dicas não tocam o WebGL', () => {
+  it('nenhum módulo dos balões importa three nem src/render', () => {
+    const fontes = import.meta.glob(['../src/ui/baloes.ts', '../src/ui/dicas.ts', '../src/ui/murmurio.ts', '../src/ui/roteiro/*.ts'], { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+    expect(Object.keys(fontes).length).toBeGreaterThanOrEqual(7);
+    for (const [arq, src] of Object.entries(fontes)) {
+      const imports = [...src.matchAll(/from\s+'([^']+)'/g)].map((m) => m[1]);
+      for (const i of imports) expect(i, `${arq} importa ${i}`).not.toMatch(/^three|render\//);
+    }
   });
 });
