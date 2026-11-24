@@ -92,3 +92,30 @@ Resultado dos bots (6 sementes cada, `test/arena_balanceamento.test.ts`):
 | Uma pessoa no treino (60 % / 70 %) | 436–492 s | 25–43 |
 
 Instantâneo da rede: ~380 bytes em média e ~720 no momento mais cheio (JSON).
+
+## Desenho (`src/render/arena/`)
+Classe `CenaArena` (segue a `CenaArenaApi` de `src/ui/partidaArena.ts`: `yaw`, `eu`, `pronta`, `desenhar(e, dt)`,
+`redimensionar`, `info`, `destruir`; extra: `fixarCamera(pos, alvo)` para cenas). Toon de 3 tons com luz de borda
+recortada e contorno em pixels (casco invertido com normal suavizada, que não racha nas costuras dos modelos do Meshy).
+
+| Arquivo | O quê |
+|---|---|
+| `ilha.ts` | gramado, praça de lajes com a estrela, borda de blocos com estrelas douradas, rocha flutuante, trepadeiras, 6 cascatas, ruínas de arcos, pedestais, grama e flores instanciadas, as 6 lembranças (brinquedos, floresta, relógio, oceano, doces, espelhos) balançando no shader |
+| `ceu.ts` | céu roxo-dourado com galáxia, estrelas, estrela de 4 pontas e mar de nuvens; anéis dourados em volta |
+| `pilares.ts` | pilares de cristal (racham, inclinam, quebram em cacos), cristais da fase 3 (pulsam, acendem, raio entre os dois), parede de névoa |
+| `herois.ts` | Natan e Bruna (GLB com esqueleto): corrida pelo clipe Run_02; parado, 3 golpes de cada arma, pulo, esquiva (rolamento), poder, tiro, dano, bolha e comemoração por poses procedurais (cada osso "mira" uma direção do personagem); espada/lança na mão |
+| `rei.ts` | rei.glb: respira, inclina, ergue-se e bate (pancada), estufa (esporos), abaixa e dispara (investida), cresce no rugido, cambaleia atordoado, pisca ao levar dano; névoa, escudo de névoa (fase 2, estilhaça), estrela do peito acesa quando exposto; some virando vaga-lume |
+| `lacaios.ts` | bolotinhas (pulam, agacham e dão o bote) e morcegos (asas batendo no shader), instanciados |
+| `efeitos.ts`, `marcas.ts`, `fita.ts`, `particulas.ts`, `atlas.ts` | avisos no chão (círculo e faixa enchendo, onda de choque com parede de luz, sombra e bola dos esporos caindo), sombras-bolha, marcador da trava, disparos, rastro dos golpes, Corte Cometa, Jardim de Luz, Fio Vermelho (fio sempre entre os dois; aceso no golpe combinado), números de dano, cura, vaga-lume, pétalas da vitória |
+| `camera.ts` | terceira pessoa atrás de quem joga, olhando para o alvo da trava (bolotinha não: a câmera balançaria), afastando até caber o parceiro e o Rei; tremida nos impactos |
+
+Medido com `renderer.info` (capturas de `test/vitrine/capturar_arena.mjs`, 1280 × 720):
+
+| Qualidade | Chamadas de desenho | Triângulos |
+|---|---|---|
+| Baixa (sem contorno) | 21 | ~92 mil |
+| Média | 24–31 | 134–193 mil (o pico é com os 4 morcegos) |
+| Alta (sombras reais, brilho) | 48–51 | 243–285 mil |
+
+Vitrine: `npm run dev` e abrir `/test/vitrine/arena.html` (bots lutando; WASD/J/K/Espaço/Shift/Q assumem o personagem,
+Tab troca, B liga/desliga os bots). Capturas escolhidas: `docs/arte/capturas_arena/`.
