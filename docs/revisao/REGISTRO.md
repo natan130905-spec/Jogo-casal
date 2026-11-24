@@ -639,9 +639,13 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
   0,3 × 7,3 m = 2,2 m abaixo do centro, e o parceiro 4,6 m abaixo não cabia. Os dois **cabiam** se o centro descesse.
 - **Correção:** com o afastamento já calculado, o y desliza até a faixa em que os dois cabem, se ela existir
   (`fyMin ≤ fyMax`). O resto da câmera não muda: os 12 testes de `camera.test.ts` passam, incluindo a faixa de
-  21–25 % nos quadros normais. Estado: **corrigido** (`2bd4b8b`).
-- **Teste que impede a volta:** `camera.test.ts` › "R66 · parceiro 4,6 m abaixo…", com 4 casos × 2 telas. Ele
-  falha com o código antigo (dx 4, dy −4,6).
+  21–25 % nos quadros normais. O desnível em que a câmera ainda enquadra os dois subiu de 4,5 para 5,2 m (`pertoY`;
+  `longeY` de 6 para 6,5), porque os corredores do cap. 6 ficam a 5 m: no p05, com a Bruna 5 m acima, ela também
+  ficava fora do quadro. Estado: **corrigido** (`2bd4b8b`, `5a923d4`). Imagens:
+  `docs/revisao/lote0/qa/r66_cap6_antes_depois_corrigido.webp` (antes, depois do lote e depois da correção do
+  desnível 4,6 m) e as folhas `qa/*_p05.webp` (cap. 6, com o desnível de 5 m).
+- **Teste que impede a volta:** `camera.test.ts` › "R66 · parceiro 4–5 m abaixo ou acima…", com 6 casos × 2 telas.
+  Ele falha com o código antigo (dx 4, dy −4,6).
 - Fonte: QA do Lote 0 (captura do cap. 6, p012).
 
 ### R67 · e2e "P2 andou no anfitrião" reprovava sem GPU com a máquina carregada
