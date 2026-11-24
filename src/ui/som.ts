@@ -63,6 +63,8 @@ class Som {
       if (!nome || agora - (this.ultimo.get(nome) ?? 0) < 80) continue;
       this.ultimo.set(nome, agora);
       const ctx = this.ctx;
+      // Pulo: sintetizado (curto e fofo). O arquivo antigo durava 1 s e soava estranho.
+      if (nome === 'sfx_pulo') { pulo(ctx, Number(ev.split(':')[1]) || 0, ev.startsWith('superpulo')); continue; }
       void this.carregar(nome).then((buf) => {
         if (!buf) return;
         const src = ctx.createBufferSource(), g = ctx.createGain();
@@ -71,6 +73,40 @@ class Som {
       });
     }
   }
+}
+
+/** "Puín" de desenho animado: subida rápida de tom (seno + um pouco de triângulo), ~0,16 s, com um sopro suave.
+ *  Natan (0) um pouco mais grave, Bruna (1) mais aguda; o superpulo sobe mais e dura um pouco mais.
+ *  Variação de ±4 % no tom para não cansar. */
+export function pulo(ctx: AudioContext, quem: number, superpulo = false) {
+  const t0 = ctx.currentTime + 0.005;
+  const dur = superpulo ? 0.26 : 0.16;
+  const base = (quem === 1 ? 520 : 400) * (0.96 + Math.random() * 0.08);
+  const fim = base * (superpulo ? 2.6 : 1.9);
+  const saida = ctx.createGain();
+  saida.gain.value = 0.22;
+  saida.connect(ctx.destination);
+
+  for (const [tipo, vol] of [['sine', 1], ['triangle', 0.25]] as const) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = tipo;
+    o.frequency.setValueAtTime(base, t0);
+    o.frequency.exponentialRampToValueAtTime(fim, t0 + dur * 0.7);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g).connect(saida);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  }
+  // sopro: ruído filtrado bem baixinho
+  const n = Math.floor(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+  const r = ctx.createBufferSource(), f = ctx.createBiquadFilter(), gr = ctx.createGain();
+  r.buffer = buf; f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = 0.8; gr.gain.value = 0.12;
+  r.connect(f).connect(gr).connect(saida);
+  r.start(t0);
 }
 
 export const som = new Som();
