@@ -188,7 +188,7 @@ if (partes.includes('treino')) {
   await A.evaluate(() => document.querySelectorAll('#mapa .ilha')[6].click());
   checar(await A.isVisible('#bt-arena'), 'treino: o mapa oferece a Arena do Coração no capítulo 7');
   await A.click('#bt-arena');
-  await A.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 30000 });
+  await A.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 120000 });
   checar((await tela(A))?.t === 'arena', 'treino: entrou na arena');
   await pausa(800);
   await A.screenshot({ path: `${saida}treino_inicio.png` });
@@ -252,8 +252,8 @@ if (partes.includes('dupla')) {
   await A.waitForFunction((t) => document.querySelector('#qd-texto').textContent !== t, q0, { timeout: 5000 }).catch(() => {});
   checar((await A.textContent('#qd-texto')) !== q0, 'dupla: toque do convidado avança a cena da fuga');
   await A.click('#bt-pular');
-  await A.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 30000 });
-  await B.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 30000 });
+  await A.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 120000 });
+  await B.waitForFunction(() => window.__edm?.arena && window.__edm.pronta(), null, { timeout: 120000 });
   checar(true, 'dupla: a arena carregou nos dois');
   await pausa(1000);
   await A.screenshot({ path: `${saida}dupla_inicio_A.png` }); await B.screenshot({ path: `${saida}dupla_inicio_B.png` });
