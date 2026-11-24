@@ -137,7 +137,14 @@ export class Cena {
     return vivo();
   }
 
-  private razaoPixel() { return Math.min(devicePixelRatio, this.qualidade === 'alta' ? 2 : this.qualidade === 'media' ? 1.5 : 1); }
+  private razaoPixel() {
+    const r = Math.min(devicePixelRatio, this.qualidade === 'alta' ? 2 : this.qualidade === 'media' ? 1.5 : 1);
+    if (this.qualidade !== 'alta') return r;
+    // alta: no máximo 0,9 Mpx internos (orçamento do Bonito, PLANO §5.3): com MSAA 4× em HalfFloat cada pixel custa
+    // ~56 bytes de memória de vídeo; a 2× no Redmi (1,37 Mpx) só o alvo da cena passaria de 75 MB (R37)
+    const px = Math.max(1, this.tamanho.w * this.tamanho.h);
+    return Math.min(r, Math.sqrt(900_000 / px));
+  }
 
   private montarLuz() {
     const t = this.tema;

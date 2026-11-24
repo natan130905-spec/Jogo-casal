@@ -29,6 +29,8 @@ export class Pos {
     // (o MSAA do canvas só valia para o retângulo final). O canvas da alta é criado sem antialias (cena.ts).
     const alvo = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
     this.composer = new EffectComposer(renderer, alvo);
+    // o segundo alvo (troca entre passes) não precisa de MSAA: só a cena é desenhada com amostras
+    this.composer.renderTarget2.samples = 0;
     this.composer.addPass(new RenderPass(cena, camera));
     if (!SEM_BRILHO) {
       this.bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), BRILHO.forca, BRILHO.raio, 0);
