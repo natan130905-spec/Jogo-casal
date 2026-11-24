@@ -211,6 +211,15 @@ button.confirmar { background: #ff8fb8 !important; color: #3a0f22 !important; bo
 #pausa .cartao { pointer-events: auto; }
 .dica-teclas { margin: 0; font-size: 11px; opacity: .6; }
 
+/* ---------- carregamento da fase (R33) ---------- */
+#carregando { z-index: 30; background: radial-gradient(circle at 50% 40%, #3a2770, #150e30); backdrop-filter: none; }
+.cartao.carr { gap: 4px; width: min(420px, 88vw); }
+.carr-arte { width: clamp(70px, 26vh, 130px); aspect-ratio: 1; margin: 0 auto 4px; border-radius: 50%; background: #2b1f5c center / cover no-repeat;
+  border: 3px solid #ffffff40; box-shadow: 0 0 24px #ffcf6b55; animation: pulsar 1.6s ease-in-out infinite; }
+.carr-trilho { height: 10px; border-radius: 99px; background: #ffffff20; overflow: hidden; margin: 6px 0 2px; }
+.carr-trilho i { display: block; height: 100%; width: 4%; border-radius: 99px; background: linear-gradient(90deg, #ffcf6b, #ff8fb8); transition: width .25s ease-out; }
+.carr-etapa { margin: 0; font-size: 14px; opacity: .8; min-height: 1.2em; }
+
 /* ---------- capítulo concluído ---------- */
 #concluido { background: radial-gradient(circle at 50% 40%, #6b3f9add, #150e30f2); }
 .cartao.festa { width: min(460px, 92vw); gap: 4px; animation: entra .5s ease-out; }

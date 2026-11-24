@@ -458,6 +458,8 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
 
   // Lança-Estrelas (na mão do lado da câmera) e a bolha de quem ficou sem corações
   const lanca = lancaEstrelas();
+  // já preso (invisível) numa das mãos: assim os shaders dele são compilados na carga, não no 1º tiro (R38)
+  ossos[O.bracoD].add(lanca.g);
   const bolha = new THREE.Mesh(new THREE.SphereGeometry(0.64, 24, 16), materialBolha(qual === 'P1' ? 0xffc8b0 : 0xd8c0ff));
   bolha.position.y = 0.55; bolha.renderOrder = 8; bolha.visible = false;
   raiz.add(bolha);

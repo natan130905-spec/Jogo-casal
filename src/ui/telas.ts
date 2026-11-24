@@ -286,3 +286,60 @@ export function comConfirmacao(el: HTMLElement, pergunta: string | (() => string
   });
   return cancelar;
 }
+
+// ---------- tela de carregamento da fase (R33) ----------
+/** Resolve depois que o navegador pintou um quadro (dois rAF: o 1º roda antes da pintura, o 2º depois dela). */
+export function quadroPintado(): Promise<void> {
+  return new Promise((r) => {
+    if (document.hidden) { setTimeout(r, 0); return; }
+    requestAnimationFrame(() => requestAnimationFrame(() => r()));
+  });
+}
+
+export interface Carga {
+  /** performance.now() do toque em Jogar (criação da partida), da tela pintada e da fase pronta */
+  inicio: number; pintada: number; pronta: number;
+  progresso(f: number, etapa: string): void;
+  terminar(): void;
+  esconder(): void;
+  resumo(): { pintadaMs: number; prontaMs: number; etapas: Record<string, number> };
+}
+
+const ETAPAS: Record<string, string> = {
+  luz: 'Acendendo o céu…', 'cenário': 'Montando o mundo…', 'peças': 'Arrumando as peças…', personagens: 'Chamando o Natan e a Bruna…',
+  bichinhos: 'Acordando os bichinhos…', shaders: 'Preparando as cores…', pronto: 'Pronto!',
+};
+
+/** Mostra a tela de carregamento do capítulo `cap` (título, barra e etapa) e devolve o controle dela. */
+export function mostrarCarregando(cap: number): Carga {
+  const el = $('#carregando');
+  const c = info(cap);
+  $('#carr-cap').textContent = `Capítulo ${cap}`;
+  $('#carr-nome').textContent = c.nome;
+  $('#carr-arte').style.backgroundImage = `url('${c.arte}')`;
+  const barra = $('#carr-barra');
+  barra.style.width = '4%';
+  $('#carr-etapa').textContent = 'Abrindo o caminho…';
+  el.hidden = false;
+  const etapas: Record<string, number> = {};
+  let ultima = '', tEtapa = performance.now();
+  const carga: Carga = {
+    inicio: performance.now(), pintada: 0, pronta: 0,
+    progresso(f, etapa) {
+      const t = performance.now();
+      if (ultima) etapas[ultima] = Math.round(t - tEtapa);
+      ultima = etapa; tEtapa = t;
+      barra.style.width = `${Math.round(4 + f * 96)}%`;
+      $('#carr-etapa').textContent = ETAPAS[etapa] ?? '';
+    },
+    terminar() {
+      carga.pronta = performance.now();
+      if (ultima) etapas[ultima] = Math.round(carga.pronta - tEtapa);
+      ultima = '';
+      el.hidden = true;
+    },
+    esconder() { el.hidden = true; },
+    resumo: () => ({ pintadaMs: Math.round(carga.pintada - carga.inicio), prontaMs: carga.pronta ? Math.round(carga.pronta - carga.inicio) : -1, etapas: { ...etapas } }),
+  };
+  return carga;
+}

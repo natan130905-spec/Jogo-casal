@@ -20,6 +20,12 @@ import { CAM, CameraJogador, aplicarCamera, type Quadro } from './camera';
 
 export type Qualidade = 'baixa' | 'media' | 'alta';
 
+/** Devolve o controle ao navegador até o próximo quadro pintado (a tela de carregamento atualiza). */
+const ceder = () => new Promise<void>((r) => {
+  if (typeof requestAnimationFrame === 'undefined' || document.hidden) { setTimeout(r, 0); return; }
+  requestAnimationFrame(() => setTimeout(r, 0));
+});
+
 /** `?resfixa` desliga a resolução dinâmica (capturas de tela comparáveis em máquina sem GPU). */
 const RES_FIXA = typeof location !== 'undefined' && new URLSearchParams(location.search).has('resfixa');
 
@@ -31,7 +37,7 @@ export class Cena {
   private cam: CameraJogador;
   private eu = 0;
   private quadroCam: Quadro | null = null;
-  private bonecos: [Personagem, Personagem];
+  private bonecos!: [Personagem, Personagem];
   private sombras: THREE.Mesh[] = [];
   private portas = new Map<string, THREE.Group>();
   private placas = new Map<string, THREE.Mesh>();
@@ -39,8 +45,8 @@ export class Cena {
   private pedaco!: THREE.Mesh;
   private tema: Tema;
   private fx = new Particulas();
-  private bichos: Bichinhos;
-  private elementos: Elementos;
+  private bichos!: Bichinhos;
+  private elementos!: Elementos;
   private vagalumes!: THREE.Points;
   private ceu!: THREE.Mesh;
   private sol!: THREE.DirectionalLight;
@@ -52,7 +58,11 @@ export class Cena {
   private medida = { t: 0, n: 0 };
   private tamanho = { w: 1, h: 1 };
 
-  constructor(canvas: HTMLCanvasElement, private fase: Fase, readonly qualidade: Qualidade) {
+  /**
+   * `adiar`: só cria o renderer; a montagem (geometria procedural, materiais, shaders) fica para `montar()`, em etapas
+   * com `await`, atrás da tela de carregamento (R33). Sem `adiar`, monta tudo já (vitrine, ferramentas).
+   */
+  constructor(canvas: HTMLCanvasElement, private fase: Fase, readonly qualidade: Qualidade, o: { adiar?: boolean } = {}) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: qualidade !== 'baixa', powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(this.razaoPixel());
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -63,18 +73,62 @@ export class Cena {
     this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.localClippingEnabled = true; // a porteira some dentro do lintel ao subir
     this.renderer.info.autoReset = false;
+    // conferir erro de shader custa uma ida e volta síncrona ao driver por programa; só no desenvolvimento (R38)
+    this.renderer.debug.checkShaderErrors = !import.meta.env?.PROD;
     TEMPO.value = 0;
     this.tema = temaDaFase(fase);
     this.cam = new CameraJogador(fase);
-    this.montarLuz();
-    this.montarMundo();
-    this.montarJogo();
-    this.bonecos = [criarPersonagem('P1', qualidade), criarPersonagem('P2', qualidade)];
-    for (const b of this.bonecos) this.scene.add(b.raiz);
-    this.bichos = new Bichinhos(fase, qualidade);
-    this.elementos = new Elementos(fase, qualidade, this.tema);
-    this.scene.add(this.bichos.raiz, this.elementos.raiz, this.fx.raiz);
-    if (qualidade === 'alta') this.pos = new Pos(this.renderer, this.scene, this.camera, ['oceano', 'doces', 'espelhos'].includes(this.tema.chave));
+    if (!o.adiar) for (const [, etapa] of this.etapas()) etapa();
+  }
+
+  /** As etapas da montagem, na ordem (nome para a tela de carregamento, trabalho). */
+  private etapas(): [string, () => void][] {
+    const q = this.qualidade, fase = this.fase;
+    return [
+      ['luz', () => this.montarLuz()],
+      ['cenário', () => this.montarMundo()],
+      ['peças', () => this.montarJogo()],
+      ['personagens', () => {
+        this.bonecos = [criarPersonagem('P1', q), criarPersonagem('P2', q)];
+        for (const b of this.bonecos) this.scene.add(b.raiz);
+      }],
+      ['bichinhos', () => {
+        this.bichos = new Bichinhos(fase, q);
+        this.elementos = new Elementos(fase, q, this.tema);
+        this.scene.add(this.bichos.raiz, this.elementos.raiz, this.fx.raiz);
+        if (q === 'alta') this.pos = new Pos(this.renderer, this.scene, this.camera, ['oceano', 'doces', 'espelhos'].includes(this.tema.chave));
+      }],
+    ];
+  }
+
+  /**
+   * Monta a fase em etapas, devolvendo o controle ao navegador entre elas (a tela de carregamento pinta e anda), e
+   * compila os shaders com `compileAsync` antes do primeiro quadro (R38). `progresso(0…1, etapa)` a cada passo;
+   * `vivo()` falso interrompe (a pessoa saiu antes de terminar).
+   */
+  async montar(e: Estado, progresso: (f: number, etapa: string) => void = () => {}, vivo: () => boolean = () => true) {
+    const etapas = this.etapas();
+    const total = etapas.length + 1;
+    for (let k = 0; k < etapas.length; k++) {
+      progresso(k / total, etapas[k][0]);
+      await ceder();
+      if (!vivo()) return false;
+      etapas[k][1]();
+    }
+    progresso(etapas.length / total, 'shaders');
+    await ceder();
+    if (!vivo()) return false;
+    // tamanho final (vaga-lumes e compositor da alta já existem) e a câmera já no primeiro enquadramento
+    this.redimensionar(this.tamanho.w, this.tamanho.h);
+    this.quadroCam = this.cam.atualizar(e, this.eu, this.camera.aspect, 0);
+    aplicarCamera(this.camera, this.quadroCam);
+    // na alta a cena é desenhada no alvo do compositor (espaço linear, sem curva de tons): compila com ele ligado
+    const antes = this.renderer.getRenderTarget();
+    if (this.pos) this.renderer.setRenderTarget(this.pos.alvoCena);
+    try { await this.renderer.compileAsync(this.scene, this.camera); } catch { /* compila no 1º quadro */ }
+    finally { this.renderer.setRenderTarget(antes); }
+    progresso(1, 'pronto');
+    return vivo();
   }
 
   private razaoPixel() { return Math.min(devicePixelRatio, this.qualidade === 'alta' ? 2 : this.qualidade === 'media' ? 1.5 : 1); }
@@ -228,7 +282,7 @@ export class Cena {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    (this.vagalumes.material as THREE.ShaderMaterial).uniforms.uAltura.value = h * this.renderer.getPixelRatio();
+    if (this.vagalumes) (this.vagalumes.material as THREE.ShaderMaterial).uniforms.uAltura.value = h * this.renderer.getPixelRatio();
     this.pos?.setSize(w, h, this.renderer.getPixelRatio());
   }
 

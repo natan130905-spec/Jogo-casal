@@ -42,6 +42,8 @@ export class Pos {
     }
     this.composer.addPass(new OutputPass());
   }
+  /** o alvo em que a cena é desenhada (para compilar os shaders da alta com o mesmo estado: espaço linear, sem curva) */
+  get alvoCena() { return this.composer.readBuffer; }
   setSize(w: number, h: number, pr: number) {
     this.composer.setPixelRatio(pr);
     this.composer.setSize(w, h);

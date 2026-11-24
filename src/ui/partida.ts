@@ -11,7 +11,7 @@ import { faseDoCap } from './historia';
 import { IndicadorParceiro } from './indicador';
 import { som } from './som';
 import { Limitador, metaDeFps } from './ritmo';
-import { $, Hud, mostrarTela } from './telas';
+import { $, Hud, mostrarCarregando, mostrarTela, quadroPintado, type Carga } from './telas';
 
 export type Modo = 'treino' | 'anfitriao' | 'convidado';
 
@@ -40,8 +40,9 @@ const DEPURAR = new URLSearchParams(location.search).has('debug');
 export class Partida {
   readonly fase: Fase;
   readonly cap: number;
-  private cena: Cena;
-  private controles: Controles;
+  /** null até a montagem (em etapas, atrás da tela de carregamento) terminar */
+  private cena: Cena | null = null;
+  private controles: Controles | null = null;
   private estado: Estado;
   private ultimo: Estado;
   /** anfitrião: entradas do convidado, uma por tick (src/net/predicao.ts) */
@@ -70,46 +71,66 @@ export class Partida {
   /** anfitrião: ticks seguidos sem entrada nova do convidado */
   private semEntrada = 0;
   private sumido = false;
-  private ajustar = () => { this.cena.redimensionar(innerWidth, innerHeight); this.indicador?.recalcular(); };
+  private ajustar = () => { this.cena?.redimensionar(innerWidth, innerHeight); this.indicador?.recalcular(); };
 
   constructor(private o: OpcoesPartida) {
     this.cap = o.cap;
     this.fase = faseDoCap(o.cap);
-    mostrarTela('jogo');
-    // um canvas novo por fase (o contexto WebGL anterior é descartado em destruir())
-    const velho = $<HTMLCanvasElement>('#canvas');
-    const canvas = velho.cloneNode() as HTMLCanvasElement;
-    velho.replaceWith(canvas);
-    this.cena = new Cena(canvas, this.fase, o.qualidade);
-    this.indicador = new IndicadorParceiro($('#indicador'), this.fase);
-    this.ajustar();
-    addEventListener('resize', this.ajustar);
-    this.controles = new Controles($('#controles'));
     this.estado = estadoInicial(this.fase);
     this.ultimo = this.estado;
     this.euControlo = o.modo === 'convidado' ? 1 : 0;
     if (o.modo === 'convidado') this.preditor = new Preditor(this.fase, 1, (m) => o.con?.enviar({ t: 'in', i: m.i as Input, seq: m.seq, l: m.l as Input[] }));
-    const bTrocar = $('#bt-trocar');
-    bTrocar.hidden = o.modo !== 'treino';
+    this.indicador = new IndicadorParceiro($('#indicador'), this.fase);
+    // o gancho da partida anterior sai já (não prende a fase velha na memória, R54; os testes esperam o novo)
+    delete (window as unknown as { __edm?: unknown }).__edm;
+    // R33: a tela de carregamento é pintada ANTES de montar a fase; a montagem vem depois, em etapas
+    mostrarTela('jogo');
+    $('#bt-trocar').hidden = o.modo !== 'treino';
+    this.carga = mostrarCarregando(o.cap);
+    void this.montar();
+  }
+
+  /** medidas da carga (gancho de teste e painel ?diag): toque → tela pintada → pronta, em ms de performance.now() */
+  readonly carga: Carga;
+
+  private async montar() {
+    const o = this.o;
+    await quadroPintado();
+    this.carga.pintada = performance.now();
+    if (!this.vivo) return;
+    // um canvas novo por fase (o contexto WebGL anterior é descartado em destruir())
+    const velho = $<HTMLCanvasElement>('#canvas');
+    const canvas = velho.cloneNode() as HTMLCanvasElement;
+    velho.replaceWith(canvas);
+    const cena = (this.cena = new Cena(canvas, this.fase, o.qualidade, { adiar: true }));
+    this.ajustar();
+    addEventListener('resize', this.ajustar);
+    const ok = await cena.montar(this.estado, (f, etapa) => this.carga.progresso(f, etapa), () => this.vivo);
+    if (!ok || !this.vivo) return;
+    this.controles = new Controles($('#controles'));
     // cada celular segue o próprio personagem; no treino, o controlado (⇄ troca a câmera junto)
-    const seguir = () => { this.cena.seguir(this.euControlo); this.indicador.configurar(this.euControlo); };
+    const seguir = () => { cena.seguir(this.euControlo); this.indicador.configurar(this.euControlo); };
     seguir();
-    bTrocar.onclick = () => { this.euControlo = 1 - this.euControlo; o.hud.eu(this.euControlo); seguir(); };
+    $('#bt-trocar').onclick = () => { this.euControlo = 1 - this.euControlo; o.hud.eu(this.euControlo); seguir(); };
     o.hud.configurar(o.cap, this.euControlo);
     som.tocarMusica(o.cap);
     // gancho de teste e depuração. roteiro/acelerar só valem no anfitrião e no treino (o convidado não simula):
     // roteiro(lista) recomeça a fase e joga as entradas gravadas (uma [P1, P2] por tick); acelerar(k) roda k passos
     // por passo de tempo, para o teste não demorar o tempo real da fase.
     (window as unknown as { __edm: unknown }).__edm = {
-      estado: () => this.ultimo, modo: o.modo, cap: o.cap, info: () => this.cena.info(),
+      estado: () => this.ultimo, modo: o.modo, cap: o.cap, info: () => cena.info(),
+      /** carga desta fase: tocou, pintada, pronta (ms) e a duração de cada etapa */
+      carga: () => this.carga.resumo(),
       /** câmera deste aparelho: quem segue, fração da tela de cada personagem (projetada), enquadramento e indicador */
-      camera: () => ({ ...this.cena.medirCamera(this.ultimo), indicador: { ...this.indicador.ultimo } }),
+      camera: () => ({ ...cena.medirCamera(this.ultimo), indicador: { ...this.indicador.ultimo } }),
       roteiro: (lista: [Input, Input][]) => {
         if (o.modo === 'convidado') return false;
         this.estado = estadoInicial(this.fase); this.roteiro = lista; this.acumulado = 0; this.concluiuEm = 0; this.avisou = false;
         return true;
       },
       contagem: () => ({ ...this.contagem }),
+      /** programas de shader vivos (nome e começo da chave): para achar compilação no meio do jogo (R38) */
+      programas: (cheia = false) => (cena.renderer.info.programs ?? []).map((p) => (cheia ? `${p.name}|${p.cacheKey}` : `${p.name} ${String(p.cacheKey).slice(0, 60)}`)),
       /** convidado: medidas da predição (reconciliações, maior erro em m, saltos, entradas sem confirmação) */
       predicao: () => (this.preditor ? { ...this.preditor.medidas } : null),
       /** posições dos dois no tick t (anfitrião/treino; só os últimos 512 ticks) */
@@ -120,6 +141,8 @@ export class Partida {
       },
       acelerar: (k: number) => { this.aceleracao = Math.max(1, Math.min(60, Math.round(k) || 1)); },
     };
+    this.carga.terminar();
+    this.anterior = performance.now();
     requestAnimationFrame(this.quadro);
   }
 
@@ -143,13 +166,13 @@ export class Partida {
   }
 
   /** Este aparelho vai para segundo plano: solta os controles (o fluxo pausa e avisa o outro). */
-  soltar() { this.controles.limpar(); }
+  soltar() { this.controles?.limpar(); }
 
   pausar(on: boolean) {
     this.pausada = on;
     // ao pausar, solta tudo; ao continuar, NÃO: o polegar que voltou ao joystick durante a pausa (a sobreposta deixa
     // o toque passar fora do cartão) já vale sem precisar levantar e tocar de novo
-    if (on) { this.controles.limpar(); this.remota.limpar(); }
+    if (on) { this.controles?.limpar(); this.remota.limpar(); }
     // o prazo de "sumiu" só conta com o jogo rodando e depois da primeira mensagem do outro
     if (!on && this.ultimaDoOutro) this.ultimaDoOutro = performance.now();
     this.preditor?.limpar();
@@ -159,9 +182,10 @@ export class Partida {
     this.vivo = false;
     removeEventListener('resize', this.ajustar);
     this.indicador.esconder();
-    this.controles.destruir();
-    this.cena.renderer.dispose();
-    this.cena.renderer.forceContextLoss();
+    this.carga.esconder();
+    this.controles?.destruir();
+    this.cena?.renderer.dispose();
+    this.cena?.renderer.forceContextLoss();
   }
 
   /** anfitrião: a entrada do convidado para este tick; repetir a última só vale por TICKS_ENTRADA_VALIDA ticks */
@@ -179,18 +203,19 @@ export class Partida {
   private limitador = new Limitador(metaDeFps());
 
   private quadro = (agora: number) => {
-    if (!this.vivo) return;
+    if (!this.vivo || !this.cena || !this.controles) return;
+    const cena = this.cena, controles = this.controles;
     if (!this.limitador.quadro(agora)) { requestAnimationFrame(this.quadro); return; }
     const o = this.o;
     const dt = Math.min(0.1, Math.max(0, (agora - this.anterior) / 1000));
     this.anterior = agora;
     // o convidado lê a entrada uma vez por tick, dentro da predição
-    const local = this.pausada || o.modo === 'convidado' ? INPUT_NEUTRO : this.controles.ler();
+    const local = this.pausada || o.modo === 'convidado' ? INPUT_NEUTRO : controles.ler();
     let mostrar: Estado = this.estado;
     let eventos: string[] = [];
 
     if (o.modo === 'convidado') {
-      const proprios = this.pausada ? [] : this.preditor!.quadro(dt, () => this.controles.ler());
+      const proprios = this.pausada ? [] : this.preditor!.quadro(dt, () => controles.ler());
       const alvo = agora - 100;
       const buf = this.buffer;
       let a = buf[0], b = buf[buf.length - 1];
@@ -231,8 +256,8 @@ export class Partida {
       o.aoSumir?.(true);
     }
 
-    this.cena.desenhar(mostrar, this.pausada ? 0 : dt);
-    this.indicador.atualizar(mostrar, eventos, this.cena, this.pausada ? 0 : dt);
+    cena.desenhar(mostrar, this.pausada ? 0 : dt);
+    this.indicador.atualizar(mostrar, eventos, cena, this.pausada ? 0 : dt);
     this.ultimo = mostrar;
     o.hud.atualizar(mostrar, eventos);
     for (const ev of eventos) { const tipo = ev.split(':')[0]; this.contagem[tipo] = (this.contagem[tipo] ?? 0) + 1; }
@@ -246,7 +271,7 @@ export class Partida {
     this.fps.n++;
     // fps, ping e contagens só com ?debug (R34: o jogador via "24 fps" e achava que estava quebrado)
     if (DEPURAR && agora - this.fps.t > 1000) {
-      const inf = this.cena.info();
+      const inf = cena.info();
       const ping = o.con ? ` · ${Math.round(o.con.ping)} ms` : '';
       $('#hud-info').textContent = `${Math.round((this.fps.n * 1000) / (agora - this.fps.t))} fps${ping} · ${inf.chamadas} ch · ${inf.triangulos} tri`;
       this.fps = { n: 0, t: agora };
