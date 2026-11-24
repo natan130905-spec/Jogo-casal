@@ -85,6 +85,8 @@ export const CAP6_ESPELHOS: FaseCapitulo = {
     ...arco(170.5, 174, 1.4, 1.4, 3),      // subindo ao palco
   ],
   lanternas: [{ x: 26, y: 0 }, { x: 66, y: 0 }, { x: 100, y: 0 }, { x: 136, y: 0 }, { x: 160, y: 0 }],
+  // os dois corredores espelhados: cada um no seu de propósito (a regra de afastamento não freia, C2 e)
+  separados: [{ x0: 30, x1: 64 }, { x0: 70, x1: 98 }],
   especiais: [
     // 0: plataforma móvel do salão final
     { tipo: 'movel', w: 2.4, h: 0.4, trajeto: [{ x: 120.2, y: -0.4 }, { x: 129.4, y: -0.4 }], vel: 1.6 },

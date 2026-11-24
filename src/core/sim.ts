@@ -52,6 +52,31 @@ export const TIRO = Object.freeze({ vel: 14, alcance: 8, cadencia: 1 / 3, altura
 export const PISAO = Object.freeze({ quique: 9, quiqueSegurando: 13 });
 export const COLETA = Object.freeze({ raio: 0.55 });
 
+// ---------- afastamento (C2 do PLANO; desligado por padrão, o L3a liga com `Estado.afastamento`) ----------
+/** Distância horizontal entre os dois: até `livre` m, nada; de `livre` a `freio`, só aviso (a interface mostra);
+ *  acima de `freio`, quem anda para LONGE do parceiro anda a `fator` da velocidade. Dentro de uma zona do Fio
+ *  Vermelho ou de um trecho `separados` da fase (corredores do cap. 6), nada muda. Não há puxão nem teleporte. */
+export const AFASTAMENTO = Object.freeze({ livre: 12, freio: 24, fator: 0.6 });
+export type SituacaoAfastamento = 'livre' | 'aviso' | 'freio' | 'fio' | 'separados';
+
+/** Como está o afastamento agora (a mesma regra que o passo usa; serve à câmera e ao indicador do parceiro). */
+export function situacaoAfastamento(fase: Fase, e: Estado): SituacaoAfastamento {
+  const [a, b] = e.jogadores;
+  const dentro = (zs: readonly { x0: number; x1: number }[] | undefined) => (zs ?? []).some((z) => [a, b].some((j) => j.x >= z.x0 && j.x <= z.x1));
+  if (dentro(fase.fio)) return 'fio';
+  if (dentro(fase.separados)) return 'separados';
+  const d = Math.abs(a.x - b.x);
+  return d > AFASTAMENTO.freio ? 'freio' : d > AFASTAMENTO.livre ? 'aviso' : 'livre';
+}
+
+/** Fator da velocidade de andar do jogador i com o joystick em `x` (1 = sem freio). */
+function fatorAfastamento(fase: Fase, e: Estado, i: number, x: number): number {
+  if (!e.afastamento || x === 0) return 1;
+  const eu = e.jogadores[i], outro = e.jogadores[1 - i];
+  if (eu.bolha || outro.bolha || Math.sign(x) !== Math.sign(eu.x - outro.x)) return 1;
+  return situacaoAfastamento(fase, e) === 'freio' ? AFASTAMENTO.fator : 1;
+}
+
 export function novoJogador(x: number, y: number): EstadoJogador {
   return {
     x, y, vx: 0, vy: 0, noChao: false, olhando: 1, seguroX: x, seguroY: y, impulso: 0, pulouSegurado: false,
@@ -193,7 +218,7 @@ export function passo(fase: Fase, e: Estado, entradas: readonly [Input, Input]):
       j.vx *= 1 - FIO.atrito * DT; j.vy *= 1 - FIO.atrito * DT;
       if (x !== 0) j.olhando = x > 0 ? 1 : -1;
     } else {
-      const alvo = x * FISICA.velAndar;
+      const alvo = x * FISICA.velAndar * fatorAfastamento(fase, e, i, x);
       const acel = (j.noChao ? FISICA.acelChao : FISICA.acelAr) * DT;
       j.vx += Math.max(-acel, Math.min(acel, alvo - j.vx));
       if (x !== 0) j.olhando = x > 0 ? 1 : -1;

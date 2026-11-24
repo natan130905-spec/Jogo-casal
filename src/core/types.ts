@@ -88,6 +88,8 @@ export interface Fase {
   argolas?: Ponto[];
   /** marcas no cenário, só visuais (o render desenha; a simulação ignora) */
   marcas?: Marca[];
+  /** trechos "separados de propósito" (x0…x1, cap. 6): ali a regra de afastamento não freia ninguém */
+  separados?: { x0: number; x1: number }[];
 }
 
 /**
@@ -208,4 +210,6 @@ export interface Estado {
   /** coyote da rede: ticks extras de coyote por jogador (o anfitrião põe ≈ RTT/2 do convidado enquanto não há
    *  predição local; teto total FISICA.coyoteRedeMax). Opcional; ausente = 0. */
   toleranciaRede?: [number, number];
+  /** regra de afastamento ligada (AFASTAMENTO em sim.ts; C2 do PLANO). Opcional; ausente = desligada. */
+  afastamento?: boolean;
 }
