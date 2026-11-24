@@ -20,9 +20,10 @@ const params = new URLSearchParams(location.search);
 const qualidadePadrao = (): Qualidade => {
   const q = params.get('q');
   if (q === 'baixa' || q === 'media' || q === 'alta') return q;
-  // primeira escolha pelo aparelho: telas densas e 8+ núcleos → alta
-  const nucleos = navigator.hardwareConcurrency || 4;
-  return nucleos >= 8 && devicePixelRatio >= 2.5 ? 'alta' : 'media';
+  // a escolha salva no aparelho; senão 'media' (o orçamento do Redmi Note 11, que tem 8 núcleos e tela densa:
+  // na 'alta' as sombras reais passam de 450 mil triângulos no capítulo 2)
+  try { const s = localStorage.getItem('edm-qualidade'); if (s === 'baixa' || s === 'media' || s === 'alta') return s; } catch { /* sem armazenamento */ }
+  return 'media';
 };
 
 type Tela =
@@ -241,6 +242,9 @@ async function telaCheia() {
 
 $('#logo-estrela').innerHTML = ESTRELA_SVG;
 $<HTMLSelectElement>('#qualidade').value = qualidadePadrao();
+$<HTMLSelectElement>('#qualidade').onchange = (e) => {
+  try { localStorage.setItem('edm-qualidade', (e.target as HTMLSelectElement).value); } catch { /* sem armazenamento */ }
+};
 {
   const n = pedacos(progresso);
   $('#menu-progresso').textContent = n || progresso.prologoVisto
