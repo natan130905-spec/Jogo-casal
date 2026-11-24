@@ -3,9 +3,10 @@
 // esqueleto simples (quadril, tronco, cabeça, braços, pernas e "cauda" do lenço/casaco). O rosto é uma calota
 // sobre a cabeça com textura de canvas (4 expressões num atlas). Material toon de 3 tons + luz de borda, e
 // contorno escuro (casco invertido) na média e na alta.
-// Por personagem: corpo (1 chamada) + contorno (1) + rosto (1) + rótulo (1) (+1 de sombra na alta); o Lança-Estrelas
-// (2, só enquanto atira) e a bolha (1, só sem corações) aparecem quando precisa.
-// Poses além do andar/pular: atirando (Lança-Estrelas na mão do lado da câmera), pendurado no Fio Vermelho ou numa
+// Por personagem: corpo (1 chamada) + contorno (1) + rosto (1) + rótulo (1) (+1 de sombra na alta); a arma na mão
+// (1, só atacando ou trocando; src/render/armas.ts, L4) e a bolha (1, só sem corações) aparecem quando precisa.
+// Poses além do andar/pular: atirando (Estilingue na mão do lado da câmera), golpe (Espada ou Martelo de cima para
+// baixo), pendurado no Fio Vermelho ou numa
 // argola (braços para cima, corpo inclinado na direção da corda), segurando a corda (inclinado para trás, braços
 // à frente) e dentro da bolha (encolhido, flutuando). Rótulos com os nomes: Natan (P1) e Bruna (P2).
 // O visual cabe na caixa de colisão (0,6 × 1,1 m): pés em y = 0, topo do cabelo ≤ 1,1 m.
@@ -16,7 +17,8 @@ import { FISICA } from '../core/sim';
 import type { Qualidade } from './cena';
 import { colocar, pintar } from './util';
 import { materialBolha } from './materiais';
-import { geoEstrela4, inclinacaoCorda } from './elementos';
+import { inclinacaoCorda } from './elementos';
+import { criarItemNaMao } from './armas';
 
 export type QualPersonagem = 'P1' | 'P2';
 
@@ -382,20 +384,6 @@ function rotulo(texto: string, cor: string) {
   return sp;
 }
 
-/** Lança-Estrelas: varinha de latão com a estrela de 4 pontas na ponta (aponta para "baixo" no osso do braço). */
-function lancaEstrelas() {
-  const g = new THREE.Group();
-  const haste = new THREE.CylinderGeometry(0.012, 0.016, 0.2, 6); haste.translate(0, -0.1, 0);
-  const anel = new THREE.TorusGeometry(0.024, 0.008, 4, 8); anel.rotateX(Math.PI / 2); anel.translate(0, -0.19, 0);
-  const geo = mergeGeometries([pintar(haste, 0xb07a3a), pintar(anel, 0xffd060)])!;
-  g.add(new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ vertexColors: true, emissive: 0x2a1404 })));
-  const est = new THREE.Mesh(geoEstrela4(0.075, 0.022, 0.018), new THREE.MeshBasicMaterial({ color: 0xfff0a8, toneMapped: false }));
-  est.position.y = -0.255; est.rotation.y = Math.PI / 2;
-  g.add(est);
-  g.visible = false;
-  return { g, est };
-}
-
 // ---------------------------------------------------------------- animação
 const amortecer = (atual: number, alvo: number, k: number) => atual + (alvo - atual) * k;
 const elastico = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -9 * t) * Math.cos(t * 12));
@@ -456,16 +444,16 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
   const placa = rotulo(NOMES[qual], qual === 'P1' ? '#ff5a4e' : '#5aa8ff');
   raiz.add(placa);
 
-  // Lança-Estrelas (na mão do lado da câmera) e a bolha de quem ficou sem corações
-  const lanca = lancaEstrelas();
-  // já preso (invisível) numa das mãos: assim os shaders dele são compilados na carga, não no 1º tiro (R38)
-  ossos[O.bracoD].add(lanca.g);
+  // arma na mão (L4, armas.ts: material do mundo, o mesmo programa das peças fixas: não compila no 1º tiro, R38)
+  // e a bolha de quem ficou sem corações
+  const item = criarItemNaMao(q);
+  ossos[O.bracoD].add(item.malha);
   const bolha = new THREE.Mesh(new THREE.SphereGeometry(0.64, 24, 16), materialBolha(qual === 'P1' ? 0xffc8b0 : 0xd8c0ff));
   bolha.position.y = 0.55; bolha.renderOrder = 8; bolha.visible = false;
   raiz.add(bolha);
 
   // estado da animação
-  const st = { fase: 0, achatar: 0, salta: 0, pisca: 2 + Math.random() * 2, piscando: 0, maos: 0, recebe: 0, superpulo: 0, caiu: 0, yaw: 0, iniciou: false, tiro: 0, dano: 0, inclina: 0, bolha: 0 };
+  const st = { fase: 0, achatar: 0, salta: 0, pisca: 2 + Math.random() * 2, piscando: 0, maos: 0, recebe: 0, superpulo: 0, caiu: 0, yaw: 0, iniciou: false, tiro: 0, golpe: 0, troca: 0, dano: 0, inclina: 0, bolha: 0 };
   const [quadril, tronco, cabeca, bracoE, bracoD, pernaE, pernaD, cauda] = ossos;
 
   return {
@@ -478,12 +466,14 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
         else if (ev === `maos:${i}`) st.maos = 0.6;
         else if (ev === `superpulo:${i}`) st.superpulo = 0.75;
         else if (ev === `caiu:${i}` || ev === `renasce:${i}`) st.caiu = 0.9;
-        else if (ev === `tiro:${i}`) st.tiro = 0.4;
+        else if (ev.startsWith(`tiro:${i}:`)) st.tiro = 0.4;
+        else if (ev.startsWith(`golpe:${i}:`) || ev === `martelada:${i}`) st.golpe = 0.3;
+        else if (ev.startsWith(`troca:${i}:`) || ev.startsWith(`mochila:${i}:`) || ev.startsWith(`bau:`) && ev.split(':')[2] === `${i}`) st.troca = 0.6;
         else if (ev === `dano:${i}`) st.dano = 0.5;
       }
-      // a recarga recém-cheia também indica tiro (se o evento se perdeu entre dois passos da simulação)
-      if (j.recarga > 0.28) st.tiro = Math.max(st.tiro, 0.3);
       st.tiro = Math.max(0, st.tiro - dt);
+      st.golpe = Math.max(0, st.golpe - dt);
+      st.troca = Math.max(0, st.troca - dt);
       st.dano = Math.max(0, st.dano - dt);
       st.bolha = j.bolha ? Math.min(1, st.bolha + dt * 4) : Math.max(0, st.bolha - dt * 6);
       const naCorda = !j.bolha && (j.pendurado || j.argola >= 0);
@@ -503,7 +493,7 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       let lado: number = j.olhando;
       if ((st.maos > 0 || segurando) && Math.abs(outro.x - j.x) > 0.05) lado = Math.sign(outro.x - j.x);
       let alvoYaw = lado * (Math.PI / 2) * (st.maos > 0 ? 0.55 : 0.38 + 0.34 * Math.min(1, vel));
-      if (st.tiro > 0) alvoYaw = lado * (Math.PI / 2) * 0.8; // de perfil, mirando
+      if (st.tiro > 0 || st.golpe > 0) alvoYaw = lado * (Math.PI / 2) * 0.8; // de perfil, mirando ou golpeando
       if (segurando) alvoYaw = lado * (Math.PI / 2) * 0.7;
       if (naCorda) alvoYaw = lado * 0.35;
       if (j.bolha) alvoYaw = Math.sin(relogio * 0.9 + i) * 0.6;
@@ -555,7 +545,11 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       if (j.bolha) { // encolhido dentro da bolha
         pE = -1.3; pD = -1.15; bEx = -0.95; bDx = -0.95; bEz = 0.35; bDz = -0.35; incl = 0.35; cabX = 0.2; caudaX = 0.3; quadY = 0;
       }
-      if (st.tiro > 0 && !j.bolha) { // atirando: braço do lado da câmera esticado para a frente com o Lança-Estrelas
+      if (st.golpe > 0 && !j.bolha) { // golpe: o braço do lado da câmera vem de cima (atrás da cabeça) para a frente
+        const t = 1 - st.golpe / 0.3, b = -2.9 + 2.3 * Math.min(1, t * 1.6);
+        if (lado > 0) { bEx = b; bEz = -0.1; } else { bDx = b; bDz = 0.1; }
+        incl += 0.08 * Math.sin(t * Math.PI);
+      } else if (st.tiro > 0 && !j.bolha) { // atirando: braço do lado da câmera esticado para a frente com o Estilingue
         const t = Math.min(1, (0.4 - st.tiro) * 14);
         if (lado > 0) { bEx = amortecer(bEx, -1.5, t); bEz = amortecer(bEz, -0.05, t); }
         else { bDx = amortecer(bDx, -1.5, t); bDz = amortecer(bDz, 0.05, t); }
@@ -582,14 +576,15 @@ export function criarPersonagem(qual: QualPersonagem, q: Qualidade): Personagem 
       st.inclina += (alvoInc - st.inclina) * Math.min(1, dt * 10);
       giro.rotation.z = st.inclina;
 
-      // Lança-Estrelas na mão do lado da câmera
+      // arma na mão do lado da câmera: aparece atacando ou logo depois de trocar
       const mao = lado > 0 ? bracoE : bracoD;
-      if (st.tiro > 0 && !j.bolha) {
-        if (lanca.g.parent !== mao) { mao.add(lanca.g); lanca.g.position.set(lado > 0 ? -0.027 : 0.027, -0.19, 0.012); }
-        lanca.g.visible = true;
-        lanca.g.scale.setScalar(Math.min(1, (0.4 - st.tiro) * 12 + 0.3));
-        lanca.est.rotation.x = relogio * 9;
-      } else lanca.g.visible = false;
+      const ar = j.arsenal;
+      const mostra = Math.max(st.tiro, st.golpe, st.troca);
+      if (mostra > 0 && !j.bolha && !naCorda && ar) {
+        if (item.malha.parent !== mao) { mao.add(item.malha); item.malha.position.set(lado > 0 ? -0.027 : 0.027, -0.17, 0.012); }
+        item.mostrar(ar.itens[ar.atual] ?? -1);
+        item.malha.scale.setScalar(Math.min(1, mostra * 6 + 0.2));
+      } else item.malha.visible = false;
 
       // bolha: flutua, balança devagar; piscar de invencível
       bolha.visible = st.bolha > 0;

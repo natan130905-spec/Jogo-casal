@@ -1,7 +1,8 @@
 // Elementos de jogo do núcleo novo: estrelinhas de lembrança (girando), estrelinhas soltas pelos bichinhos,
 // lanternas de checkpoint (apagada/acesa), argolas de pêndulo, plataformas especiais (móvel, giratória de relógio,
 // gelatina, a que cai e a bolha), o Fio Vermelho (corda macia que pende em catenária e estica quando tensa),
-// faíscas do Lança-Estrelas com rastro, esporos e os efeitos dos eventos (tiro, dano, bolha, coleta…).
+// esporos e os efeitos dos eventos (tiro, dano, bolha, coleta…). As armas (pedrinhas, miçangas, alvo-sino, barbante,
+// bloco rachado e baú) ficam em armas.ts, montadas e atualizadas daqui (L4).
 // Chamadas de desenho: estrelinhas 1 (instanciadas), vidros das lanternas 1 (instanciados), peças fixas 1, cada
 // plataforma especial 1 (+1 o ponteiro do relógio), cada corda visível 1. Brilhos e rastros vão no lote de partículas.
 import * as THREE from 'three';
@@ -13,6 +14,7 @@ import type { Tema } from './tema';
 import { marcarBrilho, materialBolha, materialMundo } from './materiais';
 import { colocar, misturar, pintar } from './util';
 import { Cel, type Particulas } from './particulas';
+import { Armas } from './armas';
 
 /**
  * Contorno de desenho por casco invertido DENTRO da mesma geometria (0 chamadas a mais): cópia pintada de escuro,
@@ -163,8 +165,8 @@ export class Elementos {
   private checkAntes = -1;
   private m = new THREE.Matrix4(); private q = new THREE.Quaternion(); private v = new THREE.Vector3(); private s = new THREE.Vector3();
   private a = new THREE.Vector3(); private b = new THREE.Vector3();
-  private rastro = 0;
   private eu = new THREE.Euler();
+  private armas: Armas;
   private corLit: THREE.Color; private corApagada = new THREE.Color(0x4a3a5e);
 
   constructor(private fase: Fase, q: Qualidade, private tema: Tema) {
@@ -303,6 +305,8 @@ export class Elementos {
       this.especiais.push({ def: d, malha, ponteiro, mola: 0, vmola: 0, sAntes: 0 });
     }
     this.raiz.add(this.fio.malha, this.cordasArgola[0].malha, this.cordasArgola[1].malha);
+    this.armas = new Armas(fase, q);
+    this.raiz.add(this.armas.raiz);
   }
 
   atualizar(e: Estado, dt: number, relogio: number, fx: Particulas) {
@@ -314,10 +318,11 @@ export class Elementos {
       const j = e.jogadores[i];
       switch (p[0]) {
         case 'tiro':
+          // estalo do elástico: um anelzinho e duas fagulhas rosadas na mão
           if (j) {
-            const x = j.x + j.olhando * 0.5, y = j.y + 0.62;
-            fx.emitir({ x, y, z: 0.5, vida: 0.18, tam: 0.9, tamFim: 0.2, cor: 0xfff0b0, cel: Cel.Halo });
-            for (let k = 0; k < 4; k++) fx.emitir({ x, y, z: 0.5, vx: j.olhando * (2 + Math.random() * 3), vy: (Math.random() - 0.5) * 3, arrasto: 4, vida: 0.25, tam: 0.18, tamFim: 0, cor: 0xffd8f0, cel: Cel.Brilho });
+            const x = j.x + j.olhando * 0.45, y = j.y + 0.62;
+            fx.emitir({ x, y, z: 0.5, vida: 0.14, tam: 0.35, tamFim: 0.9, cor: 0xffc0e0, alfa: 0.8, cel: Cel.Anel });
+            for (let k = 0; k < 2; k++) fx.emitir({ x, y, z: 0.5, vx: j.olhando * (1.5 + Math.random() * 2), vy: (Math.random() - 0.5) * 2, arrasto: 4, vida: 0.2, tam: 0.14, tamFim: 0, cor: 0xffd8f0, cel: Cel.Brilho });
           }
           break;
         case 'dano':
@@ -495,19 +500,8 @@ export class Elementos {
       this.cordasArgola[i].desenhar(this.a, this.b, this.a.distanceTo(this.b), relogio);
     });
 
-    // ---------- faíscas (com rastro) e esporos ----------
-    this.rastro += dt;
-    const emitirRastro = this.rastro > 1 / 60;
-    if (emitirRastro) this.rastro = 0;
-    for (const fa of e.faiscas) {
-      const rot = relogio * 14 + fa.id;
-      fx.ponto(fa.x, fa.y, 0.5, 1.1, 0xffc850, 0.6, Cel.Halo);
-      fx.ponto(fa.x, fa.y, 0.55, 0.55, 0xfff6d0, 1, Cel.Brilho, rot);
-      if (emitirRastro) {
-        const cor = fa.id % 2 ? 0xff9ad8 : 0xffd870;
-        fx.emitir({ x: fa.x - Math.sign(fa.vx) * 0.1, y: fa.y + (Math.random() - 0.5) * 0.08, z: 0.45, vx: -Math.sign(fa.vx) * 0.6, vy: (Math.random() - 0.5) * 0.6, vida: 0.28, tam: 0.32, tamFim: 0.02, cor, cel: Cel.Brilho, vrot: 6 });
-      }
-    }
+    // ---------- armas (pedrinhas, miçangas, sino, barbante, bloco rachado, baú) e esporos ----------
+    this.armas.atualizar(e, dt, relogio, fx);
     for (let k = 0; k < e.esporos.length; k++) {
       const s = e.esporos[k];
       const w = Math.sin(relogio * 6 + k * 2);
