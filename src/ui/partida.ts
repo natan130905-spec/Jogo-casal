@@ -10,6 +10,7 @@ import { Cena, type Qualidade } from '../render/cena';
 import { faseDoCap } from './historia';
 import { IndicadorParceiro } from './indicador';
 import { som } from './som';
+import { Limitador, metaDeFps } from './ritmo';
 import { $, Hud, mostrarTela } from './telas';
 
 export type Modo = 'treino' | 'anfitriao' | 'convidado';
@@ -174,8 +175,12 @@ export class Partida {
   private acumulado = 0;
   private fps = { n: 0, t: performance.now() };
 
+  /** no máximo 60 quadros por segundo (30 com ?fps=30) mesmo em tela de 90/120 Hz (R39) */
+  private limitador = new Limitador(metaDeFps());
+
   private quadro = (agora: number) => {
     if (!this.vivo) return;
+    if (!this.limitador.quadro(agora)) { requestAnimationFrame(this.quadro); return; }
     const o = this.o;
     const dt = Math.min(0.1, Math.max(0, (agora - this.anterior) / 1000));
     this.anterior = agora;
