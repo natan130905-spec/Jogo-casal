@@ -77,6 +77,16 @@ export const FINAL: readonly Quadro[] = [
     texto: '“Algumas coisas a gente não precisa lembrar sozinho.”' },
 ];
 
+/** Capítulo 7: ao tocarem o pedaço da estrela, o Rei-Pesadelo o arranca e foge para a Arena do Coração (fase 3D). */
+export const FUGA: readonly Quadro[] = [
+  { ilustracao: 'pedaco', arte: A('12_cap7_estrela'),
+    texto: 'O último pedaço da estrela brilha nas mãos dos dois… mas, antes de se juntar aos outros, a névoa se fecha em volta dele.' },
+  { ilustracao: 'nevoa', arte: A('18_arena'),
+    texto: 'O Rei-Pesadelo arranca o pedaço e foge para a Arena do Coração, uma ilha redonda no meio das estrelas.' },
+  { ilustracao: 'sete', fala: true,
+    texto: '“Juntos, então.” Natan ergue a Espada da Aurora; Bruna, a Lança de Pétala.' },
+];
+
 /** Cena curta de lembrança ao concluir o capítulo n. */
 export function lembranca(n: number): Quadro[] {
   const c = info(n);

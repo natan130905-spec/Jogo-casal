@@ -8,7 +8,7 @@ import { concluido, estrelinhasTotais, liberado, pedacos, TOTAL_CAPITULOS, type 
 
 export const $ = <T extends HTMLElement>(s: string) => document.querySelector<T>(s)!;
 
-export type IdTela = 'menu' | 'sala' | 'quadrinhos' | 'mapa' | 'jogo' | 'concluido';
+export type IdTela = 'menu' | 'sala' | 'quadrinhos' | 'mapa' | 'jogo' | 'concluido' | 'creditos';
 export function mostrarTela(id: IdTela) {
   for (const el of document.querySelectorAll<HTMLElement>('.tela')) el.hidden = el.id !== id;
   document.body.classList.toggle('jogando', id === 'jogo');
@@ -62,6 +62,8 @@ export interface OpcoesMapa { livre: boolean; controla: boolean }
 export class Mapa {
   aoSelecionar: (n: number) => void = () => {};
   aoJogar: (n: number) => void = () => {};
+  /** capítulo 7: ir direto à Arena do Coração (quando a parte 2.5D já foi feita, ou no treino) */
+  aoArena: () => void = () => {};
   private ilhas: HTMLButtonElement[] = [];
   private trilhas: SVGPathElement[] = [];
   private estrela!: HTMLElement;
@@ -96,6 +98,7 @@ export class Mapa {
     this.estrela.style.left = `${POS_ESTRELA[0]}%`; this.estrela.style.top = `${POS_ESTRELA[1]}%`;
     caixa.appendChild(this.estrela);
     $('#bt-jogar').addEventListener('click', () => this.aoJogar(this.sel));
+    $('#bt-arena').addEventListener('click', () => this.aoArena());
   }
 
   mostrar(p: Progresso, sel: number, o: OpcoesMapa) {
@@ -109,7 +112,8 @@ export class Mapa {
       b.classList.toggle('bloqueada', !livre);
       b.classList.toggle('sel', n === sel);
       b.disabled = !o.controla;
-      b.querySelector('.selo')!.textContent = r ? `★ ${r.estrelinhas}${r.total ? `/${r.total}` : ''}` : livre ? 'novo!' : '🔒';
+      b.querySelector('.selo')!.textContent = r ? `★ ${r.estrelinhas}${r.total ? `/${r.total}` : ''}`
+        : n === 7 && p.arena7 ? '⚔ arena' : livre ? 'novo!' : '🔒';
     }
     this.trilhas.forEach((t, k) => t.classList.toggle('feita', concluido(p, k + 1)));
     // a estrela do fim: uma ponta acesa por pedaço recuperado
@@ -126,7 +130,12 @@ export class Mapa {
     const c = info(sel);
     const livre = o.livre || liberado(p, sel);
     $('#mapa-nome').textContent = `${sel}. ${c.nome}`;
-    $('#mapa-desc').textContent = livre ? (concluido(p, sel) ? c.lembranca : `Novidade: ${c.novidade}`) : 'Termine o capítulo anterior para liberar.';
+    $('#mapa-desc').textContent = !livre ? 'Termine o capítulo anterior para liberar.'
+      : concluido(p, sel) ? c.lembranca
+      : sel === 7 && p.arena7 ? 'Falta a Arena do Coração: vençam o Rei-Pesadelo para recuperar o último pedaço!'
+      : `Novidade: ${c.novidade}`;
+    const ba = $<HTMLButtonElement>('#bt-arena');
+    ba.hidden = !o.controla || sel !== 7 || !(o.livre || p.arena7 || concluido(p, 7));
     const bj = $<HTMLButtonElement>('#bt-jogar');
     bj.hidden = !o.controla;
     bj.disabled = !livre;
@@ -146,6 +155,17 @@ export function mostrarConcluido(cap: number, est: number, total: number, frase:
   $('#conc-frase').textContent = frase;
   $('#bt-conc-continuar').hidden = !controla;
   $('#conc-espera').hidden = controla;
+}
+
+// ---------- créditos ----------
+export function mostrarCreditos(controla: boolean) {
+  mostrarTela('creditos');
+  $('#creditos-estrela').innerHTML = ESTRELA_SVG;
+  $('#creditos-caps').innerHTML = CAPITULOS_INFO.map((c) => `${c.n}. ${c.nome}`).join('<br>');
+  // recomeça a rolagem a cada vez
+  const rolo = $('#creditos-rolo');
+  rolo.style.animation = 'none'; void rolo.offsetWidth; rolo.style.animation = '';
+  $('#creditos-dica').textContent = controla ? 'Toque para voltar ao mapa' : 'Esperando quem criou a sala…';
 }
 
 // ---------- HUD ----------

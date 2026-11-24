@@ -17,6 +17,8 @@ export interface Progresso {
   /** capítulos concluídos (o pedaço da estrela foi pego), por número 1–7 */
   capitulos: Record<number, ResultadoCapitulo>;
   finalVisto: boolean;
+  /** capítulo 7: a parte 2.5D já foi feita (com estas estrelinhas) e falta vencer a Arena do Coração */
+  arena7?: ResultadoCapitulo;
 }
 
 export const progressoVazio = (): Progresso => ({ v: 1, prologoVisto: false, capitulos: {}, finalVisto: false });
@@ -29,10 +31,12 @@ export function limparProgresso(x: unknown): Progresso {
   p.prologoVisto = o.prologoVisto === true;
   p.finalVisto = o.finalVisto === true;
   const caps = (o.capitulos ?? {}) as Record<string, unknown>;
+  const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(999, Math.round(v))) : 0);
+  const a7 = o.arena7 as Record<string, unknown> | undefined;
+  if (a7 && typeof a7 === 'object') p.arena7 = { estrelinhas: num(a7.estrelinhas), total: num(a7.total) };
   for (let n = 1; n <= TOTAL_CAPITULOS; n++) {
     const c = caps[n] as Record<string, unknown> | undefined;
     if (!c) continue;
-    const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.max(0, Math.min(999, Math.round(v))) : 0);
     p.capitulos[n] = { estrelinhas: num(c.estrelinhas), total: num(c.total) };
   }
   return p;
