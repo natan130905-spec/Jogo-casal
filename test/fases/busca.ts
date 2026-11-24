@@ -65,9 +65,58 @@ function gestos(dupla: boolean, temArgola: boolean): Gesto[] {
   return g;
 }
 
-export interface OpcoesBusca { limite?: number; passoX?: number }
+/** Gestos da busca completa (tools/revisao/auditoria-movimento/alcance_estrelinhas.ts, AUDITORIA_MOVIMENTO §2.1):
+ *  ~22 por estado (45 em dupla), com 5 perfis de joystick, pulo segurando 99 ou 6 ticks, andar soltando e 3 tempos
+ *  de soltar a argola. */
+function gestosCompletos(dupla: boolean, temArgola: boolean): Gesto[] {
+  const g: Gesto[] = [];
+  for (const d of [1, -1]) {
+    g.push({ nome: `anda${d}`, min: 8, f: () => I(d) });
+    g.push({ nome: `anda-solta${d}`, min: 8, f: (t) => I(t < 8 ? d : 0) });
+  }
+  g.push({ nome: 'espera', min: 30, f: () => N });
+  const perfis: [string, (t: number, d: number) => number][] = [
+    ['reto', (_t, d) => d], ['atrasa', (t, d) => (t < 12 ? 0 : d)], ['para', (t, d) => (t < 12 ? d : 0)],
+    ['volta', (t, d) => (t < 20 ? d : -d)], ['meio', (_t, d) => d * 0.5],
+  ];
+  for (const imp of dupla ? [false, true] : [false]) {
+    const s = imp ? '-imp' : '';
+    for (const h of [99, 6]) {
+      g.push({ nome: `pula-vert-h${h}${s}`, impulso: imp, min: 2, f: (t) => I(0, t < h) });
+      for (const [nome, p] of perfis) for (const d of [1, -1]) {
+        if (h !== 99 && nome !== 'reto' && nome !== 'para') continue;
+        g.push({ nome: `pula-${nome}${d}-h${h}${s}`, impulso: imp, min: 2, f: (t) => I(p(t, d), t < h) });
+      }
+    }
+    for (const d of [1, -1]) g.push({ nome: `corre-pula${d}${s}`, impulso: imp, min: 8, f: (t) => I(d, t >= 6) });
+  }
+  if (temArgola) {
+    for (const d of [1, -1, 0]) for (const d2 of [1, -1]) for (const k of [20, 40, 60]) {
+      let agarrou = -1;
+      g.push({
+        nome: `argola${d}>${d2}@${k}`, argola: true, min: 2,
+        f: (t, e) => {
+          if (t === 0) agarrou = -1;
+          if (agarrou < 0 && e.jogadores[0].argola >= 0) agarrou = t;
+          if (agarrou < 0) return I(d, t < 30, true);
+          const dt = t - agarrou;
+          return I(d2, dt >= k && dt < k + 30, false);
+        },
+      });
+    }
+  }
+  return g;
+}
 
-function chave(f: Fase, e: Estado, passoX: number): string {
+export interface OpcoesBusca {
+  limite?: number; passoX?: number;
+  /** busca completa (npm run test:lento): gestos da auditoria, x a cada 0,25 m, y a cada 0,05 m, especiais a cada
+   *  0,5 m e portas a cada 0,25; os ponteiros do mesmo relógio por 1/16 de volta. Padrão: a versão rápida do CI. */
+  completa?: boolean;
+}
+
+function chave(f: Fase, e: Estado, passoX: number, completa = false): string {
+  if (completa) return chaveCompleta(f, e);
   const j = e.jogadores[0];
   const defs = f.especiais ?? [];
   const sobre = j.plataforma >= 0 ? defs[j.plataforma] : undefined;
@@ -89,6 +138,29 @@ function chave(f: Fase, e: Estado, passoX: number): string {
     else if (d.tipo !== 'quicante') s += `|${k}:${Math.round(sp.x)}:${Math.round(sp.y)}`;
   }
   for (const p of f.portas) s += `|${Math.round((e.portas[p.id] ?? 0) * 2)}`;
+  return s;
+}
+
+function chaveCompleta(f: Fase, e: Estado): string {
+  const j = e.jogadores[0];
+  const defs = f.especiais ?? [];
+  const sobre = j.plataforma >= 0 ? defs[j.plataforma] : undefined;
+  // em pé numa plataforma que anda com o tempo: vale a posição em cima dela (a dela entra abaixo)
+  let s = sobre && sobre.tipo !== 'quicante' && sobre.tipo !== 'cai'
+    ? `p${j.plataforma}:${Math.round((j.x - e.especiais[j.plataforma].x) * 4)}`
+    : `${Math.round(j.x * 4)}:${Math.round(j.y * 20)}:${j.plataforma}`;
+  const relogios = new Set<string>();
+  for (let k = 0; k < defs.length; k++) {
+    const sp = e.especiais[k], d = defs[k];
+    if (Math.abs(sp.x - j.x) > 10) continue;
+    if (d.tipo === 'giratoria') {
+      const id = `${d.cx}:${d.cy}:${d.periodo}`;
+      if (relogios.has(id)) continue;
+      relogios.add(id);
+      s += `|g${id}:${Math.floor(((e.tick * DT) / d.periodo % 1) * 16)}`;
+    } else s += `|${k}:${Math.round(sp.x * 2)}:${Math.round(sp.y * 2)}:${sp.s}`;
+  }
+  for (const p of f.portas) s += `|${Math.round((e.portas[p.id] ?? 0) * 4)}`;
   return s;
 }
 
@@ -123,7 +195,7 @@ export function buscar(fBase: Fase, v: Variante, sementes: Ponto[], o: OpcoesBus
   let portal = false;
   const vistos = new Set<string>();
   const fila: Estado[] = [];
-  const G = gestos(v === 'B', (f.argolas ?? []).length > 0);
+  const G = (o.completa ? gestosCompletos : gestos)(v === 'B', (f.argolas ?? []).length > 0);
   let simulados = 0;
   let maxX = 0;
   const porTrecho: number[] = Array.from({ length: Math.ceil(f.largura / 10) }, () => 0);
@@ -136,7 +208,7 @@ export function buscar(fBase: Fase, v: Variante, sementes: Ponto[], o: OpcoesBus
     j.x = p.x; j.y = p.y + 0.02; j.seguroX = p.x; j.seguroY = p.y;
     for (let t = 0; t < 12; t++) passo(f, e, [N, N]);
     if (!e.jogadores[0].noChao) continue;
-    const k = chave(f, e, passoX);
+    const k = chave(f, e, passoX, o.completa);
     if (!vistos.has(k)) { vistos.add(k); fila.push(e); }
   }
 
@@ -184,7 +256,7 @@ export function buscar(fBase: Fase, v: Variante, sementes: Ponto[], o: OpcoesBus
         if (t + 1 >= gst.min && j.noChao) { ok = true; break; }
       }
       if (!ok) continue;
-      const k = chave(f, e, passoX);
+      const k = chave(f, e, passoX, o.completa);
       if (vistos.has(k)) continue;
       vistos.add(k);
       e.eventos = [];

@@ -32,6 +32,13 @@ pedaço da estrela) e `novidade` (para o mapa). O comentário no topo de cada ar
   lanterna, cada placa e o pedaço em pelo menos 15 combinações de lugar e gesto (não um salto exato). As que só saem
   de mãos dadas ficam numa lista aprovada (cap. 1 #22–24, cap. 2 #18–20) e precisam de `marcas: [{ tipo: 'maos-dadas'
   }]` a até 6 m. Nenhuma estrelinha fica acima da tela com a dupla em pé logo abaixo (câmera de 2026-11-24).
+- **Mapa de apoio em dia** (T14, `test/apoio.test.ts`): mudou a fase, o campo `apoio`, a física ou a colisão? Rode
+  `npm run apoio` (grava `apoio/capN.json`, o mapa que o companheiro usa) e revise os pontos de cooperação que ele
+  imprime: cada um precisa de uma anotação no campo `apoio` da fase (id, dica, dica do inverso).
+- **Bateria lenta** (`npm run test:lento`, ≈ 20 min): busca completa com folga ≥ 100 em toda estrelinha, janela de
+  decolagem ≥ 0,4 m (≥ 0,9 m com o coyote) e visibilidade com a câmera do render. Rode antes de entregar mudança de
+  física ou de fase.
+- **Trechos separados de propósito** (`separados`, cap. 6): ali a regra de afastamento (12/24 m) não freia ninguém.
 - **Estrelinha de pulo especial (gelatina, argola)**: ponha sobre a trajetória simulada, não por `arco()`: o arco por
   fórmula do cap. 5 passava 1–3 m longe do corpo (ver `docs/revisao/AUDITORIA_MOVIMENTO.md` §2.3).
 

@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
+    "test:lento": "vitest run --config vitest.lento.config.ts",
     "apoio": "rolldown tools/gerar_apoio.ts --platform node --format esm -o test-out/gerar_apoio.mjs && node test-out/gerar_apoio.mjs"
   },
   "dependencies": {
