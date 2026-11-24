@@ -989,3 +989,77 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
   posições; ou o L2b/L7 baixar a borda da frente do Quintal).
 - **Teste que impede a volta:** o critério 6 do L3a, com o Quintal na lista.
 - Fonte: QA da fatia 1 (`test-out/qa-fatia1/*_9_quintal.png`).
+
+## Rede entre casas diferentes (engenheiro de rede, 2026-11-24)
+Pedido do jogador: "Tentei conectar com a minha namorada e não deu. Eu tenho que estar na mesma internet que ela?"
+Não deveria precisar. Achei duas causas confirmadas e duas menores.
+
+### R91 · Não existe TURN: o padrão do PeerJS aponta para nomes que não existem mais
+- **Sintoma:** com um celular no 4G e o outro num Wi-Fi, a sala não conecta. No mesmo Wi-Fi conecta.
+- **Causa (confirmada):** o PeerJS 1.5.5 usa por padrão `turn:eu-0.turn.peerjs.com` e `turn:us-0.turn.peerjs.com`
+  (`node_modules/peerjs/dist/bundler.mjs`, `DEFAULT_CONFIG`). Em 2026-11-24 esses nomes **não têm registro A, AAAA
+  nem CNAME** (consulta DoH em `dns.google` e `cloudflare-dns.com`; `0.peerjs.com`, a sinalização, resolve e responde).
+  Sem TURN, só há o caminho direto e o STUN. O 4G costuma usar NAT de operadora, e aí o caminho direto entre redes
+  diferentes muitas vezes não passa. Isso **não dá para medir daqui**: o contêiner não tem DNS nem UDP para fora. O
+  efeito no 4G real é **hipótese** forte, a falta do TURN é fato. O Open Relay "estático" da Metered
+  (`openrelay.metered.ca`) também acabou: resolve para `192.0.2.1` (endereço de documentação) e hoje exige conta.
+- **Correção:** `src/net/ice.ts`. A lista de servidores vem de `public/rede.json` (`iceServers` e/ou `turnApi`, o
+  endereço de credenciais da Metered) ou das variáveis `VITE_TURN_*`, mais o STUN do Google e da Cloudflare. O TURN do
+  PeerJS continua na lista, caso volte. O convidado alterna a política por tentativa: a 1ª é `all`, e a 2ª (8 s depois)
+  é `relay`, desde que haja TURN que funcione. Sem TURN, todas são `all`. O `?ice=relay` força a retransmissão. O
+  service worker não guarda o `rede.json`. Estado: **corrigido no código; falta o jogador criar a conta gratuita de TURN**
+  (Metered/Open Relay, 20 GB/mês) e me passar o endereço de credenciais para o `rede.json`. Sem isso, entre 4G e Wi-Fi
+  continua dependendo da sorte do NAT.
+- **Teste que impede a volta:** `test/rede_ice.test.ts` (o TURN do PeerJS não conta como "vivo"; política
+  all/relay; validação da lista da API; `turnApi` por http de fora é ignorada). `test/e2e/rede.mjs relay` sobe um TURN
+  local (node-turn) servido pelo `rede.json → turnApi`. A tela de teste mostra `relay 1` e "funciona (93–140 ms)", e com
+  `?ice=relay` a sala conecta com o caminho `relay/udp`.
+
+### R92 · Quem cria a sala sai do jogo para mandar o código, e a sala some
+- **Sintoma:** o convidado vê "Sala não encontrada. Confira o código." ou "Sala não encontrada ou sem resposta.", com o
+  código certo.
+- **Causa (confirmada, reproduzida):**
+  - Quem cria a sala toca em Compartilhar ou abre o WhatsApp, e o jogo vai para segundo plano. Aí acontece uma de duas
+    coisas:
+    - O celular derruba o socket da sinalização. O servidor PeerJS remove o id na hora (`_configureWS`, `close`), e o
+      pedido do convidado expira em 5 s com `peer-unavailable`. O `entrarSala` desistia no 1º `peer-unavailable`.
+    - O JS congela com o socket vivo. A oferta fica parada, e o convidado desistia aos 15 s.
+  - A volta também falhava: o anfitrião só religava no evento `disconnected`, que um socket morto em silêncio não dispara.
+  - `test/e2e/rede.mjs socket congelado` com o build de antes (`d8d0440`): A fica 25 s fora (`Debugger.pause`; o
+    `Page.setWebLifecycleState frozen` não congela página visível no Chromium sem tela, medido). **Os 2 cenários
+    reprovaram:** B parou em "Sala não encontrada. Confira o código." e em "Sala não encontrada ou sem resposta.".
+- **Correção:** `src/net/rede.ts` e `src/main.ts`.
+  - **Anfitrião:** ao voltar ao app (≥ 2 s fora), desliga e religa a sinalização com o MESMO id e o mesmo token. Se o Peer
+    morrer, um novo pede o mesmo id a cada 3 s.
+  - **Convidado:** insiste por 60 s. Faz uma oferta nova a cada 8 s, ou a cada 2,5 s enquanto a sala está sumida. As
+    ofertas velhas continuam valendo até uma abrir. O anfitrião fica com o canal em que o convidado fala primeiro.
+  - **Mensagens claras:** "Esperando quem criou a sala voltar para o jogo… (42 s)". Erros por tipo em
+    `src/net/falhas.ts`: sinalização, sala, ausente, NAT, versão, WebRTC e cheia.
+  - **Link de convite** `?sala=CÓDIGO`: entra direto, sem digitar nem tocar. O Compartilhar usa `navigator.share` com o
+    link.
+  - **Tela "Testar conexão"** no menu e na sala: mostra a sinalização, os tipos de candidato e o relay de ponta a ponta,
+    com o texto para copiar.
+  - Estado: **corrigido**.
+- **Teste que impede a volta:** `test/e2e/rede.mjs` (socket e congelado com A fora por 30 s: os dois chegam ao prólogo
+  1,7–3,9 s depois da volta em 3 rodadas, sem ninguém tocar; link, 0,5–0,7 s; teste). `dupla.mjs` e `solo.mjs` continuam passando.
+
+### R93 · Versões diferentes nos dois celulares só davam um aviso no console
+- **Sintoma (risco):** um celular com o jogo velho na memória (app da Tela de Início suspenso há dias) e o outro com o
+  novo simulam diferente, e ninguém fica sabendo.
+- **Causa (confirmada no código):** `'oi'` comparava só `VERSAO` ('0.4.0', escrita à mão) e fazia `console.warn`. O
+  service worker já busca a página na rede primeiro, então o cache não é a causa principal.
+- **Correção:** o `'oi'` leva também o `build`, o hash do `index-*.js`. Se for diferente, aparece uma faixa vermelha
+  nos dois celulares: "Fechem o jogo nos dois e abram de novo pelo link". O aviso não bloqueia. Estado: **corrigido**.
+- **Teste que impede a volta:** nenhum automático (os e2e usam o mesmo build nos dois). Fica a mensagem em
+  `rede_ice.test.ts`.
+
+### R94 · Navegador embutido de app e código com letras confusas
+- **Causa (verificada no código):**
+  - O alfabeto do código já evita I, L, O, 0 e 1, mas digitar O ou 0 procurava a sala inexistente.
+  - O link aberto dentro do Instagram ou do Facebook usa o navegador do app. No iOS, o WKWebView tem WebRTC desde o
+    14.3, e o WebView do Android também tem. Ele pode ser derrubado em segundo plano, mas não é bloqueio certo. O
+    Safari funciona com o PeerJS 1.5.5 (serialização binária).
+- **Correção:** o código com I, L, O, 0 ou 1 avisa na hora. A falha ao entrar diz "abra no Chrome ou no Safari"
+  quando o UA é de app (`navegadorDeApp`). Sem `RTCPeerConnection`, aparece a mensagem `webrtc`. Estado:
+  **corrigido**.
+- **Teste que impede a volta:** `rede_ice.test.ts` (`navegadorDeApp`, mensagens).

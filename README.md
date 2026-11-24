@@ -13,8 +13,11 @@ aplicativo pelo menu do navegador, "Adicionar à tela inicial").
    - **Jogar sozinho**: a campanha sem sala; o outro personagem vai com o jogo (por enquanto ele só segue; ⇄ troca de
      personagem). **Continuar** (aparece depois de jogar) volta à última lanterna acesa.
    - **Jogar juntos online**: **Criar sala** (quem cria joga com o Natan/P1 e escolhe os capítulos) → código de 5
-     letras e o botão de compartilhar convite. A outra pessoa digita o código e toca em **Entrar** (joga com a Bruna/P2).
-     Funciona em redes diferentes. A jornada é do casal: os dois celulares guardam a mesma e se acertam ao conectar
+     letras e o botão de compartilhar convite (manda um **link** que já entra na sala). A outra pessoa abre o link, ou
+     digita o código e toca em **Entrar** (joga com a Bruna/P2). Quem criou pode sair para mandar o link: ao voltar, a
+     sala reabre com o mesmo código, e quem está entrando espera até 60 s. Entre redes diferentes (Wi-Fi × 4G) é
+     preciso um servidor TURN em `public/rede.json` (veja "Rede" abaixo); **Testar conexão** (menu e sala) mostra o que
+     o celular consegue. A jornada é do casal: os dois celulares guardam a mesma e se acertam ao conectar
      (tanto faz quem cria a sala).
    - **Treino**: todos os capítulos liberados e o **Quintal de Treino** (oficina de mecânicas com bonecos que voltam);
      nada do treino conta para a jornada.
@@ -99,7 +102,7 @@ Cada capítulo tem de 184 a 220 m, 33 a 46 estrelinhas e trechos secretos; os bo
 | 3D | Three.js | leve, maduro, roda em WebGL no Redmi e no iPhone; a equipe já domina |
 | Linguagem/build | TypeScript + Vite | tipos, build rápido, divisão de código |
 | Física | própria, determinística, passo fixo de 60 Hz (`src/core/sim.ts`) | plataforma 2.5D não precisa de motor físico pesado; testável em Node |
-| Multiplayer | WebRTC (PeerJS): sala por código, anfitrião roda a simulação, convidado envia comandos e interpola instantâneos (100 ms) | sem servidor próprio; sinalização e TURN públicos do PeerJS atravessam redes diferentes |
+| Multiplayer | WebRTC (PeerJS): sala por código, anfitrião roda a simulação, convidado envia comandos e interpola instantâneos (100 ms) | sem servidor próprio; sinalização pública do PeerJS; STUN público + TURN configurável (`src/net/ice.ts`, `public/rede.json`) para redes diferentes |
 | PWA | manifesto (tela cheia, paisagem) + service worker | adicionar à tela inicial e abrir como aplicativo |
 
 ## Arte
@@ -148,6 +151,7 @@ node test/e2e/arena.mjs [treino|dupla]                 # Arena do Coração: con
 node test/e2e/interface.mjs [--so treino|dupla]        # L1: botões com o polegar no joystick, confirmações, carga, ?diag, iPhone, segundo plano
 node test/e2e/solo.mjs                                # L2b: campanha sem sala, salvar/recarregar/Continuar, Quintal (T12), quem cria a sala
 node test/e2e/baloes.mjs                              # L8a: balões fora dos controles nos 4 tamanhos, falas iguais na dupla, opção na pausa
+node test/e2e/rede.mjs [socket|congelado|link|teste|relay]  # rede: quem criou a sala fora do jogo 30 s, link de convite, Testar conexão, TURN local (TURN_MODULO=…/node-turn)
 npm run test:lento                                    # busca completa de alcance, janela e visibilidade (≈ 15 min)
 node tools/revisao/qa/fatia1_toque.mjs                # QA: joga pelo toque (CDP, vários dedos) em 844×390 e 915×412
 ```
@@ -164,3 +168,20 @@ segundo e a luta inteira leva minutos. Vitrine da arena: `/test/vitrine/arena.ht
 WASD/J/K/Espaço/Shift/Q assumem, Tab troca, B liga/desliga os bots); capturas por fase, poder e pose:
 `PORTA=4822 Q=baixa|media|alta W=844 H=390 node test/vitrine/capturar_arena.mjs [inicio recorte fase1 fase2 fase3
 poderes vitoria …]` → `test-out/arena/<q>/`. Orçamento, balanceamento e limites: `docs/ARENA_FINAL.md`.
+
+## Rede (jogar em casas diferentes)
+
+O TURN padrão do PeerJS (`eu-0/us-0.turn.peerjs.com`) não existe mais (REGISTRO R91). Sem TURN, entre um celular no
+4G e outro num Wi-Fi a conexão pode não passar. Para ligar um TURN gratuito:
+
+1. Crie uma conta gratuita na Metered (Open Relay, 20 GB/mês, https://www.metered.ca/tools/openrelay/) e um app.
+2. Copie o endereço de credenciais: `https://<app>.metered.live/api/v1/turn/credentials?apiKey=<chave>`. Essa chave é
+   feita para ir no navegador.
+3. Ponha em `public/rede.json`, no campo `"turnApi"`, e publique. Também aceita `"iceServers": [{ "urls": "turn:…",
+   "username": "…", "credential": "…" }]` ou as variáveis de build `VITE_TURN_URLS`, `VITE_TURN_USUARIO`,
+   `VITE_TURN_SENHA` e `VITE_TURN_API`.
+4. No celular, abra **Testar conexão**: "Retransmissão (TURN): funciona" quer dizer que o jogo passa entre redes
+   diferentes.
+
+Para diagnóstico, `?ice=relay` força a retransmissão e `?debugrede=1` liga o log do PeerJS.
+
