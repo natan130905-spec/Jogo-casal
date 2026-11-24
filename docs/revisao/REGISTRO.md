@@ -267,10 +267,14 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   anfitrião não pausa nem avisa (medido com a página congelada por 180 ticks).
 - **Causa (confirmada no código):** `partida.ts:98` reaproveita a última entrada recebida sem prazo; não há
   `visibilitychange`/`pagehide` em `src/`.
-- **Correção:** entrada neutra depois de 250 ms, pausa com aviso em 2 s, `visibilitychange` nos dois. Estado:
-  **planejado** (L1a, P0 crítico).
-- **Teste que impede a volta:** `tools/revisao/playtester/dupla.mjs`: convidado congelado 3 s ⇒ `vxBruna = 0` em
-  ≤ 0,3 s e aviso em ≤ 2 s (a levar para `test/e2e`).
+- **Correção:** entrada do convidado vale no máximo 6 ticks sem nova (a Bruna para em ≤ 18 ticks = 0,3 s depois da
+  última mensagem); 1,5 s sem nada do outro aparelho pausa com "Bruna/Natan saiu do jogo" (o prazo cresce para 8 × o
+  intervalo típico quando o aparelho já mandava devagar, para não pausar à toa); `visibilitychange`/`pagehide` nos
+  dois (mensagem `ausente`, pausa, música e `AudioContext` suspensos). Estado: **corrigido** (L1a, `58ccd30`,
+  `c80ff3f`, `888d95c`).
+- **Teste que impede a volta:** `test/e2e/interface.mjs` (dupla): convidado sem mandar nada ⇒ `vxBruna = 0` em 18
+  ticks e aviso "Bruna saiu do jogo"; anfitrião escondido ⇒ o convidado vê "Natan saiu do jogo". Ver R74 (o
+  "congelado" do CDP não congelava).
 - Fonte: PLAYTEST §2.1; TECNICO_DESEMPENHO A7.
 
 ## Interface e controles no celular
@@ -279,17 +283,22 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
 - **Sintoma:** ❚❚, ⇄, Continuar e os botões das telas não respondem enquanto outro dedo está na tela.
 - **Causa:** **confirmada no Chromium**: os botões usam `onclick` (`main.ts:361–364`), e o navegador não gera
   `click` com outro dedo encostado. No Safari é **hipótese** forte.
-- **Correção:** `pointerdown`/`pointerup` com captura. Estado: **planejado** (L1a).
-- **Teste que impede a volta:** `jogo.mjs`: `pausaComDedoNoJoystick` e `continuarComDedoNoJoystick` verdadeiros no
-  iPhone e no Android.
+- **Correção:** `tocavel()` (`src/ui/telas.ts`): ❚❚ no `pointerdown`, os outros no `pointerup` dentro do botão, com
+  captura; o `click` de compatibilidade é descartado. A pausa deixa o toque passar fora do cartão e o joystick
+  segurado continua valendo ao continuar. Estado: **corrigido** (L1a, `c9b3ffe`, `0bc19fe`, `ab17eda`).
+- **Teste que impede a volta:** `test/e2e/interface.mjs`: ❚❚, Continuar e ⇄ com o polegar no joystick, e o joystick
+  anda depois de continuar sem levantar o dedo; `jogo.mjs` (com R73 corrigido).
 - Fonte: PLAYTEST §2.2.
 
 ### R28 · Saídas destrutivas sem confirmação
 - **Sintoma:** o ✕ do mapa e Sair derrubam a sala dos dois; "Mapa da jornada" abandona a fase e fica 8 px abaixo de
   Continuar.
 - **Causa (confirmada no código):** `main.ts:290, 354, 363, 364` chamam `sair()` e a troca de tela direto.
-- **Correção:** segundo toque de confirmação, cor neutra e Continuar isolado. Estado: **planejado** (L1a).
-- **Teste que impede a volta:** e2e: um toque só nunca sai da fase nem da sala.
+- **Correção:** `comConfirmacao()`: o 1º toque troca o texto ("Toque de novo: sair (a Bruna também sai)") por 3 s
+  (pela hora do toque, não por timer: R77); Mapa e Sair em cor neutra, 14 px abaixo de Continuar. Estado:
+  **corrigido** (L1a, `c45d8d4`, `ab17eda`).
+- **Teste que impede a volta:** `test/e2e/interface.mjs`: um toque em ✕, Sair ou Mapa nunca sai (treino e convidado);
+  o segundo sai.
 - Fonte: PLAYTEST §2.3.
 
 ### R29 · Os controles tapam estrelinhas, bichinhos e pousos
@@ -317,10 +326,10 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   da barra.
 - **Causa:** **confirmada** (o iPhone não tem `requestFullscreen`, e ele falha em silêncio em `main.ts:298`; os
   controles usam `bottom: 5vh` sem `safe-area-inset-bottom`).
-- **Correção:** cartão "Adicionar à Tela de Início" fora do modo standalone; somar `env(safe-area-inset-bottom)`.
-  Estado: **planejado** (L1a).
-- **Teste que impede a volta:** e2e no perfil iPhone Safari: o cartão aparece uma vez e nunca no PWA nem no Android;
-  A9 em 844×340.
+- **Correção:** cartão "Adicionar à Tela de Início" no iOS fora do modo standalone, uma vez (`src/ui/plataforma.ts`);
+  `env(safe-area-inset-bottom)` somado nos controles do 2.5D e da arena. Estado: **corrigido** (L1a, `8ef5fa4`).
+- **Teste que impede a volta:** `test/plataforma.test.ts` e `test/e2e/interface.mjs` (iPhone: aparece uma vez;
+  standalone e Android: nunca; joystick e ⬆ acima dos 21 px da barra).
 - Fonte: PLAYTEST §3.4.
 
 ### R32 · Joystick fixo
@@ -335,18 +344,22 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   (6,8 s na alta do cap. 2 na máquina sem GPU).
 - **Causa (confirmada pelo perfil):** a fase é montada de forma síncrona dentro do toque; 70–80 % do tempo é geometria
   procedural (`mergeVertices`, ruído por vértice em `util.ts`), mais a compilação síncrona dos shaders.
-- **Correção:** tela de transição pintada antes, montagem em etapas e `compileAsync` (L1); geometria assada no build
-  ou montada num Worker (L13). Estado: **planejado**.
-- **Teste que impede a volta:** `carga.mjs`/`medir.mjs carga`: nenhuma tarefa > 200 ms entre o toque e a tela de
-  transição pintada; ≤ 3 s no Redmi (`?diag`).
+- **Correção:** tela de carregamento pintada antes de montar (`mostrarCarregando` + `quadroPintado`), montagem em
+  5 etapas com `await` e barra de progresso (`Cena.montar`), `compileAsync` e um quadro de aquecimento atrás dela.
+  Estado: **corrigido** no L1 (`ebad74f`, `337cd60`); a etapa "cenário" ainda é uma tarefa única de 1–3 s na máquina
+  sem GPU (geometria procedural em `cenario.ts`): assar no build ou Worker continua **planejado** (L13).
+- **Teste que impede a volta:** `test/e2e/interface.mjs`: nenhuma tarefa > 200 ms entre o toque em Jogar e a tela
+  pintada (medido: 0 ms; pintada em 28–37 ms); ≤ 3 s no Redmi pelo `?diag` (falta o relatório do aparelho).
 - Fonte: PLAYTEST §5.1; TECNICO_DESEMPENHO A5.
 
 ### R34 · Informação de depuração na tela do jogador
 - **Sintoma:** "N fps" sempre visível (o jogador vê "24 fps" e acha que quebrou); o nome do capítulo fica fixo em cima
   das estrelinhas altas.
 - **Causa (confirmada):** `partida.ts:183` escreve o fps sempre.
-- **Correção:** fps só com `?debug`; o nome some depois de 3 s. Estado: **planejado** (L1a).
-- **Teste que impede a volta:** e2e: sem `?debug`, `#hud-info` não contém "fps".
+- **Correção:** fps só com `?debug` (também escondido na arena, por CSS); o nome some depois de 3 s. Estado:
+  **corrigido** (L1a, `c05ddd5`).
+- **Teste que impede a volta:** `test/e2e/interface.mjs`: sem `?debug`, `#hud-info` vazio e escondido; o nome com
+  opacidade 0 depois de 3 s.
 - Fonte: PLAYTEST §3.2.
 
 ## Desempenho e plataforma
@@ -355,8 +368,9 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
 - **Sintoma:** serrilhado na grama e no cabelo justamente na alta.
 - **Causa (confirmada no código e em captura):** a cena é desenhada no alvo do `EffectComposer` (HalfFloat, 0
   samples); o MSAA do canvas só vale para o retângulo final.
-- **Correção:** `samples: 4` no alvo e `antialias: false` no canvas quando houver compositor (ou alta sem compositor).
-  Estado: **planejado** (L1b).
+- **Correção:** alvo da cena com `samples: 4` e canvas sem antialias na alta (`pos.ts`, `cena.ts`); a saída não
+  troca os alvos, para a cena cair sempre no alvo com MSAA (R76). Estado: **corrigido** (L1b, `905172d`,
+  `a031822`).
 - **Teste que impede a volta:** `serrilhado.mjs` sem degraus na alta.
 - Fonte: TECNICO_DESEMPENHO A1.
 
@@ -373,7 +387,9 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   chamadas.
 - **Causa (confirmada por medida):** sombra 2048² com toda a cena projetando sombra (`cena.ts:108`), alvos HalfFloat
   de tela cheia, cadeia do bloom e MSAA do canvas que não é usado.
-- **Correção:** sombra só dos dinâmicos, 1024², frustum justo; R35 e R36. Estado: **planejado** (L1b).
+- **Correção:** sombra só dos dinâmicos (personagens e porteiras; o cenário fixo só recebe), 1024², câmera de sombra
+  justa ao quadro visível (calculada a cada quadro no espaço da luz); alta com no máximo 0,8 Mpx internos; writeBuffer
+  do compositor 1×1. Estado: **corrigido** (L1b, `84c336c`, `3d23276`, `a031822`). Efeito na imagem: R78.
 - **Teste que impede a volta:** `medir.mjs cenas`: cap. 2 alta ≤ 80 chamadas e ≤ 300 mil triângulos; VRAM ≤ 90 MB.
 - Fonte: TECNICO_DESEMPENHO A3/A4.
 
@@ -381,9 +397,11 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
 - **Sintoma:** engasgo quando aparece um efeito ou bichinho novo; de 8 a 10 programas compilados depois do 1º quadro
   por capítulo.
 - **Causa (confirmada por medida):** compilação síncrona, `checkShaderErrors` ligado e sem `compileAsync`.
-- **Correção:** compilar atrás da tela de transição, `checkShaderErrors = false` em produção. Estado: **planejado**
-  (L1b).
-- **Teste que impede a volta:** sonda: 0 compilações depois do 1º quadro nos 7 capítulos × 3 qualidades.
+- **Correção:** `compileAsync` atrás da tela de carregamento (na alta, com o alvo do compositor ligado), Lança-Estrelas
+  já presa na mão, quadro de aquecimento com a sombra cobrindo a fase, `checkShaderErrors` só no desenvolvimento.
+  Estado: **corrigido** (L1b, `ebad74f`, `337cd60`; ver R75).
+- **Teste que impede a volta:** `tools/revisao/l1/compilacoes.mjs` (sonda + a fase inteira dos bots): 0 compilações
+  depois do 1º quadro nos 7 capítulos × 3 qualidades (medido).
 - Fonte: TECNICO_DESEMPENHO A6.
 
 ### R39 · Sem limite de fps e sem pausa em segundo plano
@@ -391,8 +409,10 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
   repete o estado); a música continua com o app escondido (no Android isso é **hipótese**).
 - **Causa (confirmada no código):** `requestAnimationFrame` direto, sem `visibilitychange`.
 - **Correção:** limitador por relógio-alvo (60 e 30 no modo economia), suspender música e `AudioContext`. Estado:
-  **planejado** (L1a).
-- **Teste que impede a volta:** sonda: ≤ 60 quadros/s com rAF de 90 e 120 Hz.
+  **corrigido** (L1a, `86b3c66`: `src/ui/ritmo.ts`, economia com `?fps=30`; `58ccd30`: música e `AudioContext`
+  suspensos em segundo plano; a pausa não redesenha a cena, `ab17eda`).
+- **Teste que impede a volta:** `test/ritmo.test.ts`: rAF a 90, 120 e 144 Hz ⇒ 58–60 quadros/s; a 60 Hz nenhum
+  pulado; economia 30. A sonda no navegador não serve (sem GPU a página roda a 3–4 fps).
 - Fonte: TECNICO_DESEMPENHO A7.
 
 ### R40 · A resolução dinâmica cai à metade no Modo de Pouca Energia do iPhone
@@ -536,7 +556,8 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
 ### R55 · Modelo exato do "Redmi Note 11" é incerto
 - **Sintoma:** os documentos citavam a GPU Mali-G57; o Note 11 global usa Snapdragon 680 / Adreno 610.
 - **Causa:** **hipótese** sobre o aparelho do jogador.
-- **Correção:** o painel `?diag=1` lê a GPU real (`WEBGL_debug_renderer_info`). Estado: **planejado** (L1a).
+- **Correção:** o painel `?diag=1` (`src/ui/diag.ts`) lê a GPU real (`WEBGL_debug_renderer_info`). Estado: **em
+  andamento** (painel pronto, `bf0d8c5`; falta o relatório dos dois aparelhos, mandado pelo Natan).
 - **Teste que impede a volta:** relatório do aparelho anexado ao L1.
 - Fonte: PESQUISA_ARTE_CAMERA §4; TECNICO_DESEMPENHO §1.
 
@@ -562,7 +583,8 @@ Preenchido em 2026-11-24 com o que a etapa de diagnóstico encontrou (base `f6a3
 - **Sintoma:** de 2 a 4 programas a mais por capítulo.
 - **Causa (confirmada no código):** `escalaRuido` e `forcaRuido` são escritas no código do shader e entram na
   `customProgramCacheKey` (`materiais.ts:57,67`).
-- **Correção:** passar a uniforms. Estado: **planejado** (L1b).
+- **Correção:** `uEscRuido`/`uForcaRuido` por material, fora da chave do programa. Estado: **corrigido** (L1b,
+  `5e078d5`).
 - **Teste que impede a volta:** sonda: programas ≤ orçamento (Leve ≤ 26, Normal ≤ 32, Bonito ≤ 38).
 - Fonte: TECNICO_DESEMPENHO §4.
 
@@ -731,3 +753,73 @@ Entradas do QA e integrador do Lote 0 (base `e9cd8ae`, os 4 agentes já commitad
 - **Teste que impede a volta:** T14 mostra os pontos gerados; se o abismo mudar, `npm run apoio` e o T14 acusam.
 - Fonte: L2a, `npm run apoio`.
 
+
+## Lote L1 (interface, rede e render técnico, 2026-11-24)
+
+### R73 · Lição: no CDP, o `touchEnd` leva só o dedo que sai
+- **Sintoma:** no playtest de toque, "Continuar com o dedo no joystick" falhava e o joystick "soltava" sozinho.
+- **Causa (confirmada no Chromium):** `Input.dispatchTouchEvent` com `touchEnd` solta os pontos LISTADOS. A classe
+  `Toque` do playtester mandava a lista dos dedos que ficavam: soltava o polegar do joystick e o dedo do botão nunca
+  recebia `pointerup`. As medidas antigas de `continuarComDedoNoJoystick` (PLAYTEST §2.2) mediam isso, não o jogo.
+- **Correção:** `soltar(id)` manda só o dedo que sai (`tools/revisao/playtester/comum.mjs`, `test/e2e/interface.mjs`).
+  Estado: **corrigido** (`0bc19fe`).
+- **Teste que impede a volta:** `test/e2e/interface.mjs` (joystick segurado do começo ao fim do teste de pausa).
+- Fonte: L1.
+
+### R74 · Lição: `Page.setWebLifecycleState: frozen` não congela uma página visível
+- **Sintoma:** com o convidado "congelado", o anfitrião continuava recebendo ~6 mensagens/s.
+- **Causa (confirmada por medida):** o CDP não congela a página que está visível; o convidado seguia mandando as
+  entradas (o joystick segurado). A medida do PLAYTEST §2.1 (`vxBruna = −5,2` "congelado") não distinguia isso; a
+  causa do R26 continua confirmada pelo código.
+- **Correção:** o e2e simula a página congelada cortando o que o convidado manda (`RTCDataChannel.send` vazio), que é
+  o que o anfitrião vê. Estado: **corrigido** (`c80ff3f`).
+- **Teste que impede a volta:** `test/e2e/interface.mjs` (dupla).
+- Fonte: L1.
+
+### R75 · `compileAsync` da alta compilava programas que o jogo não usava
+- **Sintoma:** depois do `compileAsync`, a alta ainda compilava 13 programas no meio da fase; a média, 2.
+- **Causa (confirmada pelas chaves dos programas):** (1) compilado sem o alvo do compositor, o programa saía em sRGB
+  com curva de tons; no jogo a cena vai para o alvo em espaço linear sem curva (outra chave); (2) a Lança-Estrelas só
+  entrava na cena no 1º tiro; (3) com a sombra justa, o programa de profundidade da porteira só compilava quando ela
+  entrava no quadro.
+- **Correção:** compilar com `setRenderTarget(alvo da cena)`, Lança-Estrelas presa (invisível) na mão desde a criação,
+  quadro de aquecimento com a câmera de sombra cobrindo a fase. Estado: **corrigido** (`ebad74f`, `337cd60`).
+- **Teste que impede a volta:** `tools/revisao/l1/compilacoes.mjs`: 0 compilações depois do 1º quadro.
+- Fonte: L1.
+
+### R76 · Na alta, um quadro sim e outro não ia para o alvo sem MSAA
+- **Sintoma (risco medido nas chamadas):** ao deixar só um alvo do compositor com MSAA, a cena aparecia em branco a
+  cada quadro trocado.
+- **Causa (confirmada no código do three r187):** o `OutputPass` tem `needsSwap = true`; o `EffectComposer` troca
+  `readBuffer`/`writeBuffer` depois dele a cada quadro, e o `RenderPass` desenha no `readBuffer`. Com os dois alvos
+  iguais isso só gastava memória (dois alvos de tela cheia com MSAA).
+- **Correção:** `needsSwap = false` na saída; a cena cai sempre no `readBuffer` (MSAA 4×); o `writeBuffer` fica 1×1
+  sem amostras. Estado: **corrigido** (`a031822`).
+- **Teste que impede a volta:** `serrilhado.mjs` (alta sem degraus), capturas da alta e a VRAM medida pela sonda
+  (`compilacoes.mjs`: renderbuffers de um alvo só).
+- Fonte: L1.
+
+### R77 · Confirmação por timer falhava com quadros longos; clique fantasma na tela nova
+- **Sintoma:** com a máquina carregada, o 2º toque em "Mapa da jornada" só pedia a confirmação de novo; depois de
+  "Mapa da jornada", o clique de compatibilidade caía numa ilha do mapa.
+- **Causa (confirmada no navegador):** (1) o estado "pedindo confirmação" dependia de um `setTimeout` de 3 s, e a pausa
+  continuava redesenhando a cena (quadros de 1–3 s sem GPU), atrasando os eventos; (2) o navegador gera o `click` de
+  compatibilidade depois do `pointerup` no que estiver embaixo do dedo na tela nova.
+- **Correção:** confirmação pela hora do 1º toque; `preventDefault` no `touchend` do botão que já agiu; a pausa
+  desenha a cena uma vez e para. Estado: **corrigido** (`ab17eda`).
+- **Teste que impede a volta:** `test/e2e/interface.mjs` (o 2º toque sai; o 1º nunca).
+- Fonte: L1.
+
+### R78 · Sem a sombra do cenário fixo, a alta fica até 2,3 pontos de L\* mais clara
+- **Sintoma:** nas capturas antes × depois (p012 e p05, 844×390@2), a alta sobe L\* de +0,4 a +2,3 (cap. 2 p012 e
+  cap. 6) e a % de sombra cai 0,3–6,5 pontos; a média não muda (|ΔL\*| ≤ 0,1).
+- **Causa (confirmada):** R37 tirou a sombra que o cenário fixo projetava nele mesmo (a correção pedida pelo plano). O
+  aceite do L1b pede |ΔL\*| ≤ 1: os dois pedidos se chocam. Com a sombra só dos dinâmicos o cap. 2 alta fica em 297
+  mil triângulos (teto 300 mil); devolver a sombra do cenário, mesmo com a câmera justa, redesenharia 2–3 pedaços de
+  16 m do cenário no mapa de sombra (hipótese: passaria do teto; não medido).
+- **Correção:** nenhuma no L1. Alta − média (§5.3: \|ΔL\*\| ≤ 3, Δsat ≥ −0,03) chega mais perto de 0 nos caps. 1,
+  2 (p012: −2,2 → +0,1), 3 e 5, e se afasta nos caps. 4 (+2,0 → +2,9; Δsat −0,029 → −0,036), 6 (−0,8 → +1,1) e 7
+  (p05 +4,4 → +5,1, que já passava do teto; Δsat −0,086 → −0,107). Escurecer o pé das paredes e o chão sob as copas na
+  oclusão assada (`cenario.ts`) é do L7. Estado: **planejado** (L7).
+- **Teste que impede a volta:** `comparar.mjs` alta × média e alta antes × depois no L7.
+- Fonte: L1.
