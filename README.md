@@ -24,23 +24,42 @@ aplicativo pelo menu do navegador, "Adicionar à tela inicial").
 2. **Prólogo** em quadrinhos (toque avança, "Pular ››" pula) e o **mapa da jornada**: sete ilhas, uma por capítulo.
    Quem criou a sala escolhe e toca em **Jogar ▶**; o outro vê a mesma tela.
 3. Na fase: chegue com os dois ao **pedaço da estrela** no fim e toquem nele juntos. Pelo caminho, pegue
-   **estrelinhas** (★ no alto da tela) e devolva a lembrança aos **bichinhos-pesadelo** com o Lança-Estrelas ou com
-   um pisão (eles estouram em brilho e viram estrelinha). As **lanternas** guardam o ponto de volta.
+   **estrelinhas** (★ no alto da tela) e devolva a lembrança aos **bichinhos-pesadelo** com as armas de brinquedo ou
+   com um pisão (eles estouram em brilho e viram estrelinha). As **lanternas** guardam o ponto de volta (e o jogo grava
+   nelas). Balões de fala curtos (Natan, Bruna e a Dona Lume) contam a história e dão a dica da primeira vez de cada
+   mecânica; na pausa, **Balões: todos / só história / desligados**.
 4. **Vida:** 3 corações cada. Sem corações você vira **bolha**: flutue até o parceiro e encoste para voltar. Se os
    dois virarem bolha, voltam à última lanterna acesa. Cair num vão não tira coração: volta ao chão seguro.
 5. Ao concluir: estrelinhas do capítulo (até 3 estrelas grandes), a **lembrança** do casal e o próximo capítulo no
    mapa. No capítulo 7, ao tocarem o pedaço, o Rei-Pesadelo o arranca e foge para a **Arena do Coração** (luta em 3D,
    abaixo); vencendo, vêm a lembrança, o final e os créditos. O capítulo 7 só conta depois da arena (se saírem antes,
-   o mapa oferece **Arena do Coração ⚔** no capítulo 7). O progresso fica salvo no aparelho de quem criou a sala.
+   o mapa oferece **Arena do Coração ⚔** no capítulo 7). A jornada fica salva nos dois celulares.
 
 ### Controles
 | Ação | Celular | Teclado |
 |---|---|---|
 | Andar (e ⬆/⬇ no fio e na argola) | joystick à esquerda | setas ou WASD |
 | Pular (segure para ir mais alto) | ⬆ grande à direita | Espaço, ↑ ou W |
-| Lança-Estrelas (segure: 3 por segundo) | ✨ | J |
+| Atacar com a arma na mão (o botão mostra o ícone dela) | ATACAR | J |
+| Próxima arma | ⇆ (toque) | Q |
+| Espaço direto da arma (1–4) | — | 1, 2, 3, 4 |
+| Mochila do casal (perto de uma lanterna acesa) / dar ao parceiro (longe dela) | ⇆ (segure) | Tab / G |
 | Mão: dar a mão (impulso), puxar, ancorar ou soltar o Fio Vermelho, agarrar argola, empurrar | ✋ | E ou Shift |
+| Trocar de personagem (só sozinho e no treino) | ⇄ no alto | — |
 | Pausa (os dois param) | ❚❚ | Esc ou P |
+
+Os botões respondem ao encostar o dedo, então dá para pausar ou trocar com o polegar ainda no joystick. ✕, Sair e
+"Mapa da jornada" pedem um segundo toque para confirmar. Se um dos dois sai do app, o jogo pausa e o outro vê o aviso.
+
+**Armas de brinquedo** (cada um tem 4 espaços; não há fogo amigo):
+- **Estilingue de Xuxinha**: 3 pedrinhas que voltam sozinhas (nunca acaba). Atira em arco com mira assistida;
+  segurar carrega um tiro mais forte. Um tiro que bate no Rei de escudo fechado vira miçanga.
+- **Espada de Papelão**: corpo a corpo, combo de 3 golpes (o último mais forte). Corta o barbante.
+- **Martelo de Brinquedo** (no baú do cap. 1): quebra o bloco rachado; no ar, ATACAR faz a martelada em área.
+- **Miçangas** (de bichinhos, lanternas e tiros defendidos) recarregam a arma de munição mais vazia.
+- No cap. 1: o **alvo-sino** (acerte com o Estilingue) e o **barbante** (corte com a Espada) soltam estrelinhas, o
+  **baú** no topo da pirâmide guarda o Martelo e o **bloco rachado** logo depois se quebra com ele. Todos são opcionais: tudo o que é obrigatório se vence com o
+  Estilingue e a Espada.
 
 Truques de casal: **de mãos dadas** (✋ perto do outro) um pulo vira impulso para alcançar o que é alto; quem está em
 cima segura ✋ e puxa o parceiro. No **Fio Vermelho**, quem está firme segura ✋ (âncora) e o outro pendura, balança
@@ -128,11 +147,14 @@ node test/e2e/capitulos.mjs dupla                     # os 7 capítulos em dupla
 node test/e2e/arena.mjs [treino|dupla]                 # Arena do Coração: controles, HUD, luta inteira, final e créditos
 node test/e2e/interface.mjs [--so treino|dupla]        # L1: botões com o polegar no joystick, confirmações, carga, ?diag, iPhone, segundo plano
 node test/e2e/solo.mjs                                # L2b: campanha sem sala, salvar/recarregar/Continuar, Quintal (T12), quem cria a sala
+node test/e2e/baloes.mjs                              # L8a: balões fora dos controles nos 4 tamanhos, falas iguais na dupla, opção na pausa
+npm run test:lento                                    # busca completa de alcance, janela e visibilidade (≈ 15 min)
+node tools/revisao/qa/fatia1_toque.mjs                # QA: joga pelo toque (CDP, vários dedos) em 844×390 e 915×412
 ```
 Os testes e2e usam o `dist/` (rode `npm run build` antes). Para jogar um capítulo inteiro no navegador, eles gravam as
 entradas dos bots cooperativos (`test/fases/bot.ts` e `test/fases/planos/`) na simulação em Node e as reproduzem no
 jogo com `window.__edm.roteiro(lista)` (a simulação é determinística); `window.__edm.acelerar(k)` encurta o tempo.
-O `dupla.mjs` confere: sala, prólogo, mapa, andar, pular, tiro do convidado, pausa, o capítulo 1 inteiro (tiro em
+O `dupla.mjs` confere: sala, prólogo, mapa, andar, pular, ataque do convidado, pausa, o capítulo 1 inteiro (tiro em
 bichinho, estrelinhas, mesmo placar e posições nos dois, capítulo concluído, progresso salvo) e a conexão perdida.
 Capturas em `test-out/` e `test-out/capitulos/`. Portas: `PORTA` (preview) e `PORTA_SINAL` (PeerJS; `0` = porta livre).
 
