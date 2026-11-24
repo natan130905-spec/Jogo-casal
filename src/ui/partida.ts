@@ -121,8 +121,9 @@ export class Partida {
 
   pausar(on: boolean) {
     this.pausada = on;
-    this.controles.limpar();
-    if (on) this.remota.limpar();
+    // ao pausar, solta tudo; ao continuar, NÃO: o polegar que voltou ao joystick durante a pausa (a sobreposta deixa
+    // o toque passar fora do cartão) já vale sem precisar levantar e tocar de novo
+    if (on) { this.controles.limpar(); this.remota.limpar(); }
     this.preditor?.limpar();
   }
 

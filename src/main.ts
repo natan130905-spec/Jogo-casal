@@ -16,7 +16,7 @@ import {
   salvarProgresso, TOTAL_CAPITULOS, type Progresso,
 } from './ui/progresso';
 import { som } from './ui/som';
-import { $, Hud, Mapa, mostrarCaiu, mostrarConcluido, mostrarCreditos, mostrarPausa, mostrarTela, Quadrinhos } from './ui/telas';
+import { $, Hud, Mapa, mostrarCaiu, mostrarConcluido, mostrarCreditos, mostrarPausa, mostrarTela, Quadrinhos, tocavel } from './ui/telas';
 
 const VERSAO = '0.3.0';
 const params = new URLSearchParams(location.search);
@@ -367,6 +367,11 @@ rotuloSom();
 $('#bt-som').onclick = () => { som.alternar(); rotuloSom(); };
 $('#bt-tentar').onclick = () => void tentarDeNovo();
 $('#bt-caiu-sair').onclick = () => sair();
+// botões que precisam responder com o polegar no joystick (outro dedo na tela não gera 'click'; R27). ❚❚ age já no
+// toque; os outros ao levantar o dedo em cima deles. ⇄ recebe o onclick da Partida/PartidaArena de cada fase.
+tocavel($('#bt-pausa'), { aoBaixar: true });
+for (const id of ['#bt-trocar', '#bt-continuar', '#bt-pausa-mapa', '#bt-pausa-sair', '#bt-som', '#bt-tentar', '#bt-caiu-sair',
+  '#bt-conc-continuar', '#bt-pular', '#bt-jogar', '#bt-arena', '#bt-mapa-sair', '#bt-historia']) tocavel($(id));
 addEventListener('keydown', (e) => {
   if (e.code === 'Escape' || e.code === 'KeyP') {
     if (emJogo(atual)) acao(pausado ? 'continuar' : 'pausa');

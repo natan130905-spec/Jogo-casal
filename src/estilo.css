@@ -197,6 +197,9 @@ body.jogando #ceu { display: none; }
 .sobreposta { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; background: #0d0822b8; backdrop-filter: blur(3px); }
 .cartao { display: flex; flex-direction: column; align-items: stretch; gap: 8px; text-align: center; width: min(380px, 90vw);
   background: linear-gradient(#3a2770f0, #24184ef0); border: 2px solid #ffffff30; border-radius: 22px; padding: 14px 18px; box-shadow: 0 12px 40px #000a; max-height: 96vh; overflow: auto; }
+/* pausa: o toque fora do cartão passa para os controles (o polegar pode voltar ao joystick antes de Continuar) */
+#pausa { pointer-events: none; }
+#pausa .cartao { pointer-events: auto; }
 .dica-teclas { margin: 0; font-size: 11px; opacity: .6; }
 
 /* ---------- capítulo concluído ---------- */

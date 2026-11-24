@@ -221,3 +221,61 @@ export function mostrarCaiu(on: boolean, motivo = '', tentando = false) {
   b.textContent = tentando ? 'Tentando…' : 'Tentar de novo';
 }
 
+
+// ---------- toque nos botões (R27) ----------
+/**
+ * Faz o botão responder ao toque mesmo com outro dedo na tela (o polegar no joystick). O navegador não gera `click`
+ * quando há mais de um dedo encostado; por isso o botão dispara no `pointerup` dentro dele (ou no `pointerdown`, com
+ * `aoBaixar`) e chama `el.click()`, que aciona os ouvintes normais (onclick/addEventListener). O `click` natural que
+ * vem logo depois de um toque com um dedo só é descartado (senão o botão agiria duas vezes). Teclado (Enter/Espaço)
+ * e `el.click()` de teste continuam valendo.
+ */
+export function tocavel(el: HTMLElement, o: { aoBaixar?: boolean } = {}) {
+  let dedo = -1, deixar = false, ultimo = -1e9;
+  const disparar = () => {
+    if ((el as HTMLButtonElement).disabled || el.hidden) return;
+    ultimo = performance.now();
+    deixar = true;
+    try { el.click(); } finally { deixar = false; }
+  };
+  el.addEventListener('pointerdown', (ev) => {
+    if (ev.button > 0) return;
+    dedo = ev.pointerId;
+    try { el.setPointerCapture(ev.pointerId); } catch { /* sem captura */ }
+    if (o.aoBaixar) { ev.preventDefault(); disparar(); }
+  });
+  el.addEventListener('pointerup', (ev) => {
+    if (ev.pointerId !== dedo) return;
+    dedo = -1;
+    if (o.aoBaixar) return;
+    const r = el.getBoundingClientRect(), folga = 10;
+    if (ev.clientX >= r.left - folga && ev.clientX <= r.right + folga && ev.clientY >= r.top - folga && ev.clientY <= r.bottom + folga) disparar();
+  });
+  el.addEventListener('pointercancel', (ev) => { if (ev.pointerId === dedo) dedo = -1; });
+  // fase de captura no próprio alvo: roda antes do onclick e dos outros ouvintes de 'click'
+  el.addEventListener('click', (ev) => {
+    if (deixar) return;
+    if (performance.now() - ultimo < 700) { ev.stopImmediatePropagation(); ev.preventDefault(); }
+  }, true);
+}
+
+// ---------- confirmação das saídas (R28) ----------
+/**
+ * Saída destrutiva com segundo toque: o 1º toque troca o texto do botão pelo aviso (`pergunta`) e o deixa em destaque
+ * por 3 s; só um 2º toque nesse tempo executa `fazer`. Devolve uma função que cancela o pedido (ao fechar a tela).
+ */
+export function comConfirmacao(el: HTMLElement, pergunta: string, fazer: () => void) {
+  let original = '', timer: ReturnType<typeof setTimeout> | null = null;
+  const cancelar = () => {
+    if (timer === null) return;
+    clearTimeout(timer); timer = null;
+    el.textContent = original; el.classList.remove('confirmar');
+  };
+  el.addEventListener('click', () => {
+    if (timer !== null) { cancelar(); fazer(); return; }
+    original = el.textContent ?? '';
+    el.textContent = pergunta; el.classList.add('confirmar');
+    timer = setTimeout(cancelar, 3000);
+  });
+  return cancelar;
+}
