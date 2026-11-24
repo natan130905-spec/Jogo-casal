@@ -17,3 +17,19 @@
    (sistema novo de armas), lanternas de checkpoint, pequenos puzzles de dupla, e no coração da floresta a Arena do
    Coração com o Rei. Usa o núcleo da arena (`src/core/arena`) estendido para mundo aberto em zonas (carregamento por
    zona, LOD, instancing de árvores) para caber no celular.
+
+## Pedido seguinte (2026-11-24): caminhos secretos com easter eggs
+> "Quero que tenha alguns caminhos secretos que tenham easter eggs como arma diferente, habilidades diferentes, moedas;
+> só me passe fora do jogo onde estão cada um e o que são."
+
+Decisões do diretor:
+- Cada capítulo (e a Floresta do Coração) ganha **2–3 caminhos secretos** de verdade (parede falsa, cipó escondido atrás
+  do primeiro plano, cano/toca, nuvem alta, sala atrás da cachoeira), com pista visual discreta (não invisível por
+  azar: tem que ser descobrível por quem explora).
+- Recompensas: **armas únicas** (só existem no segredo), **habilidades** permanentes da campanha (ex.: pulo duplo, botas de
+  impulso, guarda-chuva planador, mergulho, abraço que cura), **moedas** (moeda do casal, gastas na casa compartilhada em
+  roupas/decoração/minigames) e easter eggs de casal (fotos, recados).
+- Tudo coletável no solo (o companheiro ajuda) e em dupla; teste automático de alcance cobre os segredos.
+- **Guia fora do jogo**: gerado automaticamente dos dados das fases por `tools/guia_segredos.mjs` (para nunca ficar
+  desatualizado), entregue ao jogador como arquivo e **não publicado** no repositório público (a pasta `.segredos/`
+  fica no .gitignore). O repositório é público: os dados das fases ficam no código, mas o guia legível não.
