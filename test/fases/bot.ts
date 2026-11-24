@@ -226,7 +226,7 @@ export const puxar = (): Passo[] => [darImpulso(), esperar((c) => c.outro.noChao
 /** Carona na plataforma especial k: espera em `espera`; quando o canto esquerdo dela está em `xEmbarque`, sobe
  *  (pulando, se `pular`), fica em pé (a `dx` do meio) até o canto chegar em `xDesce` (ou `desce(c)`), e anda até
  *  `saida`. Se cair, volta a esperar. */
-export function carona(k: number, espera: number, xEmbarque: number, xDesce: number | ((c: Ctx) => boolean), saida: number, o: { dx?: number; pular?: boolean; tol?: number } = {}): Passo {
+export function carona(k: number, espera: number, xEmbarque: number | ((c: Ctx) => boolean), xDesce: number | ((c: Ctx) => boolean), saida: number, o: { dx?: number; pular?: boolean; tol?: number } = {}): Passo {
   const andarEspera = ir(espera), andarSaida = ir(saida);
   return {
     nome: `carona(${k})`,
@@ -246,12 +246,14 @@ export function carona(k: number, espera: number, xEmbarque: number, xDesce: num
           m.fase = 1; continue;
         }
         if (fase === 1) { // esperar a plataforma
-          if (Math.abs(s.x - xEmbarque) <= (o.tol ?? 0.25) && s.ativa) { m.fase = 2; m.t2 = 0; continue; }
+          const pode = typeof xEmbarque === 'number' ? Math.abs(s.x - xEmbarque) <= (o.tol ?? 0.25) : xEmbarque(c);
+          if (pode && s.ativa) { m.fase = 2; m.t2 = 0; continue; }
           return { x: guiar(c.eu, espera) };
         }
         if (fase === 2) { // subir
           if (c.eu.noChao && c.eu.plataforma === k && Math.abs(c.eu.x - alvo) < 0.35) { m.fase = 3; continue; }
-          if (++m.t2 > 240 || (c.eu.noChao && c.eu.plataforma < 0 && Math.abs(s.x - xEmbarque) > 1.5)) { m.fase = 1; continue; }
+          const longe = typeof xEmbarque === 'number' ? Math.abs(s.x - xEmbarque) > 1.5 : !xEmbarque(c);
+          if (++m.t2 > 240 || (m.t2 > 40 && c.eu.noChao && c.eu.plataforma < 0 && longe)) { m.fase = 1; continue; }
           const pula = !!o.pular && m.t2 > 1;
           return { x: guiar(c.eu, alvo, 5), jump: pula && (c.eu.noChao ? m.t2 < 4 : true) };
         }
@@ -440,6 +442,26 @@ export function quicarPara(xGel: number, alvo: number, o: { de?: number; soDesce
       if (eu.noChao && quicou) return null;
       if (eu.noChao && !quicou) { m.saiu = 0; m.solto = 0; return { x: 0 }; }
       return { x: quicou ? guiar(eu, alvo, 3) : guiar(eu, xGel, 4), jump: true };
+    },
+  };
+}
+
+/** Luta com o Rei-Pesadelo: fica a `dist` m dele (do lado `lado`), dentro de [xMin, xMax], olhando para ele e
+ *  atirando; foge dos esporos que vêm na altura do corpo pulando. Termina quando ele vira vaga-lume. */
+export function lutarComORei(lado: 1 | -1, xMin: number, xMax: number, dist = 6.5): Passo {
+  return {
+    nome: 'lutar com o Rei-Pesadelo',
+    fn: (c) => {
+      const rei = c.e.inimigos.find((n) => n.tipo === 'rei');
+      if (!rei || !rei.vivo) return null;
+      const { eu } = c;
+      const alvo = Math.max(xMin, Math.min(xMax, rei.x + lado * dist));
+      const dx = alvo - eu.x;
+      const praRei = Math.sign(rei.x - eu.x) || 1;
+      const x = Math.abs(dx) > 0.35 ? guiar(eu, alvo) : praRei * 0.04;
+      // esporo vindo na altura do corpo e perto: pula
+      const perigo = c.e.esporos.some((s) => Math.abs(s.x - eu.x) < 2.2 && s.y > eu.y - 0.1 && s.y < eu.y + 1.3 && Math.sign(eu.x - s.x) === Math.sign(s.vx));
+      return { x, jump: perigo && eu.noChao, shoot: (eu.olhando === praRei) };
     },
   };
 }

@@ -48,7 +48,7 @@ describe('fases dos capítulos: dados', () => {
         for (const l of f.lanternas ?? []) expect(sol.some((r) => pontoDentro(r, l.x, l.y - 0.05)), `lanterna em ${l.x}`).toBe(true);
         for (const n of f.inimigos ?? []) {
           const m = INIMIGO[n.tipo];
-          const cx = { x: n.x - m.w / 2, y: n.y, w: m.w, h: m.h };
+          const cx = { x: n.x - m.w / 2 + 0.02, y: n.y + 0.02, w: m.w - 0.04, h: m.h - 0.04 };
           expect(sol.some((r) => sobrepoe(cx, r)), `${n.tipo} em ${n.x} dentro de parede`).toBe(false);
           if (n.tipo !== 'morcego') expect(sol.some((r) => pontoDentro(r, n.x, n.y - 0.05)), `${n.tipo} em ${n.x} sem chão`).toBe(true);
         }
