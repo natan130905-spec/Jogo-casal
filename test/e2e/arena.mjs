@@ -34,7 +34,8 @@ const cap7 = partes.includes('dupla') ? (await gravarRoteiros([7]))[7] : null;
 
 let sinal = null, portaSinal = 0;
 if (partes.includes('dupla')) portaSinal = await new Promise((r) => { sinal = PeerServer({ port: 0, path: '/', host: '127.0.0.1' }, (s) => r(s.address().port)); });
-const srv = await preview({ preview: { port: porta, host: '127.0.0.1', strictPort: true }, logLevel: 'error' });
+// DIST=pasta usa outro build (padrão: dist)
+const srv = await preview({ ...(process.env.DIST ? { build: { outDir: process.env.DIST } } : {}), preview: { port: porta, host: '127.0.0.1', strictPort: true }, logLevel: 'error' });
 const navegador = await chromium.launch({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] });
 const log = [];
 
