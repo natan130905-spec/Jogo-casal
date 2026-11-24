@@ -338,7 +338,8 @@ export function criarKit(chave: Exclude<ChaveTema, 'floresta'>, k: Contexto): Ki
         }
         luz.add('halo', x, y + 0.3, z + 0.1, 1.5, 1.2, cor, 0.6, rnd());
       },
-      alta(x0, x1, topo) { ilha(x0, x1, topo, 0, 1.4, 0.7); },
+      // no plano do jogo o cone fica raso (1,2 m) para não esconder quem está pendurado no fio embaixo da ilha
+      alta(x0, x1, topo) { ilha(x0, x1, topo, 0, 1.4, 0); },
       marcos(X, L) {
         // arco de ruína grande ao fundo
         const ax = X + L * 0.4, az = -13, h = 9, w = 6;
@@ -479,7 +480,7 @@ export function criarKit(chave: Exclude<ChaveTema, 'floresta'>, k: Contexto): Ki
         luz.add('halo', x, y + 0.5, z + 0.1, 1.5, 1.5, cor, 0.65, rnd());
         luz.add('estrela', x, y + 0.5, z + 0.12, 0.7, 0.7, 0xffffff, 0.8, rnd());
       },
-      alta(x0, x1, topo) { ilha(x0, x1, topo, 0, 1.4, 1); },
+      alta(x0, x1, topo) { ilha(x0, x1, topo, 0, 1.4, 0); }, // cone raso: veja o oceano
       marcos(X, L) {
         // planeta grande com anel e a "estrela do coração" ao longe
         const g = new THREE.SphereGeometry(9, seg(28), seg(18)); colocar(g, X + L * 0.3, 14, -40);
