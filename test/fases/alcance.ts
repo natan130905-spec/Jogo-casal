@@ -205,7 +205,8 @@ export function montarGrafo(f: Fase, o: { passoAmostra?: number } = {}): Grafo {
     }
     const perto = sol.filter((r) => r.x < n.x1 + 12 && r.x + r.w > n.x0 - 12);
     const espPerto: [number, Retangulo][] = [...retNo].filter(([id, r]) => id !== n.id && r.x < n.x1 + 12 && r.x + r.w > n.x0 - 12);
-    const saidas: [number, TipoLigacao][] = n.tipo === 'quica' ? [[15, 'solo'], [18, 'solo']]
+    const forca = n.tipo === 'quica' ? ((defs[n.k!] as { forca?: number }).forca ?? 15) : 0;
+    const saidas: [number, TipoLigacao][] = n.tipo === 'quica' ? [[forca, 'solo'], [forca * 1.2, 'solo']]
       : n.tipo === 'fixo' ? [[FISICA.pulo, 'solo'], [0, 'solo'], [FISICA.impulsoPulo, 'super']] : [[FISICA.pulo, 'solo'], [0, 'solo']];
     for (const x0 of xs) {
       // pontos de mira (arredondados a 0,5 m, sem repetir)

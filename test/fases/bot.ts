@@ -416,3 +416,30 @@ export function atravessarArgola(k: number, alvo: number, yAlvo: number, o: { ra
     },
   };
 }
+
+/** Pula (ou desce) na gelatina em `xGel` e, ao quicar, segura o pulo e vai até `alvo`; termina ao pousar.
+ *  Com `de`, corre até passar de `de` antes de pular; `soDescer`: só anda para fora da beira. */
+export function quicarPara(xGel: number, alvo: number, o: { de?: number; soDescer?: boolean; quiques?: number } = {}): Passo {
+  return {
+    nome: `quicar em ${xGel} até ${alvo}`,
+    fn: (c) => {
+      const { eu, m } = c;
+      if (c.e.eventos.includes(`quique:${c.i}`)) m.q = (m.q ?? 0) + 1;
+      if (c.e.eventos.includes(`caiu:${c.i}`)) { m.saiu = 0; m.q = 0; m.solto = 0; }
+      const quicou = (m.q ?? 0) >= (o.quiques ?? 1);
+      if (!m.saiu) {
+        const dir = Math.sign(xGel - eu.x) || 1;
+        if (o.de !== undefined && eu.noChao && (eu.x - o.de) * dir < 0) return { x: dir };
+        if (eu.noChao) {
+          if (o.soDescer) return { x: dir };
+          if (!m.solto) { m.solto = 1; return { x: guiar(eu, xGel), jump: false }; }
+          return { x: o.de !== undefined ? dir : guiar(eu, xGel), jump: true };
+        }
+        m.saiu = 1;
+      }
+      if (eu.noChao && quicou) return null;
+      if (eu.noChao && !quicou) { m.saiu = 0; m.solto = 0; return { x: 0 }; }
+      return { x: quicou ? guiar(eu, alvo, 3) : guiar(eu, xGel, 4), jump: true };
+    },
+  };
+}
