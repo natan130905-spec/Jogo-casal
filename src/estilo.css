@@ -156,16 +156,20 @@ body.jogando #ceu { display: none; }
 #hud-estrelinhas { font-size: clamp(14px, 4.4vh, 19px); color: #ffe9a0; font-weight: 700; }
 #hud-estrelinhas.ganhou { animation: ganhou .4s; }
 @keyframes ganhou { 50% { transform: scale(1.25); } }
-#hud button { pointer-events: auto; font-size: 15px; padding: 4px 11px; box-shadow: none; background: #ffffff30; color: #fff; border: 1px solid #ffffff40; }
-.hud-cap { font-size: 12px; opacity: .8; }
-.hud-info { font-size: 11px; opacity: .6; }
+/* fundo escuro translúcido e sombra no texto: legível também nos céus claros (doces, espelhos) */
+#hud button { pointer-events: auto; font-size: 15px; padding: 4px 11px; box-shadow: none; background: #1a1240a0; color: #fff; border: 1px solid #ffffff55; }
+#hud-estrelinhas { background: #1a1240a0; border-radius: 99px; padding: 1px 10px; }
+.hud-cap, .hud-info { text-shadow: 0 1px 2px #000c, 0 0 6px #0008; background: #1a124066; border-radius: 99px; padding: 0 8px; }
+.hud-cap { font-size: 12px; }
+.hud-info { font-size: 11px; opacity: .8; }
+.hud-info:empty { display: none; }
 #controles { position: absolute; inset: 0; pointer-events: none; }
 #joystick { position: absolute; left: max(4vw, env(safe-area-inset-left)); bottom: 6vh; width: min(36vh, 170px); aspect-ratio: 1; border-radius: 50%;
-  background: #ffffff1c; border: 2px solid #ffffff55; pointer-events: auto; display: grid; place-items: center; touch-action: none; }
+  background: #1a124038; border: 2px solid #ffffff66; pointer-events: auto; display: grid; place-items: center; touch-action: none; }
 #joystick .bola { width: 42%; aspect-ratio: 1; border-radius: 50%; background: #ffffffcc; transition: transform 0.05s; }
 /* ⬆ grande no canto; ✨ à esquerda dele; ✋ acima dele (como no conceito) */
 #botoes { position: absolute; right: max(3vw, env(safe-area-inset-right)); bottom: 5vh; width: min(52vh, 250px); aspect-ratio: 1.1; pointer-events: none; }
-#botoes button { position: absolute; aspect-ratio: 1; border-radius: 50%; padding: 0; background: #ffffff2e; color: #fff; pointer-events: auto;
+#botoes button { position: absolute; aspect-ratio: 1; border-radius: 50%; padding: 0; background: #1a12404d; color: #fff; pointer-events: auto; text-shadow: 0 1px 3px #0009;
   border: 2px solid #ffffff77; box-shadow: none; touch-action: none; display: grid; place-items: center; }
 #bt-pulo { right: 0; bottom: 0; width: 46%; font-size: min(9vh, 40px); }
 #bt-tiro { left: 0; bottom: 4%; width: 38%; font-size: min(8vh, 34px); background: #ffcf6b33 !important; border-color: #ffe9a0aa !important; }
