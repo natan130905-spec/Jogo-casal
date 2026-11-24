@@ -33,3 +33,18 @@ Decisões do diretor:
 - **Guia fora do jogo**: gerado automaticamente dos dados das fases por `tools/guia_segredos.mjs` (para nunca ficar
   desatualizado), entregue ao jogador como arquivo e **não publicado** no repositório público (a pasta `.segredos/`
   fica no .gitignore). O repositório é público: os dados das fases ficam no código, mas o guia legível não.
+
+## Pedido seguinte (2026-11-24): queda secreta que leva a outra parte ou outro final
+> "Tipo uma queda que leva a outra parte ou outro final do jogo."
+
+Decisões do diretor:
+- **Quedas secretas**: alguns abismos, em vez de virar bolha, levam a outro lugar quando se cai no ponto certo (pista:
+  vaga-lumes descendo, brilho no fundo, som diferente). Um por capítulo em média, sempre opcional.
+- Destinos: **fases secretas curtas** (ex.: "O Fundo da Caixa de Brinquedos" no cap. 1, "Raízes da Floresta" no cap. 2,
+  "Engrenagens" no cap. 3, "Fundo do Mar" no cap. 4, "Caverna de Caramelo" no cap. 5, "Do Outro Lado do Espelho" no
+  cap. 6) com armas únicas, habilidades, moedas e uma **lembrança secreta** cada.
+- **Final alternativo**: juntando as lembranças secretas, uma queda no fim do cap. 7 (cair os dois juntos, de mãos dadas,
+  no vazio do cosmos) leva ao **Mundo de Dentro da Estrela**, uma fase extra e um **final verdadeiro** diferente do normal
+  (cena e música próprias). O final normal continua igual para quem não achar.
+- Tudo entra no guia de segredos fora do jogo (`tools/guia_segredos.mjs` → `.segredos/`), no teste de alcance e
+  funciona no solo e em dupla. Salvamento guarda quais segredos e finais foram vistos.
